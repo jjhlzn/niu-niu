@@ -33,6 +33,7 @@ public class FirstDealerController : MonoBehaviour {
 	public GameObject[] user2CardPositions;
 
 	private List<Image> deckCards;
+	public Sprite[] cardSprites;
 
 
 	// Use this for initialization
@@ -71,6 +72,9 @@ public class FirstDealerController : MonoBehaviour {
 				Debug.Log("first deal card over");
 				hideOtherDeckCard ();
 				StartCoroutine (TurnCardUp (deckCards[0]));
+				StartCoroutine (TurnCardUp (deckCards[1]));
+				StartCoroutine (TurnCardUp (deckCards[2]));
+				StartCoroutine (TurnCardUp (deckCards[3]));
 				gamePlayController.state = gamePlayController.state.nextState ();
 			}
 		} 
@@ -115,11 +119,21 @@ public class FirstDealerController : MonoBehaviour {
 		this.deckCards = cards;
 	}
 
+	public void SetCardSprites(Sprite[] cardSprites) {
+		this.cardSprites = cardSprites;
+	}
+
 	IEnumerator TurnCardUp(Image card) {
 		Animator anim = card.GetComponent<Animator> ();
 		anim.Play ("TurnUp");
 		yield return new WaitForSeconds (.4f);
-		//anim.sprite = puzzleImage;
+		card.sprite = cardSprites[0];
+
+
+		//card.transform.localEulerAngles = new Vector3(0,360,0);
+		anim.Play ("TurnBackNow2");
+		yield return new WaitForSeconds (.1f);
+
 	}
 
 }

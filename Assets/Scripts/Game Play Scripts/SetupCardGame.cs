@@ -14,6 +14,8 @@ public class SetupCardGame : MonoBehaviour {
 	[SerializeField]
 	private GameObject cardPanel;
 
+	public Sprite[] cardSprites;
+
 	private int cardCount = 10;
 
 	private List<Image> cards = new List<Image> ();
@@ -22,6 +24,10 @@ public class SetupCardGame : MonoBehaviour {
 	void Awake() {
 
 		Debug.Log ("SetupCardGame Awake");
+
+
+		cardSprites = Resources.LoadAll<Sprite>("sprites/simple");
+
 		CreateDeckCards ();
 	}
 	
@@ -59,6 +65,8 @@ public class SetupCardGame : MonoBehaviour {
 		}
 
 		firstDealerController.SetDeckCards (cards);
+
+		firstDealerController.SetCardSprites (cardSprites);
 
 	}
 
