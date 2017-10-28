@@ -52,7 +52,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\CardScript.cs" />
+     <Compile Include="Assets\Scripts\Game Play Scripts\FirstDealerController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\GamePlayController.cs" />
+     <Compile Include="Assets\Scripts\Game Play Scripts\GameState.cs" />
+     <Compile Include="Assets\Scripts\Game Play Scripts\SetupCardGame.cs" />
  <Reference Include="UnityEngine.UIAutomation">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UIAutomation/UnityEngine.UIAutomation.dll</HintPath>
  </Reference>
