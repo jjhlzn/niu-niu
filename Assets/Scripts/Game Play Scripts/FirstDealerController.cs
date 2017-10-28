@@ -21,16 +21,13 @@ public class FirstDealerController : MonoBehaviour {
 	private GamePlayController gamePlayController;
 
 	[SerializeField]
-	private SetupCardGame setupCardGame;
-
-	[SerializeField]
 	private GameObject deckCardPosition;
 
-	private float speed = 400f; //发牌速度
-	private float waitTimeDelta = 0.1f;
+	public static float speed = 400f; //发牌速度
+	public static float waitTimeDelta = 0.1f;
 
-	public GameObject[] user1CardPositions;
-	public GameObject[] user2CardPositions;
+	private GameObject[] user1CardPositions;
+	private GameObject[] user2CardPositions;
 
 	private List<Image> deckCards;
 	public Sprite[] cardSprites;
@@ -38,12 +35,11 @@ public class FirstDealerController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		setUserCardsPosition ();
 		hideOtherDeckCard (); 
 	}
 
 
-	private bool isTwoPositionIsEqual(Vector3 v1, Vector3 v2) {
+	public static bool isTwoPositionIsEqual(Vector3 v1, Vector3 v2) {
 		float deltaX = Mathf.Abs(v1.x - v2.x);
 		float deltaY = Mathf.Abs(v1.y - v2.y);
 		//Debug.Log ("deltaX = " + deltaX + ", deltaY = " + deltaY);
@@ -69,30 +65,17 @@ public class FirstDealerController : MonoBehaviour {
 			FirstGiveCards (user2CardPositions, waitTime, 4);
 
 			if (isTwoPositionIsEqual(deckCards [4 * 2 - 1].transform.position, user2CardPositions [3].transform.position)) {
-				Debug.Log("first deal card over");
+				//Debug.Log("first deal card over");
 				hideOtherDeckCard ();
+
 				StartCoroutine (TurnCardUp (deckCards[0]));
 				StartCoroutine (TurnCardUp (deckCards[1]));
 				StartCoroutine (TurnCardUp (deckCards[2]));
 				StartCoroutine (TurnCardUp (deckCards[3]));
-				gamePlayController.state = gamePlayController.state.nextState ();
+
+				StartCoroutine (GoToNextState ());
 			}
 		} 
-
-	}
-
-	private void setUserCardsPosition() {
-		user1CardPositions = getUserCardsPosition ("user1CardsPosition");
-		user2CardPositions = getUserCardsPosition ("user2CardsPosition");
-	}
-
-	private GameObject[] getUserCardsPosition(string tag) {
-		GameObject[] cards = GameObject.FindGameObjectsWithTag (tag);
-		System.Array.Sort (cards, new MyComparer ());
-		for (int i = 0; i < cards.Length; i++) {
-			cards[i].SetActive(false);
-		}
-		return cards;
 
 	}
 
@@ -123,6 +106,14 @@ public class FirstDealerController : MonoBehaviour {
 		this.cardSprites = cardSprites;
 	}
 
+	public void setUser1CardsPositions(GameObject[] user1Positions) {
+		this.user1CardPositions = user1Positions;
+	}
+
+	public void setUser2CardsPositions(GameObject[] user2Positions) {
+		this.user2CardPositions = user2Positions;
+	}
+
 	IEnumerator TurnCardUp(Image card) {
 		Animator anim = card.GetComponent<Animator> ();
 		anim.Play ("TurnUp");
@@ -133,6 +124,14 @@ public class FirstDealerController : MonoBehaviour {
 		//card.transform.localEulerAngles = new Vector3(0,360,0);
 		anim.Play ("TurnBackNow2");
 		yield return new WaitForSeconds (.1f);
+
+	}
+
+	IEnumerator GoToNextState() {
+		
+		yield return new WaitForSeconds (.4f);
+		if (gamePlayController.state == GameState.FirstDeal)
+			gamePlayController.goToNextState ();
 
 	}
 

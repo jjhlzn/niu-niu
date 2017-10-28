@@ -29,6 +29,10 @@ public class GamePlayController : MonoBehaviour {
 		state = GameState.FirstDeal;
 
 	}
+
+	public void goToNextState() {
+		state = state.nextState ();
+	}
 		
 
 }

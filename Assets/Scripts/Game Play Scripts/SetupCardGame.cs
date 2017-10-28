@@ -8,6 +8,12 @@ public class SetupCardGame : MonoBehaviour {
 	private FirstDealerController firstDealerController;
 
 	[SerializeField]
+	private SecondDealController secondDealController;
+
+	[SerializeField]
+	private CheckCardController checkCardController;
+
+	[SerializeField]
 	private Image card;
 	[SerializeField]
 	private GameObject deckCardPosition;
@@ -16,10 +22,15 @@ public class SetupCardGame : MonoBehaviour {
 
 	public Sprite[] cardSprites;
 
+	private GameObject[] user1CardsPositions;
+	private GameObject[] user2CardsPositions;
+
 	private int cardCount = 10;
 
 	private List<Image> cards = new List<Image> ();
 	private List<Animator> cardAnims = new List<Animator>();
+
+
 
 	void Awake() {
 
@@ -28,12 +39,34 @@ public class SetupCardGame : MonoBehaviour {
 
 		cardSprites = Resources.LoadAll<Sprite>("sprites/simple");
 
+		SetUserCardsPosition ();
 		CreateDeckCards ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
+	}
+
+	private void SetUserCardsPosition() {
+		user1CardsPositions = SetUserCardsPosition ("user1CardsPosition");
+		user2CardsPositions = SetUserCardsPosition ("user2CardsPosition");
+
+		firstDealerController.setUser1CardsPositions (user1CardsPositions);
+		firstDealerController.setUser2CardsPositions (user2CardsPositions);
+
+		secondDealController.SetUser1CardPositions (user1CardsPositions);
+		secondDealController.SetUser2CardPositions (user2CardsPositions);
+	}
+
+	private GameObject[] SetUserCardsPosition(string tag) {
+		GameObject[] cards = GameObject.FindGameObjectsWithTag (tag);
+		System.Array.Sort (cards, new MyComparer ());
+		for (int i = 0; i < cards.Length; i++) {
+			cards[i].SetActive(false);
+		}
+		return cards;
+
 	}
 
 	void CreateDeckCards() {
@@ -54,7 +87,7 @@ public class SetupCardGame : MonoBehaviour {
 
 			temp.gameObject.transform.position = deckCardPosition.transform.position;
 
-			Debug.Log ("deckCardPosition: " +  deckCardPosition.transform.position.x + ", copy  position: " + temp.transform.position.x);
+			//Debug.Log ("deckCardPosition: " +  deckCardPosition.transform.position.x + ", copy  position: " + temp.transform.position.x);
 
 			temp.gameObject.name = "" + i;
 			cards.Add (temp);
@@ -65,8 +98,12 @@ public class SetupCardGame : MonoBehaviour {
 		}
 
 		firstDealerController.SetDeckCards (cards);
+		secondDealController.SetDeckCards (cards);
+		checkCardController.SetDeckCards (cards);
 
 		firstDealerController.SetCardSprites (cardSprites);
+		secondDealController.SetCardSprites (cardSprites);
+		checkCardController.SetCardSprites (cardSprites);
 
 	}
 
