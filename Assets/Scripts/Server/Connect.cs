@@ -5,20 +5,28 @@ using socket.io;
 
 public class Connect : MonoBehaviour {
 
+	public static string GameInstructionEvent = "game instruction";
+
+	[SerializeField]
+	private GamePlayController gamePlayController;
+
+	private Socket gameSocket;
+
 	// Use this for initialization
 	void Start() {
 		var serverUrl = "http://localhost:3000";
-		var socket = Socket.Connect(serverUrl);
+		var gameSocket = Socket.Connect(serverUrl);
 
-		socket.On(SystemEvents.connect, () => {
+		gameSocket.On(SystemEvents.connect, () => {
 			Debug.Log("Hello, Socket.io~");
+			gamePlayController.SetGameSocket(gameSocket);
 		});
 
-		socket.On(SystemEvents.reconnect, (int reconnectAttempt) => {
+		gameSocket.On(SystemEvents.reconnect, (int reconnectAttempt) => {
 			Debug.Log("Hello, Again! " + reconnectAttempt);
 		});
 
-		socket.On(SystemEvents.disconnect, () => {
+		gameSocket.On(SystemEvents.disconnect, () => {
 			Debug.Log("Bye~");
 		});
 	}
