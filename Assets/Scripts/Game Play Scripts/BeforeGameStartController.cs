@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 public class BeforeGameStartController : MonoBehaviour {
 
-	private static float moveSeatSpeed = 30f;
+	private static float moveSeatSpeed = 40f;
 
 	[SerializeField]
 	private GamePlayController gamePlayerController;
