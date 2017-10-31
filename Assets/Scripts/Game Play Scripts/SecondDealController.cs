@@ -107,4 +107,12 @@ public class SecondDealController : MonoBehaviour {
 	}
 
 
+	public void HandleResponse(GoToSecondDealNotify notify) {
+		string[] cards = gamePlayController.game.currentRound.myCards;
+		cards [4] = notify.card;
+
+		gamePlayController.state = GameState.SecondDeal;
+	}
+
+
 }

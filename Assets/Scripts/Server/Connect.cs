@@ -29,6 +29,8 @@ public class Connect : MonoBehaviour {
 		gameSocket.On(SystemEvents.disconnect, () => {
 			Debug.Log("Bye~");
 		});
+
+
 	}
 	
 	// Update is called once per frame

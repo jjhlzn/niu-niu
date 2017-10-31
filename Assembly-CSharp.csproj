@@ -60,7 +60,12 @@
      <Compile Include="Assets\LINQtoGameObject\Scripts\GameObjectExtensions.Operate.cs" />
      <Compile Include="Assets\LINQtoGameObject\Scripts\GameObjectExtensions.Traverse.cs" />
      <Compile Include="Assets\Scripts\CardScript.cs" />
+     <Compile Include="Assets\Scripts\Domain Model\Game.cs" />
+     <Compile Include="Assets\Scripts\Domain Model\Player.cs" />
+     <Compile Include="Assets\Scripts\Domain Model\Round.cs" />
+     <Compile Include="Assets\Scripts\Domain Model\Seat.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\BaseStateController.cs" />
+     <Compile Include="Assets\Scripts\Game Play Scripts\BeforeGameStartController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\BetController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\CheckCardController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\ChooseBankerController.cs" />
@@ -71,8 +76,10 @@
      <Compile Include="Assets\Scripts\Game Play Scripts\RobBankerController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\SecondDealController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\SetupCardGame.cs" />
+     <Compile Include="Assets\Scripts\Game Play Scripts\Utils.cs" />
      <Compile Include="Assets\Scripts\Server\Connect.cs" />
      <Compile Include="Assets\Scripts\Server\Messages\Messages.cs" />
+     <Compile Include="Assets\UnityPackages\JsonNetSample\JsonNetSample.cs" />
      <None Include="Assets\Plugins\UniRx\ReadMe.txt" />
  <Reference Include="UnityEngine.UIAutomation">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UIAutomation/UnityEngine.UIAutomation.dll</HintPath>
@@ -100,6 +107,9 @@
  </Reference>
  <Reference Include="UnityEngine.SpatialTracking">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
+ </Reference>
+ <Reference Include="Newtonsoft.Json">
+ <HintPath>/Users/jinjunhang/niu niu/Assets/UnityPackages/JsonNet/Newtonsoft.Json.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Analytics">
  <HintPath>/Users/jinjunhang/Library/Unity/cache/packages/packages.unity.com/com.unity.analytics@1.0.1/UnityEngine.Analytics.dll</HintPath>

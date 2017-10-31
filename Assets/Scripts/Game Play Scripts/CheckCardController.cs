@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using socket.io;
+using Newtonsoft.Json;
 
 public class CheckCardController : MonoBehaviour {
 
@@ -14,9 +16,23 @@ public class CheckCardController : MonoBehaviour {
 	private List<Image> deckCards;
 	public Sprite[] cardSprites;
 
+	/*
+	[SerializeField]
+	private Button cuoCardButton;
+	[SerializeField]
+	private Button showCardButton; */
+
+	private bool hasShowCard = false;
+
+
+	public void Reset() {
+		hasShowCard = false;
+	}
+
+
 	void Update() {
 		//Debug.Log ("state = " + gamePlayController.state.value);
-		if (gamePlayController.state == GameState.CheckCard) {
+		if (gamePlayController.state == GameState.CheckCard && !hasShowCard) {
 			checkCardPanel.SetActive (true);
 		} else {
 			checkCardPanel.SetActive (false);
@@ -73,17 +89,27 @@ public class CheckCardController : MonoBehaviour {
 			StartCoroutine(TurnCardUp(deckCards[8]));
 			StartCoroutine (TurnUser1Cards ());
 
-			gamePlayController.goToNextState ();
+			//gamePlayController.goToNextState ();
 		}
 	}
 
 	public void ShowCardClick() {
 		if (gamePlayController.state == GameState.CheckCard) {
-			//user1 亮牌
-			StartCoroutine(TurnCardUp(deckCards[8]));
-			StartCoroutine (TurnUser1Cards ());
 
-			gamePlayController.goToNextState ();
+			Socket gameSocket = gamePlayController.gameSocket;
+
+			var request = new {
+				userId = "",
+				roomNo = ""
+			};
+
+			gameSocket.EmitJson (Messages.ShowCard, JsonConvert.SerializeObject (request), (string msg) => {
+				//user1 亮牌
+				StartCoroutine(TurnCardUp(deckCards[8]));
+				StartCoroutine (TurnUser1Cards ());
+			});
+
+			//gamePlayController.goToNextState ();
 		}
 	}
 
@@ -93,6 +119,13 @@ public class CheckCardController : MonoBehaviour {
 
 	public void SetCardSprites(Sprite[] cardSprites) {
 		this.cardSprites = cardSprites;
+	}
+
+	public void HandleResponse(GoToCheckCardNotify notify) {
+		string[] cards = gamePlayController.game.currentRound.myCards;
+		cards [4] = notify.card;
+
+		gamePlayController.state = GameState.CheckCard;
 	}
 
 }

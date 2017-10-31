@@ -7,6 +7,13 @@ TagManager:
   - deckCard
   - user2CardsPosition
   - user1CardsPosition
+  - UserPanel
+  - UserSeat
+  - UserImage
+  - SeatButton
+  - SeatDesc
+  - UserScore
+  - UserName
   layers:
   - Default
   - TransparentFX

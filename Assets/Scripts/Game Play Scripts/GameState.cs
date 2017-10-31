@@ -7,11 +7,11 @@ public class GameState
 	public static GameState Ready = new GameState("Ready"); //房主点按开始之后，并且所有玩家已经准本好
 	public static GameState FirstDeal = new GameState("FirstDeal"); //第一次分牌中
 	public static GameState RobBanker = new GameState("RobBanker"); //抢专
-	public static GameState ChooseBanker = new GameState("ChooseBanker"); //抢专
+	public static GameState ChooseBanker = new GameState("ChooseBanker"); //选择庄家
 	public static GameState Bet = new GameState("Bet");
 	public static GameState SecondDeal = new GameState("SecondDeal"); //第二次发牌
 	public static GameState CheckCard = new GameState("CheckCard"); //查看手牌
-	public static GameState ComparePoker = new GameState("ComparePoker"); //查看手牌
+	public static GameState CompareCard = new GameState("CompareCard"); //比牌
 	public static GameState GameBeforeStart = new GameState("GameBeforeStart"); //一局结束
 	public static GameState GameOver = new GameState("GameOver");
 
@@ -39,8 +39,8 @@ public class GameState
 		} else if (this.Equals (SecondDeal)) {
 			next = CheckCard;
 		} else if (this.Equals (CheckCard)) {
-			next = ComparePoker;
-		} else if (this.Equals (ComparePoker)) {
+			next = CompareCard;
+		} else if (this.Equals (CompareCard)) {
 			next = GameBeforeStart;
 		} else if (this.Equals (GameBeforeStart)) {
 			next = Ready;

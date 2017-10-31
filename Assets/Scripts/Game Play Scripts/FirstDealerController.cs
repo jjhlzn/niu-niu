@@ -68,10 +68,10 @@ public class FirstDealerController : MonoBehaviour {
 				//Debug.Log("first deal card over");
 				hideOtherDeckCard ();
 
-				StartCoroutine (TurnCardUp (deckCards[0]));
-				StartCoroutine (TurnCardUp (deckCards[1]));
-				StartCoroutine (TurnCardUp (deckCards[2]));
-				StartCoroutine (TurnCardUp (deckCards[3]));
+				StartCoroutine (TurnCardUp (deckCards[0], gamePlayController.game.currentRound.myCards[0]));
+				StartCoroutine (TurnCardUp (deckCards[1], gamePlayController.game.currentRound.myCards[1]));
+				StartCoroutine (TurnCardUp (deckCards[2], gamePlayController.game.currentRound.myCards[2]));
+				StartCoroutine (TurnCardUp (deckCards[3], gamePlayController.game.currentRound.myCards[3]));
 
 				StartCoroutine (GoToNextState ());
 			}
@@ -114,12 +114,11 @@ public class FirstDealerController : MonoBehaviour {
 		this.user2CardPositions = user2Positions;
 	}
 
-	IEnumerator TurnCardUp(Image card) {
+	IEnumerator TurnCardUp(Image card, string cardValue) {
 		Animator anim = card.GetComponent<Animator> ();
 		anim.Play ("TurnUp");
 		yield return new WaitForSeconds (.4f);
-		card.sprite = cardSprites[0];
-
+		card.sprite = Utils.findCardSprite(cardSprites, cardValue);
 
 		//card.transform.localEulerAngles = new Vector3(0,360,0);
 		anim.Play ("TurnBackNow2");
@@ -127,12 +126,30 @@ public class FirstDealerController : MonoBehaviour {
 
 	}
 
+
+
 	IEnumerator GoToNextState() {
 		
 		yield return new WaitForSeconds (.4f);
 		if (gamePlayController.state == GameState.FirstDeal)
 			gamePlayController.goToNextState ();
 
+	}
+
+	public void HandleResponse(FirstDealResponse resp) {
+
+		string[] cards = resp.cards;
+		//Debug.Log ("cards: " + cards);
+		int[] bets = resp.bets;
+		//Debug.Log ("bets: " + bets);
+
+		for (int i = 0; i < cards.Length; i++) {
+			gamePlayController.game.currentRound.myCards[i] = cards[i];
+		}
+
+		gamePlayController.game.currentRound.myBets = bets;
+
+		gamePlayController.state = GameState.FirstDeal;
 	}
 
 }

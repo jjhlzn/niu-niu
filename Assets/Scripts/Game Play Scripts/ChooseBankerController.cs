@@ -8,9 +8,17 @@ public class ChooseBankerController : MonoBehaviour {
 
 
 	void Update() {
-		if (gamePlayController.state == GameState.ChooseBanker) {
-			gamePlayController.goToNextState ();
-		}
+		
+	}
+
+	public void HandleResponse(GoToChooseBankerNotity resp) {
+		gamePlayController.game.currentRound.banker = resp.banker;
+
+		gamePlayController.state = GameState.ChooseBanker;
+
+
+		gamePlayController.goToNextState ();
+
 	}
 		
 }
