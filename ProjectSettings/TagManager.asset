@@ -14,6 +14,7 @@ TagManager:
   - SeatDesc
   - UserScore
   - UserName
+  - EmptySeatImage
   layers:
   - Default
   - TransparentFX

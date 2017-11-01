@@ -32,6 +32,7 @@ public class SetupCardGame : MonoBehaviour {
 	public Text[] playerScores;
 	public Button[] seatButtons;
 	public Text[] seatDescs;
+	public Image[] emptySeatImages;
 
 	private GameObject[] user1CardsPositions;
 	private GameObject[] user2CardsPositions;
@@ -112,6 +113,14 @@ public class SetupCardGame : MonoBehaviour {
 			seatDescs [i] = descs [i].GetComponent<Text> ();
 		}
 		beforeGameStartController.SetSeatDescs (seatDescs);
+
+		GameObject[] emptyImages = GameObject.FindGameObjectsWithTag ("EmptySeatImage");
+		emptyImages = SortUserSeatUIObjects (emptyImages);
+		emptySeatImages = new Image[emptyImages.Length];
+		for (int i = 0; i < emptyImages.Length; i++) {
+			emptySeatImages [i] = emptyImages [i].GetComponent<Image> ();
+		}
+		beforeGameStartController.SetEmptySeatImages (emptySeatImages);
 	}
 
 

@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 public class BeforeGameStartController : MonoBehaviour {
 
-	private static float moveSeatSpeed = 40f;
+	private static float moveSeatSpeed = 30f;
 
 	[SerializeField]
 	private GamePlayController gamePlayerController;
@@ -19,6 +19,7 @@ public class BeforeGameStartController : MonoBehaviour {
 	public Text[] playerScores;
 	public Button[] seatButtons;
 	public Text[] seatDescs;
+	public Image[] emptySeatImages;
 
 	private bool isMoveSeat;
 	private int[] fromPositions;
@@ -26,10 +27,12 @@ public class BeforeGameStartController : MonoBehaviour {
 
 	private Vector3[] positions;
 
+	private bool isSeat;
+
 	// Use this for initialization
 	void Start () {
 		isMoveSeat = false;
-
+		isSeat = false;
 	}
 	
 	// Update is called once per frame
@@ -55,6 +58,10 @@ public class BeforeGameStartController : MonoBehaviour {
 
 			if (isMoveOver) {
 				isMoveSeat = false;
+				for (int i = 0; i < Game.SeatCount; i++) {
+					userPanels [i].transform.position = positions [i];
+				}
+				SetPlayerSeatUI ();
 			}
 
 		} else {
@@ -98,6 +105,10 @@ public class BeforeGameStartController : MonoBehaviour {
 		this.seatImages = seatImages;
 	}
 
+	public void SetEmptySeatImages(Image[] emptySeatImages) {
+		this.emptySeatImages = emptySeatImages;
+	}
+
 	//根据是否有玩家坐在座位上，设置位置的外观
 	public void SetPlayerSeatUI() {
 		
@@ -112,6 +123,7 @@ public class BeforeGameStartController : MonoBehaviour {
 				this.playerScores [i].gameObject.SetActive (true);
 				this.seatButtons [i].gameObject.SetActive (false);
 				this.seatImages [i].gameObject.SetActive (true);
+				this.emptySeatImages [i].gameObject.SetActive (false);
 
 				this.playerNames [i].text = seat.player.userId;
 				this.seatDescs [i].text = "座位 [" + seat.seatNo + "]";
@@ -119,8 +131,17 @@ public class BeforeGameStartController : MonoBehaviour {
 				this.playerImages [i].gameObject.SetActive (false);
 				this.playerNames [i].gameObject.SetActive (false);
 				this.playerScores [i].gameObject.SetActive (false);
-				this.seatButtons [i].gameObject.SetActive (true);
+
 				this.seatImages [i].gameObject.SetActive (false);
+				this.seatDescs [i].text = "座位 [" + seat.seatNo + "]";
+
+				if (isSeat) {
+					this.emptySeatImages [i].gameObject.SetActive (true);
+					this.seatButtons [i].gameObject.SetActive (false);
+				} else {
+					this.emptySeatImages [i].gameObject.SetActive (false);
+					this.seatButtons [i].gameObject.SetActive (true);
+				}
 			}
 		}
 	}
@@ -151,16 +172,14 @@ public class BeforeGameStartController : MonoBehaviour {
 		};
 
 		socket.EmitJson (Messages.Seat, JsonConvert.SerializeObject (seatReq), (msg) => {
-
+			isSeat = true;
 			seats[seq].player = Player.Me;
-			//SetPlayerSeatUI();
+			SetPlayerSeatUI();
 
 			moveSeats(seq);
 
 		});
 	}
-
-
 
 	//移动玩家
 	private void moveSeats(int seatIndex) {
@@ -188,9 +207,6 @@ public class BeforeGameStartController : MonoBehaviour {
 			seats [i].player = players [destUsers[i]];
 			seats [i].seatNo = positions [destUsers[i]];
 		}
-			
-		//StartCoroutine(MoveSeat(destUsers [i], positions[i]));
-
 
 		this.fromPositions = destUsers;
 		this.toPositions = positions;
