@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 
 public class Messages
@@ -13,8 +15,15 @@ public class Messages
 	public static string GoToCompareCard = "GoToCompareCard";
 	public static string GoToGameOver = "GoToGameOver";
 
-	public static string Seat = "Seat";
+	public static string JoinRoom = "JoinRoom";
+	public static string LeaveRoom = "LeaveRoom";
+	public static string SitDown = "SitDown";
+	public static string SomePlayerSitDown = "SomePlayerSitDown";
+	public static string SomePlayerStandUp = "SomePlayerStandUp"; 
+	public static string StandUp = "StandUp";
+	public static string StartGame = "StartGame";
 	public static string RobBanker = "RobBanker";
+	public static string SomePlayerRobBanker = "SomePlayerRobRanker";
 	public static string Bet = "Bet";
 	public static string ShowCard = "ShowCard";
 }
@@ -54,5 +63,28 @@ public class GoToSecondDealNotify : BaseGameResponse {
 
 public class GoToCheckCardNotify : BaseGameResponse {
 	public string card;
+}
+
+public class SomePlayerSitDownNotify : BaseGameResponse {
+	public string roomNo;
+	public string seat;
+	public string userId;
+}
+
+public class SomePlayerStandUpNotify : BaseGameResponse {
+	public string roomNo;
+	public string userId;
+}
+
+public class StartGameNotify : BaseGameResponse {
+	public string roomNo;
+	public Dictionary<string, string[]> cardsDict = new Dictionary<string, string[]>();
+	public Dictionary<string, int[]> betsDict = new Dictionary<string, int[]>();
+}
+
+public class SomePlayerRobBankerNotify : BaseGameResponse {
+	public string roomNo;
+	public string userId;
+	public bool isRob;
 }
 

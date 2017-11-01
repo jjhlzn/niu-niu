@@ -15,9 +15,10 @@ public class Game
 		rounds.Add(currentRound);
 
 		seats = new Seat[SeatCount];
+		string seatNos = "ABCDEF";
 		for(int i = 0 ; i < SeatCount; i++) {
 			seats [i] = new Seat ();
-			seats [i].seatNo = i;
+			seats [i].seatNo = seatNos[i] + "";
 		}
 	}
 
@@ -37,6 +38,27 @@ public class Game
 	public int currentRoundNo;
 
 	public Seat[] seats;
+
+	public int PlayerCount {
+		get {
+			int count = 0;
+			foreach (Seat seat in seats) {
+				if (seat.player != null) {
+					count++;
+				}
+			}
+			return count;
+		}
+	}
+
+	public int GetSeatIndex(string userId) {
+		for (int i = 0; i < seats.Length; i++) {
+			if (seats [i].hasPlayer () && userId == seats [i].player.userId) {
+				return i;
+			}
+		}
+		return -1;
+	}
 }
 
 

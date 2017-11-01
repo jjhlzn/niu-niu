@@ -15,6 +15,11 @@ TagManager:
   - UserScore
   - UserName
   - EmptySeatImage
+  - user3CardsPosition
+  - user4CardsPosition
+  - user5CardsPosition
+  - user6CardsPosition
+  - isRobImage
   layers:
   - Default
   - TransparentFX

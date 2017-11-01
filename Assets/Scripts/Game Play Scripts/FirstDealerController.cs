@@ -3,19 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MyComparer : IComparer<GameObject> {
-	public int Compare(GameObject x1, GameObject y1)  
-	{
-		if (x1.transform.position.x > y1.transform.position.x) {
-			return 1;
-		} else if (x1.transform.position.x < y1.transform.position.x) {
-			return -1;
-		} else {
-			return 0;
-		} 
-	}
-}
-
 public class FirstDealerController : MonoBehaviour {
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -26,8 +13,7 @@ public class FirstDealerController : MonoBehaviour {
 	public static float speed = 400f; //发牌速度
 	public static float waitTimeDelta = 0.1f;
 
-	private GameObject[] user1CardPositions;
-	private GameObject[] user2CardPositions;
+	private GameObject[][] userCardPositionsArray;
 
 	private List<Image> deckCards;
 	public Sprite[] cardSprites;
@@ -38,34 +24,29 @@ public class FirstDealerController : MonoBehaviour {
 		hideOtherDeckCard (); 
 	}
 
-
-	public static bool isTwoPositionIsEqual(Vector3 v1, Vector3 v2) {
-		float deltaX = Mathf.Abs(v1.x - v2.x);
-		float deltaY = Mathf.Abs(v1.y - v2.y);
-		//Debug.Log ("deltaX = " + deltaX + ", deltaY = " + deltaY);
-		return deltaX < .5f && deltaY < .5f;
-	}
-
-	private void hideOtherDeckCard() {
-		//Debug.Log ("hideOtherDeckCard called");
-		foreach (Image card in deckCards) {
-			//Debug.Log ("deckCardPosition: " +  deckCardPosition.transform.position.x + ", copy  position: " + card.transform.position.x);
-			if (isTwoPositionIsEqual(card.transform.position, deckCardPosition.transform.position))
-				card.gameObject.SetActive (false);
-		}
-	}
-
 	// Update is called once per frame
 	void Update () {
 
 		if (gamePlayController.state.Equals (GameState.FirstDeal)) {
 			float waitTime = 0;
-			FirstGiveCards (user1CardPositions, waitTime, 0);
-			waitTime += 4 * waitTimeDelta;
-			FirstGiveCards (user2CardPositions, waitTime, 4);
 
-			if (isTwoPositionIsEqual(deckCards [4 * 2 - 1].transform.position, user2CardPositions [3].transform.position)) {
-				//Debug.Log("first deal card over");
+			Seat[] seats = gamePlayController.game.seats;
+			//int index = 0;
+			int lastSeatIndex = 0;
+			int playerIndex = 0;
+			for (int i = 0; i < Game.SeatCount; i++) {
+				Seat seat = seats [i];
+				if (seat.hasPlayer ()) {
+					lastSeatIndex = i;
+					FirstGiveCards (userCardPositionsArray[i], waitTime, 4 * playerIndex);
+					waitTime += 4 * waitTimeDelta;
+					playerIndex++;
+				}
+			}
+
+			int playerCount = gamePlayController.game.PlayerCount;
+			//判断最后一张牌是否已经发好
+			if (Utils.isTwoPositionIsEqual(deckCards [4 * playerCount - 1].transform.position, userCardPositionsArray [lastSeatIndex][3].transform.position)) {
 				hideOtherDeckCard ();
 
 				StartCoroutine (TurnCardUp (deckCards[0], gamePlayController.game.currentRound.myCards[0]));
@@ -79,15 +60,21 @@ public class FirstDealerController : MonoBehaviour {
 
 	}
 
+	private void hideOtherDeckCard() {
+		foreach (Image card in deckCards) {
+			if (Utils.isTwoPositionIsEqual(card.transform.position, deckCardPosition.transform.position))
+				card.gameObject.SetActive (false);
+		}
+	}
+
 	/**
-	 * 第一次发票给某个玩家
+	 * 发4张牌给指定的玩家
 	 * */
 	private void FirstGiveCards(GameObject[] targetCards, float waitTime, int deckCardStartIndex) {
 		float step = speed * Time.deltaTime;
 		for (int i = 0; i < 4; i++) {
 			Image card = deckCards [deckCardStartIndex + i];
 			GameObject targetCard = targetCards [i];
-
 			StartCoroutine(GiveCard(card, targetCard, step, waitTime));
 			waitTime += waitTimeDelta;
 		}
@@ -106,12 +93,8 @@ public class FirstDealerController : MonoBehaviour {
 		this.cardSprites = cardSprites;
 	}
 
-	public void setUser1CardsPositions(GameObject[] user1Positions) {
-		this.user1CardPositions = user1Positions;
-	}
-
-	public void setUser2CardsPositions(GameObject[] user2Positions) {
-		this.user2CardPositions = user2Positions;
+	public void setUserCardsPositionsArray(GameObject[][] positionsArray) {
+		this.userCardPositionsArray = positionsArray;
 	}
 
 	IEnumerator TurnCardUp(Image card, string cardValue) {
@@ -123,24 +106,22 @@ public class FirstDealerController : MonoBehaviour {
 		//card.transform.localEulerAngles = new Vector3(0,360,0);
 		anim.Play ("TurnBackNow2");
 		yield return new WaitForSeconds (.1f);
-
 	}
-
 
 
 	IEnumerator GoToNextState() {
-		
 		yield return new WaitForSeconds (.4f);
 		if (gamePlayController.state == GameState.FirstDeal)
 			gamePlayController.goToNextState ();
-
 	}
 
-	public void HandleResponse(FirstDealResponse resp) {
 
-		string[] cards = resp.cards;
+	/******* 处理服务器的通知***************/
+	public void HandleResponse(FirstDealResponse notify) {
+
+		string[] cards = notify.cards;
 		//Debug.Log ("cards: " + cards);
-		int[] bets = resp.bets;
+		int[] bets = notify.bets;
 		//Debug.Log ("bets: " + bets);
 
 		for (int i = 0; i < cards.Length; i++) {
@@ -149,6 +130,34 @@ public class FirstDealerController : MonoBehaviour {
 
 		gamePlayController.game.currentRound.myBets = bets;
 
+		gamePlayController.state = GameState.FirstDeal;
+	}
+
+	public void HandleResponse(StartGameNotify notify) {
+		Dictionary<string, string[]> cardsDict = notify.cardsDict;
+		//Debug.Log ("cards: " + cards);
+		Dictionary<string, int[]> betsDict = notify.betsDict;
+		//Debug.Log ("bets: " + bets);
+
+		string[] myCards;
+		if (cardsDict.ContainsKey (Player.Me.userId)) {
+			myCards = cardsDict [Player.Me.userId];
+		} else {
+			throw new UnityException ("找不到UserId = " + Player.Me.userId + "的牌");
+		}
+
+		int[] myBets;
+		if (betsDict.ContainsKey (Player.Me.userId)) {
+			myBets = betsDict [Player.Me.userId];
+		} else {
+			throw new UnityException ("找不到UserId = " + Player.Me.userId + "的可下注的筹码量");
+		}
+
+		for (int i = 0; i < myCards.Length; i++) {
+			gamePlayController.game.currentRound.myCards[i] = myCards[i];
+		}
+
+		gamePlayController.game.currentRound.myBets = myBets;
 		gamePlayController.state = GameState.FirstDeal;
 	}
 

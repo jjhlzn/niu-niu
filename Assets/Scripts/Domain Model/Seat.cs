@@ -7,7 +7,7 @@ public class Seat
 	{
 	}
 
-	public int seatNo;
+	public string seatNo;
 	public Player player;
 
 	public bool hasPlayer() {

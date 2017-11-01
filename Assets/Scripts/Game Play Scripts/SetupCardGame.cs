@@ -17,6 +17,9 @@ public class SetupCardGame : MonoBehaviour {
 	private BeforeGameStartController beforeGameStartController;
 
 	[SerializeField]
+	private RobBankerController robBankerController;
+
+	[SerializeField]
 	private Image card;
 	[SerializeField]
 	private GameObject deckCardPosition;
@@ -33,9 +36,12 @@ public class SetupCardGame : MonoBehaviour {
 	public Button[] seatButtons;
 	public Text[] seatDescs;
 	public Image[] emptySeatImages;
+	public Image[] isRobImages;
 
 	private GameObject[] user1CardsPositions;
 	private GameObject[] user2CardsPositions;
+
+	private GameObject[][] userCardsPositionsArray;
 
 	private int cardCount = 10;
 
@@ -46,7 +52,7 @@ public class SetupCardGame : MonoBehaviour {
 
 	void Awake() {
 		Debug.Log ("SetupCardGame Awake");
-
+		userCardsPositionsArray = new GameObject[6][];
 
 		cardSprites = Resources.LoadAll<Sprite>("sprites/simple");
 
@@ -121,6 +127,17 @@ public class SetupCardGame : MonoBehaviour {
 			emptySeatImages [i] = emptyImages [i].GetComponent<Image> ();
 		}
 		beforeGameStartController.SetEmptySeatImages (emptySeatImages);
+
+		GameObject[] isRobObjs = GameObject.FindGameObjectsWithTag ("isRobImage");
+		isRobObjs = SortUserSeatUIObjects (isRobObjs);
+		isRobImages = new Image[isRobObjs.Length];
+		for (int i = 0; i < isRobObjs.Length; i++) {
+			isRobImages [i] = isRobObjs [i].GetComponent<Image> ();
+		}
+		beforeGameStartController.SetIsRobImages (isRobImages);
+		robBankerController.SetIsRobImages (isRobImages);
+
+		robBankerController.Reset ();
 	}
 
 
@@ -141,11 +158,14 @@ public class SetupCardGame : MonoBehaviour {
 	}
 
 	private void GetUserCardsPosition() {
-		user1CardsPositions = GetUserCardsPosition ("user1CardsPosition");
-		user2CardsPositions = GetUserCardsPosition ("user2CardsPosition");
-
-		firstDealerController.setUser1CardsPositions (user1CardsPositions);
-		firstDealerController.setUser2CardsPositions (user2CardsPositions);
+		var user1CardsPositions = userCardsPositionsArray[0] = GetUserCardsPosition ("user1CardsPosition");
+		var user2CardsPositions = userCardsPositionsArray[1] = GetUserCardsPosition ("user2CardsPosition");
+		var user3CardsPositions = userCardsPositionsArray[2] = GetUserCardsPosition ("user3CardsPosition");
+		var user4CardsPositions = userCardsPositionsArray[3] = GetUserCardsPosition ("user4CardsPosition");
+		var user5CardsPositions = userCardsPositionsArray[4] = GetUserCardsPosition ("user5CardsPosition");
+		var user6CardsPositions = userCardsPositionsArray[5] = GetUserCardsPosition ("user6CardsPosition");
+	
+		firstDealerController.setUserCardsPositionsArray (userCardsPositionsArray);
 
 		secondDealController.SetUser1CardPositions (user1CardsPositions);
 		secondDealController.SetUser2CardPositions (user2CardsPositions);
@@ -204,5 +224,19 @@ public class SetupCardGame : MonoBehaviour {
 			card.gameObject.transform.position = deckCardPosition.transform.position;
 			card.gameObject.SetActive (true);
 		}
+	}
+}
+
+
+public class MyComparer : IComparer<GameObject> {
+	public int Compare(GameObject x1, GameObject y1)  
+	{
+		if (x1.transform.position.x > y1.transform.position.x) {
+			return 1;
+		} else if (x1.transform.position.x < y1.transform.position.x) {
+			return -1;
+		} else {
+			return 0;
+		} 
 	}
 }

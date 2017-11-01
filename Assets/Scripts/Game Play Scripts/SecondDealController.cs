@@ -38,7 +38,7 @@ public class SecondDealController : MonoBehaviour {
 			waitTime += FirstDealerController.waitTimeDelta;
 			FirstDealCards (user2CardPositions, waitTime, 9);
 
-			if (FirstDealerController.isTwoPositionIsEqual(deckCards [4 * 2 - 1 + 2].transform.position, 
+			if (Utils.isTwoPositionIsEqual(deckCards [4 * 2 - 1 + 2].transform.position, 
 				user2CardPositions [4].transform.position)) {
 				dealing = false;
 				//Debug.Log("first deal card over");
@@ -60,7 +60,7 @@ public class SecondDealController : MonoBehaviour {
 		//Debug.Log ("hideOtherDeckCard called");
 		foreach (Image card in deckCards) {
 			//Debug.Log ("deckCardPosition: " +  deckCardPosition.transform.position.x + ", copy  position: " + card.transform.position.x);
-			if (FirstDealerController.isTwoPositionIsEqual(card.transform.position, deckCardPosition.transform.position))
+			if (Utils.isTwoPositionIsEqual(card.transform.position, deckCardPosition.transform.position))
 				card.gameObject.SetActive (false);
 		}
 	}

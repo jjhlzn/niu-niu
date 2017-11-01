@@ -49,32 +49,10 @@ public class GamePlayController : MonoBehaviour {
 		game = new Game ();
 		game.totalRoundCount = 10;
 		game.currentRoundNo = 1;
+		game.roomNo = GenerateRoomNo ();
 		state = GameState.Ready;
 	}
 
-	public void StartClick() {
-		if (gameSocket == null || !gameSocket.IsConnected) {
-			return;
-		}
-		setupCardGame.resetCards ();
-		Debug.Log ("start game click");
-
-		//make start game request
-		var request = new {
-			type = "startGame",
-			data = new {
-				roomNo = "123456"
-			},
-			userId = "1234566"
-		};
-
-		string json = JsonConvert.SerializeObject(request);
-
-		gameSocket.EmitJson (Connect.GameInstructionEvent, json, (string msg) => {
-			//TODO 处理游戏开始的结果
-		});
-
-	}
 
 	public void goToNextState() {
 		state = state.nextState ();
@@ -106,6 +84,35 @@ public class GamePlayController : MonoBehaviour {
 			GoToCheckCardNotify resp = JsonConvert.DeserializeObject<GoToCheckCardNotify>(msg);
 			checkCardController.HandleResponse(resp);
 		});
+
+		gameSocket.On (Messages.SomePlayerSitDown, (string msg) => {
+			Debug.Log("SomePlayerSitDown: " + msg);
+			SomePlayerSitDownNotify  resp = JsonConvert.DeserializeObject<SomePlayerSitDownNotify>(msg);
+			beforeGameStartController.HandleResponse(resp);
+		});
+
+		gameSocket.On (Messages.SomePlayerStandUp, (string msg) => {
+			Debug.Log("SomePlayerStandUp: " + msg);
+			SomePlayerStandUpNotify resp = JsonConvert.DeserializeObject<SomePlayerStandUpNotify>(msg);
+			beforeGameStartController.HandleResponse(resp);
+		});
+
+		gameSocket.On (Messages.StartGame, (string msg) => {
+			Debug.Log("StartGame: " + msg);
+			StartGameNotify resp = JsonConvert.DeserializeObject<StartGameNotify>(msg);
+			firstDealerController.HandleResponse(resp);
+
+		});
+
+		gameSocket.On (Messages.SomePlayerRobBanker, (string msg) => {
+			Debug.Log("SomePlayerRobBanker: " + msg);
+			SomePlayerRobBankerNotify notify = JsonConvert.DeserializeObject<SomePlayerRobBankerNotify>(msg);
+			robBankerController.HanldeResponse(notify);
+		});
+	}
+
+	public string GenerateRoomNo() {
+		return "123456";
 	}
 
 }
