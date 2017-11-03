@@ -21,6 +21,13 @@ public class BeforeGameStartController : MonoBehaviour {
 	[SerializeField]
 	private Button startButton;
 
+	[SerializeField]
+	private Image card;
+	[SerializeField]
+	private Camera cam;
+
+	private Canvas canvas;
+
 	public GameObject[] userPanels;
 	public Image[] seatImages;
 	public Image[] playerImages;
@@ -53,6 +60,16 @@ public class BeforeGameStartController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		RectTransform t = new RectTransform ();
+
+		//Debug.Log (card.transform.position.x + ", " + card.transform.position.y + ", " + card.transform.position.z);
+		//Debug.Log (card.rectTransform.position.x + ", " + card.rectTransform.transform.position.y + ", " + card.rectTransform.transform.position.z);
+		//Vector3 target =  new Vector3 (-240, -240, 0);
+		//target = Camera.main.ScreenToWorldPoint (target);
+
+		//Debug.Log (target.x + ", " +target.y + ", " + target.z);
+		//card.transform.position = Vector3.MoveTowards (card.transform.position, target, 60f * Time.deltaTime);
+
 		if (isMoveSeat) {
 			float step = moveSeatSpeed * Time.deltaTime;
 			bool[] bools = new bool[Game.SeatCount]; 

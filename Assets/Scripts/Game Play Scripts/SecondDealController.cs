@@ -17,7 +17,7 @@ public class SecondDealController : MonoBehaviour {
 	public static float waitTimeDelta = 0.1f;
 	//private GameObject[] user1CardPositions;
 	//private GameObject[] user2CardPositions;
-	private GameObject[][] userCardPositionsArray;
+	private Vector3[][] userCardPositionsArray;
 
 	private List<Image> deckCards;
 	public Sprite[] cardSprites;
@@ -85,9 +85,9 @@ public class SecondDealController : MonoBehaviour {
 
 			//判断最后一张牌是否已经发好
 			Vector3 lastCardPosition = deckCards [5 * playerCount - 1].gameObject.transform.position;
-			Vector3 lastUserLastCardPosition = userCardPositionsArray [lastSeatIndex] [4].transform.position;
+			Vector3 lastUserLastCardPosition = userCardPositionsArray [lastSeatIndex] [4];
 			//Debug .Log("(x, y): " + lastCardPosition.x + "," + lastCardPosition.y + "     (x1, y1): " + lastUserLastCardPosition.x + "," + lastUserLastCardPosition.y);
-			if (Utils.isTwoPositionIsEqual(deckCards [5 * playerCount - 1].gameObject.transform.position, userCardPositionsArray [lastSeatIndex][4].transform.position)) {
+			if (Utils.isTwoPositionIsEqual(deckCards [5 * playerCount - 1].gameObject.transform.position, userCardPositionsArray [lastSeatIndex][4])) {
 				HideOtherDeckCards ();
 
 				dealing = false;
@@ -112,20 +112,20 @@ public class SecondDealController : MonoBehaviour {
 		}
 	}
 		
-	private void SecondDealCards(GameObject[] targetCards, float waitTime, int deckCardStartIndex) {
+	private void SecondDealCards(Vector3[] targetCards, float waitTime, int deckCardStartIndex) {
 		float step = secondDealSpeed * Time.deltaTime;
 
 		Image card = deckCards [deckCardStartIndex];
-		GameObject targetCard = targetCards [4];
+		Vector3 targetCard = targetCards [4];
 
 		StartCoroutine(GiveCard(card, targetCard, step, waitTime));
 		waitTime += FirstDealerController.waitTimeDelta;
 
 	}
 
-	IEnumerator GiveCard(Image card, GameObject targetCard, float step, float waitTime) {
+	IEnumerator GiveCard(Image card, Vector3 targetCard, float step, float waitTime) {
 		yield return new WaitForSeconds (waitTime);
-		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard.transform.position, step);
+		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
 	}
 
 
@@ -145,7 +145,7 @@ public class SecondDealController : MonoBehaviour {
 		this.cardSprites = cardSprites;
 	}
 
-	public void SetUserCardPositionsArray(GameObject[][] userCardPositionsArray) {
+	public void SetUserCardPositionsArray(Vector3[][] userCardPositionsArray) {
 		this.userCardPositionsArray = userCardPositionsArray;
 	}
 

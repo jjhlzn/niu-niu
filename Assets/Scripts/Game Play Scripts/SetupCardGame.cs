@@ -34,6 +34,8 @@ public class SetupCardGame : MonoBehaviour {
 
 	public Sprite[] cardSprites;
 
+	private float TransformConstant = 71.98f;
+
 	public GameObject[] userPanels;
 	public Image[] seatImages;
 	public Image[] playerImages;
@@ -49,7 +51,7 @@ public class SetupCardGame : MonoBehaviour {
 	public Image[] chipPositionImages;
 	public Text[] chipCountLabels;
 
-	private GameObject[][] userCardsPositionsArray;
+	private Vector3[][] userCardsPositionsArray;
 	private GameObject[][] showCardPositionsArray;
 
 	private int cardCount = 30;
@@ -61,10 +63,10 @@ public class SetupCardGame : MonoBehaviour {
 
 	void Awake() {
 		Debug.Log ("SetupCardGame Awake");
-		userCardsPositionsArray = new GameObject[6][];
+		userCardsPositionsArray = new Vector3[6][];
 		showCardPositionsArray = new GameObject[6][];
 
-		cardSprites = Resources.LoadAll<Sprite>("sprites/simple");
+		cardSprites = Resources.LoadAll<Sprite>("sprites/mobile");
 
 		GetUserCardsPosition ();
 		GetShowCardsPosition ();
@@ -215,20 +217,64 @@ public class SetupCardGame : MonoBehaviour {
 
 	private void GetUserCardsPosition() {
 		for (int i = 0; i < Game.SeatCount; i++) {
-			userCardsPositionsArray[i] = GetUserCardsPosition ("user"+(i + 1)+"CardsPosition");
+			userCardsPositionsArray [i] = GetUserCardsPosition (i);
+
+				//GetUserCardsPosition ("user"+(i + 1)+"CardsPosition");
 		}
 	
+
 		firstDealerController.setUserCardsPositionsArray (userCardsPositionsArray);
 		secondDealController.SetUserCardPositionsArray (userCardsPositionsArray);
 	}
 
-	private GameObject[] GetUserCardsPosition(string tag) {
+	private Vector3[] GetUserCardsPosition(int index) {
+		Vector3[] result = new Vector3[5];
+		int initialX = 0, initialY = 0;
+		int stepX = 0;
+		switch (index) {
+		case 0:
+			initialX = -240;
+			initialY = -277;
+			stepX = 100;
+			break;
+		case 1:
+			initialX = -448;
+			initialY = -65;
+			stepX = 25;
+			break;
+		case 2:
+			initialX = -340;
+			initialY = 121;
+			stepX = 25;
+			break;
+		case 3:
+			initialX = -20;
+			initialY = 170;
+			stepX = 25;
+			break;
+		case 4:
+			initialX = 220;
+			initialY = 95;
+			stepX = 25;
+			break;
+		case 5:
+			initialX = 320;
+			initialY = -70;
+			stepX = 25;
+			break;
+		}
+		for (int i = 0; i < 5; i++) {
+			result[i] = new Vector3 ((initialX + i * stepX) / TransformConstant, initialY / TransformConstant,  0);
+		}
+		return result;
+
+		/*
 		GameObject[] cards = GameObject.FindGameObjectsWithTag (tag);
 		System.Array.Sort (cards, new MyComparer ());
 		for (int i = 0; i < cards.Length; i++) {
 			cards[i].SetActive(false);
 		}
-		return cards;
+		return cards; */
 
 	}
 

@@ -13,7 +13,7 @@ public class FirstDealerController : MonoBehaviour {
 	public static float speed = 400f; //发牌速度
 	public static float waitTimeDelta = 0.1f;
 
-	private GameObject[][] userCardPositionsArray;
+	private Vector3[][] userCardPositionsArray;
 
 	private List<Image> deckCards;
 	public Sprite[] cardSprites;
@@ -46,7 +46,7 @@ public class FirstDealerController : MonoBehaviour {
 
 			int playerCount = gamePlayController.game.PlayerCount;
 			//判断最后一张牌是否已经发好
-			if (Utils.isTwoPositionIsEqual(deckCards [4 * playerCount - 1].transform.position, userCardPositionsArray [lastSeatIndex][3].transform.position)) {
+			if (Utils.isTwoPositionIsEqual(deckCards [4 * playerCount - 1].transform.position, userCardPositionsArray [lastSeatIndex][3])) {
 				hideOtherDeckCard ();
 
 				StartCoroutine (TurnCardUp (deckCards[0], gamePlayController.game.currentRound.myCards[0]));
@@ -70,19 +70,20 @@ public class FirstDealerController : MonoBehaviour {
 	/**
 	 * 发4张牌给指定的玩家
 	 * */
-	private void FirstGiveCards(GameObject[] targetCards, float waitTime, int deckCardStartIndex) {
+	private void FirstGiveCards(Vector3[] targetCards, float waitTime, int deckCardStartIndex) {
 		float step = speed * Time.deltaTime;
 		for (int i = 0; i < 4; i++) {
 			Image card = deckCards [deckCardStartIndex + i];
-			GameObject targetCard = targetCards [i];
+			Vector3 targetCard = targetCards [i];
 			StartCoroutine(GiveCard(card, targetCard, step, waitTime));
 			waitTime += waitTimeDelta;
 		}
 	}
 
-	IEnumerator GiveCard(Image card, GameObject targetCard, float step, float waitTime) {
+	IEnumerator GiveCard(Image card, Vector3 targetCard, float step, float waitTime) {
 		yield return new WaitForSeconds (waitTime);
-		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard.transform.position, step);
+		Debug.Log ("(x, y): (" + targetCard.x + " , " + targetCard.y + ")");
+		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
 	}
 		
 	public void SetDeckCards(List<Image> cards) {
@@ -93,7 +94,7 @@ public class FirstDealerController : MonoBehaviour {
 		this.cardSprites = cardSprites;
 	}
 
-	public void setUserCardsPositionsArray(GameObject[][] positionsArray) {
+	public void setUserCardsPositionsArray(Vector3[][] positionsArray) {
 		this.userCardPositionsArray = positionsArray;
 	}
 
