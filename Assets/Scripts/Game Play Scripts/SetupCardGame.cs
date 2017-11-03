@@ -11,6 +11,9 @@ public class SetupCardGame : MonoBehaviour {
 	private SecondDealController secondDealController;
 
 	[SerializeField]
+	private ChooseBankerController chooseBankerController;
+
+	[SerializeField]
 	private CheckCardController checkCardController;
 
 	[SerializeField]
@@ -18,6 +21,9 @@ public class SetupCardGame : MonoBehaviour {
 
 	[SerializeField]
 	private RobBankerController robBankerController;
+
+	[SerializeField]
+	private BetController betController;
 
 	[SerializeField]
 	private Image card;
@@ -37,13 +43,16 @@ public class SetupCardGame : MonoBehaviour {
 	public Text[] seatDescs;
 	public Image[] emptySeatImages;
 	public Image[] isRobImages;
-
-	private GameObject[] user1CardsPositions;
-	private GameObject[] user2CardsPositions;
+	public Image[] robingImages;
+	public Image[] bankerSignPositions;
+	public Image[] chipImages;
+	public Image[] chipPositionImages;
+	public Text[] chipCountLabels;
 
 	private GameObject[][] userCardsPositionsArray;
+	private GameObject[][] showCardPositionsArray;
 
-	private int cardCount = 10;
+	private int cardCount = 30;
 
 	private List<Image> cards = new List<Image> ();
 	private List<Animator> cardAnims = new List<Animator>();
@@ -53,10 +62,12 @@ public class SetupCardGame : MonoBehaviour {
 	void Awake() {
 		Debug.Log ("SetupCardGame Awake");
 		userCardsPositionsArray = new GameObject[6][];
+		showCardPositionsArray = new GameObject[6][];
 
 		cardSprites = Resources.LoadAll<Sprite>("sprites/simple");
 
 		GetUserCardsPosition ();
+		GetShowCardsPosition ();
 		CreateDeckCards ();
 		GetUserSeatUI ();
 	}
@@ -108,7 +119,7 @@ public class SetupCardGame : MonoBehaviour {
 		buttons = SortUserSeatUIObjects (buttons);
 		seatButtons = new Button[buttons.Length];
 		for (int i = 0; i < buttons.Length; i++) {
-			seatButtons[i] = buttons[i].GetComponent<Button>();
+			seatButtons [i] = buttons [i].GetComponent<Button> ();
 		}
 		beforeGameStartController.SetSeatButtons (seatButtons);
 
@@ -136,10 +147,55 @@ public class SetupCardGame : MonoBehaviour {
 		}
 		beforeGameStartController.SetIsRobImages (isRobImages);
 		robBankerController.SetIsRobImages (isRobImages);
-
 		robBankerController.Reset ();
-	}
+		chooseBankerController.SetIsRobImages (isRobImages);
 
+		GameObject[] robingObjs = GameObject.FindGameObjectsWithTag ("RobingImage");
+		robingObjs = SortUserSeatUIObjects (robingObjs);
+		robingImages = new Image[robingObjs.Length];
+		for (int i = 0; i < robingObjs.Length; i++) {
+			robingImages [i] = robingObjs [i].GetComponent<Image> ();
+		}
+		chooseBankerController.SetRobingImages (robingImages);
+		chooseBankerController.Reset ();
+
+		GameObject[] bankerSignObjs = GameObject.FindGameObjectsWithTag ("BankerSign");
+		bankerSignObjs = SortUserSeatUIObjects (bankerSignObjs);
+		bankerSignPositions = new Image[bankerSignObjs.Length];
+		for (int i = 0; i < bankerSignObjs.Length; i++) {
+			bankerSignPositions [i] = bankerSignObjs [i].GetComponent<Image> ();
+			bankerSignPositions [i].gameObject.SetActive (false);
+		}
+		chooseBankerController.SetBankerSignPositions (bankerSignPositions);
+		chooseBankerController.Reset ();
+
+
+		GameObject[] chipObjs = GameObject.FindGameObjectsWithTag ("chip");
+		chipObjs = SortUserSeatUIObjects (chipObjs);
+		chipImages = new Image[chipObjs.Length];
+		for (int i = 0; i < chipObjs.Length; i++) {
+			chipImages [i] = chipObjs [i].GetComponent<Image> ();
+		}
+		betController.SetChipImages (chipImages);
+
+
+		GameObject[] chipPositionObjs = GameObject.FindGameObjectsWithTag ("chipPosition");
+		chipPositionObjs = SortUserSeatUIObjects (chipPositionObjs);
+		chipPositionImages = new Image[chipPositionObjs.Length];
+		for (int i = 0; i < chipPositionObjs.Length; i++) {
+			chipPositionImages [i] = chipPositionObjs [i].GetComponent<Image> ();
+		}
+		betController.SetChipPositionImages (chipPositionImages);
+
+		GameObject[] chipCountObjs = GameObject.FindGameObjectsWithTag ("chipCountLabel");
+		chipCountObjs = SortUserSeatUIObjects (chipCountObjs);
+		chipCountLabels = new Text[chipCountObjs.Length];
+		for (int i = 0; i < chipCountObjs.Length; i++) {
+			chipCountLabels [i] = chipCountObjs [i].GetComponent<Text> ();
+		}
+		betController.SetChipCountLabels (chipCountLabels);
+		betController.Reset ();
+	}
 
 
 	private GameObject[] SortUserSeatUIObjects(GameObject[] objs)  {
@@ -150,7 +206,7 @@ public class SetupCardGame : MonoBehaviour {
 		}
 		for (int i = 0; i < objs.Length; i++) {
 			string name = objs [i].name;
-
+			//Debug.Log (name);
 			int index = int.Parse (name [name.Length - 1] + "");
 			result [index] = objs [i];
 		}
@@ -158,17 +214,12 @@ public class SetupCardGame : MonoBehaviour {
 	}
 
 	private void GetUserCardsPosition() {
-		var user1CardsPositions = userCardsPositionsArray[0] = GetUserCardsPosition ("user1CardsPosition");
-		var user2CardsPositions = userCardsPositionsArray[1] = GetUserCardsPosition ("user2CardsPosition");
-		var user3CardsPositions = userCardsPositionsArray[2] = GetUserCardsPosition ("user3CardsPosition");
-		var user4CardsPositions = userCardsPositionsArray[3] = GetUserCardsPosition ("user4CardsPosition");
-		var user5CardsPositions = userCardsPositionsArray[4] = GetUserCardsPosition ("user5CardsPosition");
-		var user6CardsPositions = userCardsPositionsArray[5] = GetUserCardsPosition ("user6CardsPosition");
+		for (int i = 0; i < Game.SeatCount; i++) {
+			userCardsPositionsArray[i] = GetUserCardsPosition ("user"+(i + 1)+"CardsPosition");
+		}
 	
 		firstDealerController.setUserCardsPositionsArray (userCardsPositionsArray);
-
-		secondDealController.SetUser1CardPositions (user1CardsPositions);
-		secondDealController.SetUser2CardPositions (user2CardsPositions);
+		secondDealController.SetUserCardPositionsArray (userCardsPositionsArray);
 	}
 
 	private GameObject[] GetUserCardsPosition(string tag) {
@@ -179,6 +230,25 @@ public class SetupCardGame : MonoBehaviour {
 		}
 		return cards;
 
+	}
+
+	private void GetShowCardsPosition() {
+		for (int i = 0; i < Game.SeatCount; i++) {
+			showCardPositionsArray[i] = GetShowCardsPosition ("showCardPosition"+i);
+		}
+
+		checkCardController.SetShowCardPositionsArray (showCardPositionsArray);
+	}
+
+	private GameObject[] GetShowCardsPosition(string tag) {
+		GameObject[] cardObjs = GameObject.FindGameObjectsWithTag (tag);
+
+		Debug.Log (tag + " has " + cardObjs.Length);
+		System.Array.Sort (cardObjs, new MyComparer ());
+		for (int i = 0; i < cardObjs.Length; i++) {
+			cardObjs[i].gameObject.SetActive(false);
+		}
+		return cardObjs;
 	}
 
 	void CreateDeckCards() {

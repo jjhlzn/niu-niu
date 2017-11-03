@@ -29,6 +29,9 @@ public class GamePlayController : MonoBehaviour {
 	[SerializeField]
 	private CheckCardController checkCardController;
 
+	[SerializeField]
+	private BetController betController;
+
 	public GameState state;
 
 	public Socket gameSocket;
@@ -69,17 +72,6 @@ public class GamePlayController : MonoBehaviour {
 			firstDealerController.HandleResponse(resp);
 		});
 
-		gameSocket.On (Messages.GoToChooseBanker, (string msg) => {
-			Debug.Log("GoToChooseBanker: " + msg);
-			GoToChooseBankerNotity resp = JsonConvert.DeserializeObject<GoToChooseBankerNotity>(msg);
-			chooseBankerController.HandleResponse(resp);
-		});
-
-		gameSocket.On (Messages.GoToSecondDeal, (string msg) => {
-			GoToSecondDealNotify resp = JsonConvert.DeserializeObject<GoToSecondDealNotify>(msg);
-			secondDealController.HandleResponse(resp);
-		});
-
 		gameSocket.On (Messages.GoToCheckCard, (string msg) => {
 			GoToCheckCardNotify resp = JsonConvert.DeserializeObject<GoToCheckCardNotify>(msg);
 			checkCardController.HandleResponse(resp);
@@ -108,6 +100,30 @@ public class GamePlayController : MonoBehaviour {
 			Debug.Log("SomePlayerRobBanker: " + msg);
 			SomePlayerRobBankerNotify notify = JsonConvert.DeserializeObject<SomePlayerRobBankerNotify>(msg);
 			robBankerController.HanldeResponse(notify);
+		});
+
+		gameSocket.On (Messages.GoToChooseBanker, (string msg) => {
+			Debug.Log("GoToChooseBanker: " + msg);
+			GoToChooseBankerNotity resp = JsonConvert.DeserializeObject<GoToChooseBankerNotity>(msg);
+			chooseBankerController.HandleResponse(resp);
+		});
+
+		gameSocket.On (Messages.SomePlayerBet, (string msg) => {
+			Debug.Log("SomePlayerBet: " + msg);
+			SomePlayerBetNotify notify = JsonConvert.DeserializeObject<SomePlayerBetNotify>(msg);
+			betController.HandleResponse(notify);
+		});
+
+		gameSocket.On (Messages.GoToSecondDeal, (string msg) => {
+			Debug.Log("GoToSecondDeal: " + msg);
+			GoToSecondDealNotify resp = JsonConvert.DeserializeObject<GoToSecondDealNotify>(msg);
+			secondDealController.HandleResponse(resp);
+		});
+
+		gameSocket.On (Messages.SomePlayerShowCard, (string msg) => {
+			Debug.Log("SomePlayerShowCard: " +msg);
+			SomePlayerShowCardNotify resp = JsonConvert.DeserializeObject<SomePlayerShowCardNotify>(msg);
+			checkCardController.HandleResponse(resp);
 		});
 	}
 

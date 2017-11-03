@@ -20,6 +20,17 @@ TagManager:
   - user5CardsPosition
   - user6CardsPosition
   - isRobImage
+  - RobingImage
+  - BankerSign
+  - chip
+  - chipPosition
+  - chipCountLabel
+  - showCardPosition0
+  - showCardPosition1
+  - showCardPosition2
+  - showCardPosition3
+  - showCardPosition4
+  - showCardPosition5
   layers:
   - Default
   - TransparentFX

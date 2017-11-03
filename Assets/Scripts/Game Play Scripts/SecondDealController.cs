@@ -9,30 +9,44 @@ public class SecondDealController : MonoBehaviour {
 	private GamePlayController gamePlayController;
 
 	[SerializeField]
+	private BetController betController;
+
+	[SerializeField]
 	private GameObject deckCardPosition;
 
-
-	private GameObject[] user1CardPositions;
-	private GameObject[] user2CardPositions;
+	public static float waitTimeDelta = 0.1f;
+	//private GameObject[] user1CardPositions;
+	//private GameObject[] user2CardPositions;
+	private GameObject[][] userCardPositionsArray;
 
 	private List<Image> deckCards;
 	public Sprite[] cardSprites;
+	private float secondDealSpeed = 300f;
 
 	private bool dealing;
+
+	public bool canSecondDeal;
 
 	// Use this for initialization
 	void Start () {
 		dealing = false;
 	}
-	
+
+	void Reset() {
+		dealing = false;
+		canSecondDeal = false;
+	}
+
 	// Update is called once per frame
 	void Update () {
 		if (gamePlayController.state.Equals (GameState.SecondDeal)) {
+			
 			if (!dealing) {
 				ShowOtherDeckCards ();
 				dealing = true;
 			}
 
+			/*
 			float waitTime = 0;
 			FirstDealCards (user1CardPositions, waitTime, 8);
 			waitTime += FirstDealerController.waitTimeDelta;
@@ -46,12 +60,45 @@ public class SecondDealController : MonoBehaviour {
 
 				if (gamePlayController.state == GameState.SecondDeal)
 					gamePlayController.goToNextState ();
+			} */
+
+
+			float waitTime = 0;
+
+			Seat[] seats = gamePlayController.game.seats;
+			int playerCount = gamePlayController.game.PlayerCount;
+			//int index = 0;
+			int lastSeatIndex = 0;
+			//int playerIndex = 0;
+			int playerIndex = 0;
+			for (int i = 0; i < Game.SeatCount; i++) {
+				Seat seat = seats [i];
+				if (seat.hasPlayer ()) {
+					lastSeatIndex = i;
+					SecondDealCards (userCardPositionsArray[i], waitTime, 4 * playerCount + playerIndex);
+					waitTime += 1 * waitTimeDelta;
+					playerIndex++;
+					//playerIndex++;
+				}
+			}
+
+
+			//判断最后一张牌是否已经发好
+			Vector3 lastCardPosition = deckCards [5 * playerCount - 1].gameObject.transform.position;
+			Vector3 lastUserLastCardPosition = userCardPositionsArray [lastSeatIndex] [4].transform.position;
+			//Debug .Log("(x, y): " + lastCardPosition.x + "," + lastCardPosition.y + "     (x1, y1): " + lastUserLastCardPosition.x + "," + lastUserLastCardPosition.y);
+			if (Utils.isTwoPositionIsEqual(deckCards [5 * playerCount - 1].gameObject.transform.position, userCardPositionsArray [lastSeatIndex][4].transform.position)) {
+				HideOtherDeckCards ();
+
+				dealing = false;
+			
+				gamePlayController.goToNextState (); 
 			}
 		} 
 	}
 
 	private void ShowOtherDeckCards() {
-		for (int i = 8; i < deckCards.Count; i++) {
+		for (int i = 0; i < deckCards.Count; i++) {
 			deckCards[i].gameObject.SetActive (true);
 		}
 	}
@@ -65,8 +112,8 @@ public class SecondDealController : MonoBehaviour {
 		}
 	}
 		
-	private void FirstDealCards(GameObject[] targetCards, float waitTime, int deckCardStartIndex) {
-		float step = FirstDealerController.speed * Time.deltaTime;
+	private void SecondDealCards(GameObject[] targetCards, float waitTime, int deckCardStartIndex) {
+		float step = secondDealSpeed * Time.deltaTime;
 
 		Image card = deckCards [deckCardStartIndex];
 		GameObject targetCard = targetCards [4];
@@ -98,20 +145,20 @@ public class SecondDealController : MonoBehaviour {
 		this.cardSprites = cardSprites;
 	}
 
-	public void SetUser1CardPositions(GameObject[] user1CardPositions) {
-		this.user1CardPositions = user1CardPositions;
-	}	
-
-	public void SetUser2CardPositions(GameObject[] user2CardPositions) {
-		this.user2CardPositions = user2CardPositions;
+	public void SetUserCardPositionsArray(GameObject[][] userCardPositionsArray) {
+		this.userCardPositionsArray = userCardPositionsArray;
 	}
 
 
 	public void HandleResponse(GoToSecondDealNotify notify) {
 		string[] cards = gamePlayController.game.currentRound.myCards;
-		cards [4] = notify.card;
+		cards [4] =  notify.cardsDict[Player.Me.userId];
 
-		gamePlayController.state = GameState.SecondDeal;
+		if (betController.IsAllBetCompleted) {
+			gamePlayController.state = GameState.SecondDeal;
+		} else {
+			canSecondDeal = true;
+		}
 	}
 
 

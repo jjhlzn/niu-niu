@@ -25,7 +25,9 @@ public class Messages
 	public static string RobBanker = "RobBanker";
 	public static string SomePlayerRobBanker = "SomePlayerRobRanker";
 	public static string Bet = "Bet";
+	public static string SomePlayerBet = "SomePlayerBet";
 	public static string ShowCard = "ShowCard";
+	public static string SomePlayerShowCard = "SomePlayerShowCard";
 }
 
 public class StartGameRequest {
@@ -58,7 +60,8 @@ public class GoToChooseBankerNotity : BaseGameResponse {
 }
 
 public class GoToSecondDealNotify : BaseGameResponse {
-	public string card;
+	public string roomNo;
+	public Dictionary<string, string> cardsDict;
 }
 
 public class GoToCheckCardNotify : BaseGameResponse {
@@ -88,3 +91,24 @@ public class SomePlayerRobBankerNotify : BaseGameResponse {
 	public bool isRob;
 }
 
+public class SomePlayerBetNotify : BaseGameResponse {
+	public string roomNo;
+	public string userId;
+	public int bet;
+}
+
+public class SomePlayerShowCardNotify : BaseGameResponse {
+	public string roomNo;
+	public string userId;
+	public string[] cards;
+	public int[] cardSequences;
+	public int niu;   //0 表示没有牛，表示牛牛， 1 - 10 表示牛1 - 牛牛， 11表示炸弹，以此类推。
+	public int multiple; //倍数
+}
+
+public class ShowCardAck : BaseGameResponse {
+	public int[] cardSequences;
+	public int niu;   //0 表示没有牛，表示牛牛， 1 - 10 表示牛1 - 牛牛， 11表示炸弹，以此类推。
+	public int multiple; //倍数
+
+}
