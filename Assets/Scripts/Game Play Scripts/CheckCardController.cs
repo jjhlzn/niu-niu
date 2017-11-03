@@ -18,13 +18,9 @@ public class CheckCardController : MonoBehaviour {
 
 	private Vector3[][] showCardPositionsArray;
 
-	private float user1MoveCardSpeedWhenShowCard = 9f;
+	private float user1MoveCardSpeedWhenShowCard = 7f;
 	private float moveCardSpeedWhenShowNiu = 6f;
-	/*
-	[SerializeField]
-	private Button cuoCardButton;
-	[SerializeField]
-	private Button showCardButton; */
+
 
 	public bool[] isMoveCardArray;
 
