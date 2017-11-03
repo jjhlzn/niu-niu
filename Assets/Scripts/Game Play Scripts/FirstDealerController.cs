@@ -82,7 +82,7 @@ public class FirstDealerController : MonoBehaviour {
 
 	IEnumerator GiveCard(Image card, Vector3 targetCard, float step, float waitTime) {
 		yield return new WaitForSeconds (waitTime);
-		Debug.Log ("(x, y): (" + targetCard.x + " , " + targetCard.y + ")");
+		//Debug.Log ("(x, y): (" + targetCard.x + " , " + targetCard.y + ")");
 		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
 	}
 		

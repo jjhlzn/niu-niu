@@ -16,7 +16,7 @@ public class CheckCardController : MonoBehaviour {
 	private List<Image> deckCards;
 	public Sprite[] cardSprites;
 
-	private GameObject[][] showCardPositionsArray;
+	private Vector3[][] showCardPositionsArray;
 
 	private float user1MoveCardSpeedWhenShowCard = 9f;
 	private float moveCardSpeedWhenShowNiu = 6f;
@@ -50,7 +50,7 @@ public class CheckCardController : MonoBehaviour {
 		for (int i = 0; i < isMoveCardArray.Length; i++) {
 			if (isMoveCardArray [i]) {
 				Image[] cards = GetCards (i);
-				GameObject[] targetPositions = showCardPositionsArray [i];
+				Vector3[] targetPositions = showCardPositionsArray [i];
 				int[] sequences = gamePlayController.game.currentRound.cardSequenceArray [i];
 
 				float step;
@@ -61,12 +61,12 @@ public class CheckCardController : MonoBehaviour {
 				}
 				for (int j = 0; j < 5; j++) {
 					if (gamePlayController.game.currentRound.HasNiu (i)  && sequences [j] >= 3) {
-						Vector3 targetV = targetPositions [sequences [j]].transform.position;
+						Vector3 targetV = targetPositions [sequences [j]];
 						Vector3 v = new Vector3 (targetV.x + 0.3f, targetV.y, targetV.z);
 
 						cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, v, step);
 					} else {
-						cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, targetPositions [sequences[j]].transform.position, step);
+						cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, targetPositions [sequences[j]], step);
 					}
 
 					cards [j].gameObject.layer = sequences [j];
@@ -82,7 +82,7 @@ public class CheckCardController : MonoBehaviour {
 		anim.Play ("TurnUp");
 		yield return new WaitForSeconds (.4f);
 
-		card.sprite = cardSprites[0];
+		card.sprite = Utils.findCardSprite(cardSprites, gamePlayController.game.currentRound.myCards[4]);
 		anim.Play ("TurnBackNow2");
 		yield return new WaitForSeconds (.2f);
 
@@ -187,7 +187,7 @@ public class CheckCardController : MonoBehaviour {
 		this.cardSprites = cardSprites;
 	}
 
-	public void SetShowCardPositionsArray(GameObject[][] array) {
+	public void SetShowCardPositionsArray(Vector3[][] array) {
 		this.showCardPositionsArray = array;
 	}
 

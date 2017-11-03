@@ -13,7 +13,6 @@ public class Utils
 	private static Dictionary<string, Sprite> cardDict = new Dictionary<string, Sprite>();
 
 	public static Sprite findCardSprite(Sprite[] cardSprites, string cardValue) {
-		return cardSprites [16];
 
 		if (cardDict.ContainsKey (cardValue)) {
 			return cardDict [cardValue];

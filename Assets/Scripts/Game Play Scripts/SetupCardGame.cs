@@ -52,7 +52,7 @@ public class SetupCardGame : MonoBehaviour {
 	public Text[] chipCountLabels;
 
 	private Vector3[][] userCardsPositionsArray;
-	private GameObject[][] showCardPositionsArray;
+	private Vector3[][] showCardPositionsArray;
 
 	private int cardCount = 30;
 
@@ -64,7 +64,7 @@ public class SetupCardGame : MonoBehaviour {
 	void Awake() {
 		Debug.Log ("SetupCardGame Awake");
 		userCardsPositionsArray = new Vector3[6][];
-		showCardPositionsArray = new GameObject[6][];
+		showCardPositionsArray = new Vector3[6][];
 
 		cardSprites = Resources.LoadAll<Sprite>("sprites/mobile");
 
@@ -218,11 +218,7 @@ public class SetupCardGame : MonoBehaviour {
 	private void GetUserCardsPosition() {
 		for (int i = 0; i < Game.SeatCount; i++) {
 			userCardsPositionsArray [i] = GetUserCardsPosition (i);
-
-				//GetUserCardsPosition ("user"+(i + 1)+"CardsPosition");
 		}
-	
-
 		firstDealerController.setUserCardsPositionsArray (userCardsPositionsArray);
 		secondDealController.SetUserCardPositionsArray (userCardsPositionsArray);
 	}
@@ -230,7 +226,7 @@ public class SetupCardGame : MonoBehaviour {
 	private Vector3[] GetUserCardsPosition(int index) {
 		Vector3[] result = new Vector3[5];
 		int initialX = 0, initialY = 0;
-		int stepX = 0;
+		int stepX = 25;
 		switch (index) {
 		case 0:
 			initialX = -240;
@@ -240,61 +236,72 @@ public class SetupCardGame : MonoBehaviour {
 		case 1:
 			initialX = -448;
 			initialY = -65;
-			stepX = 25;
 			break;
 		case 2:
 			initialX = -340;
 			initialY = 121;
-			stepX = 25;
 			break;
 		case 3:
 			initialX = -20;
 			initialY = 170;
-			stepX = 25;
 			break;
 		case 4:
 			initialX = 220;
 			initialY = 95;
-			stepX = 25;
 			break;
 		case 5:
 			initialX = 320;
 			initialY = -70;
-			stepX = 25;
 			break;
 		}
 		for (int i = 0; i < 5; i++) {
 			result[i] = new Vector3 ((initialX + i * stepX) / TransformConstant, initialY / TransformConstant,  0);
 		}
 		return result;
-
-		/*
-		GameObject[] cards = GameObject.FindGameObjectsWithTag (tag);
-		System.Array.Sort (cards, new MyComparer ());
-		for (int i = 0; i < cards.Length; i++) {
-			cards[i].SetActive(false);
-		}
-		return cards; */
-
 	}
 
 	private void GetShowCardsPosition() {
 		for (int i = 0; i < Game.SeatCount; i++) {
-			showCardPositionsArray[i] = GetShowCardsPosition ("showCardPosition"+i);
+			showCardPositionsArray[i] = GetShowCardsPosition (i);
 		}
 
 		checkCardController.SetShowCardPositionsArray (showCardPositionsArray);
 	}
 
-	private GameObject[] GetShowCardsPosition(string tag) {
-		GameObject[] cardObjs = GameObject.FindGameObjectsWithTag (tag);
-
-		Debug.Log (tag + " has " + cardObjs.Length);
-		System.Array.Sort (cardObjs, new MyComparer ());
-		for (int i = 0; i < cardObjs.Length; i++) {
-			cardObjs[i].gameObject.SetActive(false);
+	private Vector3[] GetShowCardsPosition(int index) {
+		Vector3[] result = new Vector3[5];
+		int initialX = 0, initialY = 0;
+		int stepX = 30;
+		switch (index) {
+		case 0:
+			initialX = -100;
+			initialY = -277;
+			break;
+		case 1:
+			initialX = -448;
+			initialY = -65;
+			break;
+		case 2:
+			initialX = -340;
+			initialY = 121;
+			break;
+		case 3:
+			initialX = -20;
+			initialY = 170;
+			break;
+		case 4:
+			initialX = 220;
+			initialY = 95;
+			break;
+		case 5:
+			initialX = 320;
+			initialY = -70;
+			break;
 		}
-		return cardObjs;
+		for (int i = 0; i < 5; i++) {
+			result[i] = new Vector3 ((initialX + i * stepX) / TransformConstant, initialY / TransformConstant,  0);
+		}
+		return result;
 	}
 
 	void CreateDeckCards() {
