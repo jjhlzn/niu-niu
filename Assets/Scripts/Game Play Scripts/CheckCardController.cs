@@ -192,8 +192,7 @@ public class CheckCardController : MonoBehaviour {
 		Socket gameSocket = gamePlayController.gameSocket;
 		var request = new {
 			userId = Player.Me.userId,
-			roomNo = gamePlayController.game.roomNo,
-			cards = gamePlayController.game.currentRound.myCards
+			roomNo = gamePlayController.game.roomNo
 		};
 
 		gameSocket.EmitJson (Messages.ShowCard, JsonConvert.SerializeObject (request), (string msg) => {

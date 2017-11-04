@@ -53,7 +53,7 @@ public class RobBankerController : MonoBehaviour {
 		}
 
 		var robReq = new {
-			room = gamePlayerController.game.roomNo,
+			roomNo = gamePlayerController.game.roomNo,
 			isRob = isRob,
 			userId = Player.Me.userId
 		};

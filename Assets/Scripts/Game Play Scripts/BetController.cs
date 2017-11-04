@@ -33,7 +33,7 @@ public class BetController : MonoBehaviour {
 			bool result = true;
 			var seats = gamePlayController.game.seats;
 			for (var i = 0; i < seats.Length; i++) {
-				if (seats [i].hasPlayer ()) {
+				if (seats [i].hasPlayer () && seats[i].player.userId != gamePlayController.game.currentRound.banker) {
 					result = result && isBetCompletedArray [i];
 				}
 			}
