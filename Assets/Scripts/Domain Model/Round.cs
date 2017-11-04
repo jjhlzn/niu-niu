@@ -18,6 +18,8 @@ public class Round
 	public int[][] cardSequenceArray;
 	public int[] multipleArray;
 
+	public Dictionary<string, int> resultDict; //输赢关系
+
 	public Round ()
 	{
 		myCards = new string[5];
@@ -26,6 +28,7 @@ public class Round
 		niuArray = new int[Game.SeatCount];
 		cardSequenceArray = new int[Game.SeatCount] [];
 		multipleArray = new int[Game.SeatCount];
+		resultDict = new Dictionary<string, int> ();
 	}
 
 	public bool HasNiu(int seatIndex) {

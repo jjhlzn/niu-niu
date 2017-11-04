@@ -112,3 +112,8 @@ public class ShowCardAck : BaseGameResponse {
 	public int multiple; //倍数
 
 }
+
+public class GoToCompareCardNotify : BaseGameResponse {
+	public string roomNo;
+	public Dictionary<string, int> resultDict;   //输赢关系
+}

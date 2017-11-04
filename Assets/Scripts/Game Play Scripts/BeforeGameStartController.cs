@@ -60,16 +60,6 @@ public class BeforeGameStartController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		RectTransform t = new RectTransform ();
-
-		//Debug.Log (card.transform.position.x + ", " + card.transform.position.y + ", " + card.transform.position.z);
-		//Debug.Log (card.rectTransform.position.x + ", " + card.rectTransform.transform.position.y + ", " + card.rectTransform.transform.position.z);
-		//Vector3 target =  new Vector3 (-240, -240, 0);
-		//target = Camera.main.ScreenToWorldPoint (target);
-
-		//Debug.Log (target.x + ", " +target.y + ", " + target.z);
-		//card.transform.position = Vector3.MoveTowards (card.transform.position, target, 60f * Time.deltaTime);
-
 		if (isMoveSeat) {
 			float step = moveSeatSpeed * Time.deltaTime;
 			bool[] bools = new bool[Game.SeatCount]; 
@@ -162,6 +152,7 @@ public class BeforeGameStartController : MonoBehaviour {
 		setUpGameController.resetCards ();
 		Debug.Log ("start game click");
 
+
 		//make start game request
 		var request = new {
 			roomNo = gamePlayerController.game.roomNo,
@@ -171,7 +162,7 @@ public class BeforeGameStartController : MonoBehaviour {
 		gameSocket.EmitJson (Messages.StartGame, JsonConvert.SerializeObject(request), (string msg) => {
 			startButton.gameObject.SetActive(false);
 			standUpButton.gameObject.SetActive(false);
-		});
+		}); 
 	}
 		
 

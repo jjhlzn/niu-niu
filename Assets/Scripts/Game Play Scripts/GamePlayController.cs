@@ -32,6 +32,9 @@ public class GamePlayController : MonoBehaviour {
 	[SerializeField]
 	private BetController betController;
 
+	[SerializeField]
+	private CompareCardController compareController;
+
 	public GameState state;
 
 	public Socket gameSocket;
@@ -124,6 +127,12 @@ public class GamePlayController : MonoBehaviour {
 			Debug.Log("SomePlayerShowCard: " +msg);
 			SomePlayerShowCardNotify resp = JsonConvert.DeserializeObject<SomePlayerShowCardNotify>(msg);
 			checkCardController.HandleResponse(resp);
+		});
+
+		gameSocket.On (Messages.GoToCompareCard, (string msg) => {
+			Debug.Log("GoToCompareCard: " + msg);
+			GoToCompareCardNotify notify = JsonConvert.DeserializeObject<GoToCompareCardNotify>(msg);
+			compareController.HandleResponse(notify);
 		});
 	}
 

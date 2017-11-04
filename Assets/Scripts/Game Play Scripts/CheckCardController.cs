@@ -17,10 +17,13 @@ public class CheckCardController : MonoBehaviour {
 	public Sprite[] cardSprites;
 
 	private Vector3[][] showCardPositionsArray;
+	private Image[] niuImages;
+	private Image[] multipleImages;
 
 	private float user1MoveCardSpeedWhenShowCard = 7f;
 	private float moveCardSpeedWhenShowNiu = 6f;
 
+	public bool[] playerShowCardCompleted;
 
 	public bool[] isMoveCardArray;
 
@@ -28,10 +31,28 @@ public class CheckCardController : MonoBehaviour {
 
 	public void Awake() {
 		isMoveCardArray = new bool[Game.SeatCount];
+		playerShowCardCompleted = new bool[Game.SeatCount];
 	}
 
 	public void Reset() {
 		hasShowCard = false;
+	}
+
+	public bool isAllPlayerShowCardAnimCompleted {
+		get {
+			bool result = true;
+			Seat[] seats = gamePlayController.game.seats;
+
+			int index = 0;
+			foreach (Seat seat in seats) {
+				if (seat.hasPlayer () && !playerShowCardCompleted [index]) {
+					result = false;
+					break;
+				}
+				index++;
+			}
+			return result;
+		}
 	}
 
 
@@ -55,22 +76,38 @@ public class CheckCardController : MonoBehaviour {
 				} else {
 					step = moveCardSpeedWhenShowNiu * Time.deltaTime;
 				}
-				for (int j = 0; j < 5; j++) {
-					if (gamePlayController.game.currentRound.HasNiu (i)  && sequences [j] >= 3) {
-						Vector3 targetV = targetPositions [sequences [j]];
-						Vector3 v = new Vector3 (targetV.x + 0.3f, targetV.y, targetV.z);
 
-						cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, v, step);
-					} else {
-						cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, targetPositions [sequences[j]], step);
-					}
+				bool moveCompleted = true;
+				for (int j = 0; j < 5; j++) {
+					Vector3 targetV = targetPositions [sequences [j]];
+					if (gamePlayController.game.currentRound.HasNiu (i)  && sequences [j] >= 3) {
+						targetV = new Vector3 (targetV.x + 0.3f, targetV.y, targetV.z);
+					} 
+					cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, targetV, step);
 
 					cards [j].gameObject.layer = sequences [j];
 					cards [j].transform.SetSiblingIndex (sequences [j]);
-				}	
 
+					if (!Utils.isTwoPositionIsEqual (cards [j].gameObject.transform.position, targetV)) {
+						moveCompleted = false;
+					}
+				}
+
+				if (moveCompleted) {
+					isMoveCardArray[i] = false;
+					Debug.Log ("seat " + i + " show card anim completed");
+					niuImages [i].gameObject.SetActive (true);
+					multipleImages [i].gameObject.SetActive (true);
+					//playerShowCardCompleted [i] = true;
+					StartCoroutine(SetPlayerShowCardCompleted(i));
+				} 
 			} 
 		}
+	}
+
+	IEnumerator SetPlayerShowCardCompleted(int index) {
+		yield return new WaitForSeconds(.3f);
+		playerShowCardCompleted [index] = true;
 	}
 
 	IEnumerator TurnCardUp(Image card) {
@@ -185,6 +222,14 @@ public class CheckCardController : MonoBehaviour {
 
 	public void SetShowCardPositionsArray(Vector3[][] array) {
 		this.showCardPositionsArray = array;
+	}
+
+	public void SetNiuImages(Image[] niuImages) {
+		this.niuImages = niuImages;
+	}
+
+	public void SetMutipleImages(Image[] mutipleImages) {
+		this.multipleImages = mutipleImages;
 	}
 
 	public void HandleResponse(GoToCheckCardNotify notify) {

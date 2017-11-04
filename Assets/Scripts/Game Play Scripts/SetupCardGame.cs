@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SetupCardGame : MonoBehaviour {
+	private int MaxMoveChipCount = 10;
+
 	[SerializeField]
 	private FirstDealerController firstDealerController;
 
@@ -26,11 +28,20 @@ public class SetupCardGame : MonoBehaviour {
 	private BetController betController;
 
 	[SerializeField]
+	private CompareCardController compareController;
+
+	[SerializeField]
 	private Image card;
 	[SerializeField]
 	private GameObject deckCardPosition;
 	[SerializeField]
 	private GameObject cardPanel;
+
+	[SerializeField]
+	private Image niuImage;
+	[SerializeField]
+	private Image mutipleImage;
+
 
 	public Sprite[] cardSprites;
 
@@ -47,10 +58,12 @@ public class SetupCardGame : MonoBehaviour {
 	public Image[] isRobImages;
 	public Image[] robingImages;
 	public Image[] bankerSignPositions;
-	public Image[] chipImages;
+	public Image[] chipImages;   //下注的筹码
 	public Image[] chipPositionImages;
 	public Text[] chipCountLabels;
-
+	public Image[] niuImages;  //说明是牛几的图片
+	public Image[] multipleImages; //倍数的图片
+	public Image[][] chipsArray; //计算结果，所移动的筹码
 	private Vector3[][] userCardsPositionsArray;
 	private Vector3[][] showCardPositionsArray;
 
@@ -70,8 +83,11 @@ public class SetupCardGame : MonoBehaviour {
 
 		GetUserCardsPosition ();
 		GetShowCardsPosition ();
+		GetNiuImages ();
+
 		CreateDeckCards ();
 		GetUserSeatUI ();
+		GetChipsArray ();
 	}
 
 	// Update is called once per frame
@@ -302,6 +318,131 @@ public class SetupCardGame : MonoBehaviour {
 			result[i] = new Vector3 ((initialX + i * stepX) / TransformConstant, initialY / TransformConstant,  0);
 		}
 		return result;
+	}
+
+	private void GetNiuImages() {
+		this.niuImages = new Image[Game.SeatCount];
+		this.multipleImages = new Image[Game.SeatCount];
+		for (int i = 0; i < Game.SeatCount; i++) {
+			niuImages [i] = GetNiuImage (i);
+			niuImages [i].gameObject.SetActive (false);
+			multipleImages [i] = GetMutipleImage (i);
+			multipleImages [i].gameObject.SetActive (false);
+		}
+		checkCardController.SetNiuImages (niuImages);
+		checkCardController.SetMutipleImages (multipleImages);
+	}
+
+	private Image GetNiuImage(int index) {
+		int x = 0, y = 0;
+		Image image = Instantiate (niuImage);
+		switch (index) {
+		case 0:
+			x = -100;
+			y = -277;
+			break;
+		case 1:
+			x = -448;
+			y = -65;
+			break;
+		case 2:
+			x = -340;
+			y = 121;
+			break;
+		case 3:
+			x = -20;
+			y = 170;
+			break;
+		case 4:
+			x = 220;
+			y = 95;
+			break;
+		case 5:
+			x = 320;
+			y = -70;
+			break;
+		}
+			
+		image.gameObject.transform.SetParent (cardPanel.transform);
+
+
+		Vector3 localScale = new Vector3 ();
+		localScale.x = 0.5f;
+		localScale.y = 0.5f;
+		image.transform.localScale = localScale;
+
+		image.transform.position = new Vector3 ( (x + 20) / TransformConstant, (y - 30) / TransformConstant, 0);
+		return image;
+	}
+
+	private Image GetMutipleImage(int index) {
+		int x = 0, y = 0;
+		Image image = Instantiate (mutipleImage);
+		switch (index) {
+		case 0:
+			x = -100;
+			y = -277;
+			break;
+		case 1:
+			x = -448;
+			y = -65;
+			break;
+		case 2:
+			x = -340;
+			y = 121;
+			break;
+		case 3:
+			x = -20;
+			y = 170;
+			break;
+		case 4:
+			x = 220;
+			y = 95;
+			break;
+		case 5:
+			x = 320;
+			y = -70;
+			break;
+		}
+
+		image.gameObject.transform.SetParent (cardPanel.transform);
+
+
+		Vector3 localScale = new Vector3 ();
+		localScale.x = 0.4f;
+		localScale.y = 0.4f;
+		image.transform.localScale = localScale;
+
+		image.transform.position = new Vector3 ( (x + 130) / TransformConstant, (y - 30) / TransformConstant, 0);
+		return image;
+	}
+
+
+	private void GetChipsArray() {
+		chipsArray = new Image[Game.SeatCount][];
+		for (int i = 0; i < Game.SeatCount; i++) {
+			chipsArray [i] = GetChips (i);
+		}	
+		compareController.SetChipsArray (chipsArray);
+	}
+
+	private Image[] GetChips(int index) {
+		Image[] images = new Image[MaxMoveChipCount];
+		for (int i = 0; i < MaxMoveChipCount; i++) {
+			Image image = Instantiate (chipImages[index]);
+			image.name = "user" + index + "chip" + i;
+			image.gameObject.transform.SetParent (cardPanel.transform);
+
+			Vector3 localScale = new Vector3 ();
+			localScale.x = 0.3f;
+			localScale.y = 0.3f;
+			image.transform.localScale = localScale;
+
+			image.transform.position = chipImages [index].transform.position;
+			images [i] = image;
+			image.gameObject.SetActive (false);
+		}
+		return images;
 	}
 
 	void CreateDeckCards() {
