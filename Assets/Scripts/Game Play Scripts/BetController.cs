@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using socket.io;
 using Newtonsoft.Json;
 
-public class BetController : MonoBehaviour {
+public class BetController : BaseStateController {
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -66,7 +66,7 @@ public class BetController : MonoBehaviour {
 		}
 	}
 
-	public void Reset() {
+	public override void Reset() {
 		hasBet = false;
 		for (int i = 0; i < chipImages.Length; i++) {
 			chipImages [i].gameObject.SetActive (false);

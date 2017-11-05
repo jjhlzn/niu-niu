@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ChooseBankerController : MonoBehaviour {
+public class ChooseBankerController : BaseStateController {
 	public static int ChooseTotalCount = 15;
 	private float timeInterval = .03f;
 	private float moveBankerSignSpeed = 16f;
@@ -93,7 +93,7 @@ public class ChooseBankerController : MonoBehaviour {
 	}
 
 
-	public void Reset() {
+	public override void Reset() {
 		bankerSign.gameObject.SetActive (false);
 		choosing = false;
 		movingBankerSign = false;

@@ -31,6 +31,7 @@ TagManager:
   - showCardPosition3
   - showCardPosition4
   - showCardPosition5
+  - ReadyImage
   layers:
   - Default
   - TransparentFX

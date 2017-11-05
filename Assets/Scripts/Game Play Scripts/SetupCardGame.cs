@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SetupCardGame : MonoBehaviour {
-	private int MaxMoveChipCount = 10;
+public class SetupCardGame : BaseStateController {
+	private int MaxMoveChipCount = 8 * 5;
 
 	[SerializeField]
 	private FirstDealerController firstDealerController;
@@ -36,6 +36,10 @@ public class SetupCardGame : MonoBehaviour {
 	private GameObject deckCardPosition;
 	[SerializeField]
 	private GameObject cardPanel;
+	[SerializeField]
+	private GameObject userPanel;
+	[SerializeField]
+	private Text scoreLabel;
 
 	[SerializeField]
 	private Image niuImage;
@@ -61,9 +65,11 @@ public class SetupCardGame : MonoBehaviour {
 	public Image[] chipImages;   //下注的筹码
 	public Image[] chipPositionImages;
 	public Text[] chipCountLabels;
+	public Image[] readyImages;
 	public Image[] niuImages;  //说明是牛几的图片
 	public Image[] multipleImages; //倍数的图片
 	public Image[][] chipsArray; //计算结果，所移动的筹码
+	public Text[] scoreLabels; //在展示结果时，跳出来的本局输赢分数的展示
 	private Vector3[][] userCardsPositionsArray;
 	private Vector3[][] showCardPositionsArray;
 
@@ -88,6 +94,10 @@ public class SetupCardGame : MonoBehaviour {
 		CreateDeckCards ();
 		GetUserSeatUI ();
 		GetChipsArray ();
+		GetScoreLabels ();
+	}
+
+	public override void Reset() {
 	}
 
 	// Update is called once per frame
@@ -116,6 +126,16 @@ public class SetupCardGame : MonoBehaviour {
 			playerImages [i] = images [i].GetComponent<Image> ();
 		}
 		beforeGameStartController.SetPlayerImages (playerImages);
+
+		GameObject[] readyObjs = GameObject.FindGameObjectsWithTag ("ReadyImage");
+		readyObjs = SortUserSeatUIObjects (readyObjs);
+		readyImages = new Image[readyObjs.Length];
+		for (int i = 0; i < readyObjs.Length; i++) {
+			readyImages [i] = readyObjs [i].GetComponent<Image> ();
+			readyImages [i].gameObject.SetActive (false);
+		}
+		beforeGameStartController.SetReadyImages (readyImages);
+		firstDealerController.SetReadyImages (readyImages);
 
 		GameObject[] names = GameObject.FindGameObjectsWithTag ("UserName");
 		names = SortUserSeatUIObjects (names);
@@ -443,6 +463,59 @@ public class SetupCardGame : MonoBehaviour {
 			image.gameObject.SetActive (false);
 		}
 		return images;
+	}
+
+	private void GetScoreLabels() {
+		this.scoreLabels = new Text[Game.SeatCount];
+		for (int i = 0; i < scoreLabels.Length; i++) {
+			scoreLabels [i] = GetScoreLabel (i);
+		}
+		compareController.SetScoreLabels (scoreLabels);
+	}
+
+	private Text GetScoreLabel(int index) {
+		int x = 0, y = 0;
+		switch (index) {
+		case 0:
+			x = -515;
+			y = -265;
+			break;
+		case 1:
+			x = -555;
+			y = -37;
+			break;
+		case 2:
+			x = -420;
+			y = 234;
+			break;
+		case 3:
+			x = 30;
+			y = 273;
+			break;
+		case 4:
+			x = 375;
+			y = 210;
+			break;
+		case 5:
+			x = 555;
+			y = -33;
+			break;
+		}
+
+		Text text = Instantiate (scoreLabel);
+		text.name = "userScoreLabel" + index;
+		text.transform.SetParent (userPanel.transform);
+
+		Vector3 localScale = new Vector3 ();
+		localScale.x = 1f;
+		localScale.y = 1f;
+		text.transform.localScale = localScale;
+
+		text.gameObject.SetActive (false);
+
+		text.transform.position = new Vector3 ( x / TransformConstant, y / TransformConstant, 0);
+		return text;
+
 	}
 
 	void CreateDeckCards() {

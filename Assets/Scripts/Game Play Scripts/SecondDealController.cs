@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SecondDealController : MonoBehaviour {
+public class SecondDealController : BaseStateController {
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -32,7 +32,7 @@ public class SecondDealController : MonoBehaviour {
 		dealing = false;
 	}
 
-	void Reset() {
+	public override void Reset() {
 		dealing = false;
 		canSecondDeal = false;
 	}

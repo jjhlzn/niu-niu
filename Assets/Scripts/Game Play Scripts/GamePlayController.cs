@@ -64,6 +64,9 @@ public class GamePlayController : MonoBehaviour {
 		state = state.nextState ();
 	}
 
+	public void Reset() {
+	}
+
 	public void SetGameSocket(Socket socket) {
 		gameSocket = socket;
 
@@ -133,6 +136,12 @@ public class GamePlayController : MonoBehaviour {
 			Debug.Log("GoToCompareCard: " + msg);
 			GoToCompareCardNotify notify = JsonConvert.DeserializeObject<GoToCompareCardNotify>(msg);
 			compareController.HandleResponse(notify);
+		});
+
+		gameSocket.On (Messages.SomePlayerReady, (string msg) => {
+			Debug.Log("SomePlayerReady: " + msg);
+			SomePlayerReadyNotify notify = JsonConvert.DeserializeObject<SomePlayerReadyNotify>(msg);
+			beforeGameStartController.HandleResponse(notify);
 		});
 	}
 

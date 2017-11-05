@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using socket.io;
 using Newtonsoft.Json;
 
-public class BeforeGameStartController : MonoBehaviour {
+public class BeforeGameStartController : BaseStateController {
 
 	private static float moveSeatSpeed = 30f;
 
@@ -37,6 +37,7 @@ public class BeforeGameStartController : MonoBehaviour {
 	public Text[] seatDescs;
 	public Image[] emptySeatImages;
 	public Image[] isRobImages;
+	public Image[] readyImages;
 
 	private bool isMoveSeat;
 	private int[] fromPositions;
@@ -52,7 +53,10 @@ public class BeforeGameStartController : MonoBehaviour {
 		isSeat = false;
 	}
 
-	public void Reset() {
+	/**
+	 * 游戏在一局之后，在下一局开始之前，需要重新设置界面或者变量
+	 * */
+	public override void Reset() {
 		foreach(Image isRobImage in isRobImages) {
 			isRobImage.gameObject.SetActive (false);
 		}
@@ -101,14 +105,14 @@ public class BeforeGameStartController : MonoBehaviour {
 
 		for (int i = 0; i < seats.Length; i++) {
 			Seat seat = seats [i];
-			if (seat.player != null) {
+			if (seat.hasPlayer()) {
 				this.playerImages [i].gameObject.SetActive (true);
 				this.playerNames [i].gameObject.SetActive (true);
 				this.playerScores [i].gameObject.SetActive (true);
 				this.seatButtons [i].gameObject.SetActive (false);
 				this.seatImages [i].gameObject.SetActive (true);
 				this.emptySeatImages [i].gameObject.SetActive (false);
-
+				this.readyImages [i].gameObject.SetActive (true);
 				this.playerNames [i].text = seat.player.userId;
 				this.seatDescs [i].text = "座位 [" + seat.seatNo + "]";
 				this.playerScores [i].text = seat.player.score + "";
@@ -116,7 +120,7 @@ public class BeforeGameStartController : MonoBehaviour {
 				this.playerImages [i].gameObject.SetActive (false);
 				this.playerNames [i].gameObject.SetActive (false);
 				this.playerScores [i].gameObject.SetActive (false);
-
+				this.readyImages [i].gameObject.SetActive (false);
 				this.seatImages [i].gameObject.SetActive (false);
 				this.seatDescs [i].text = "座位 [" + seat.seatNo + "]";
 
@@ -160,6 +164,32 @@ public class BeforeGameStartController : MonoBehaviour {
 		};
 
 		gameSocket.EmitJson (Messages.StartGame, JsonConvert.SerializeObject(request), (string msg) => {
+			foreach(Image image in readyImages) {
+				image.gameObject.SetActive(false);
+			}
+
+			startButton.gameObject.SetActive(false);
+			standUpButton.gameObject.SetActive(false);
+		}); 
+	}
+
+	public void ReadyClick() {
+		Socket gameSocket = gamePlayerController.gameSocket;
+		Debug.Log ("ready  click");
+	
+		//make start game request
+		var request = new {
+			roomNo = gamePlayerController.game.roomNo,
+			userId = Player.Me.userId
+		};
+
+		gameSocket.EmitJson (Messages.StartGame, JsonConvert.SerializeObject(request), (string msg) => {
+			setUpGameController.resetCards ();
+
+			foreach(Image image in readyImages) {
+				image.gameObject.SetActive(false);
+			}
+
 			startButton.gameObject.SetActive(false);
 			standUpButton.gameObject.SetActive(false);
 		}); 
@@ -283,6 +313,11 @@ public class BeforeGameStartController : MonoBehaviour {
 		return;
 	}
 
+	public void HandleResponse(SomePlayerReadyNotify notify) {
+		int seatIndex = gamePlayerController.game.GetSeatIndex (notify.userId);
+		readyImages [seatIndex].gameObject.SetActive (true);
+	}
+
 	#region 设置UI的元素
 	public void SetPlayerImages(Image[] playerImages) {
 		this.playerImages = playerImages;
@@ -323,6 +358,10 @@ public class BeforeGameStartController : MonoBehaviour {
 
 	public void SetIsRobImages(Image[] isRobImages) {
 		this.isRobImages = isRobImages;
+	}
+
+	public void SetReadyImages(Image[] readyImages) {
+		this.readyImages = readyImages;
 	}
 	#endregion
 

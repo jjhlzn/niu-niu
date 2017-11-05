@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
 
-public class RobBankerController : MonoBehaviour {
+public class RobBankerController : BaseStateController {
 
 	[SerializeField]
 	private GamePlayController gamePlayerController; 
@@ -22,7 +22,7 @@ public class RobBankerController : MonoBehaviour {
 
 	private bool hasRobBanker = false; 
 
-	public void Reset() {
+	public override void Reset() {
 		hasRobBanker = false;
 		foreach (Image isRobImage in isRobImages) {
 			isRobImage.gameObject.SetActive (false);

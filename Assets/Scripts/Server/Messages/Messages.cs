@@ -28,6 +28,8 @@ public class Messages
 	public static string SomePlayerBet = "SomePlayerBet";
 	public static string ShowCard = "ShowCard";
 	public static string SomePlayerShowCard = "SomePlayerShowCard";
+	public static string Ready = "Ready";
+	public static string SomePlayerReady = "SomePlayerReady";
 }
 
 public class StartGameRequest {
@@ -85,6 +87,11 @@ public class StartGameNotify : BaseGameResponse {
 	public Dictionary<string, int[]> betsDict = new Dictionary<string, int[]>();
 }
 
+public class SomePlayerReadyNotify : BaseGameResponse {
+	public string roomNo;
+	public string userId;
+}
+
 public class SomePlayerRobBankerNotify : BaseGameResponse {
 	public string roomNo;
 	public string userId;
@@ -117,3 +124,4 @@ public class GoToCompareCardNotify : BaseGameResponse {
 	public string roomNo;
 	public Dictionary<string, int> resultDict;   //输赢关系
 }
+

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using socket.io;
 using Newtonsoft.Json;
 
-public class CheckCardController : MonoBehaviour {
+public class CheckCardController : BaseStateController {
 
 	[SerializeField] 
 	private GamePlayController gamePlayController;
@@ -34,7 +34,7 @@ public class CheckCardController : MonoBehaviour {
 		playerShowCardCompleted = new bool[Game.SeatCount];
 	}
 
-	public void Reset() {
+	public override void Reset() {
 		hasShowCard = false;
 	}
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FirstDealerController : MonoBehaviour {
+public class FirstDealerController : BaseStateController {
 	[SerializeField]
 	private GamePlayController gamePlayController;
 
@@ -15,6 +15,8 @@ public class FirstDealerController : MonoBehaviour {
 
 	private Vector3[][] userCardPositionsArray;
 
+	private Image[] readyImages;
+
 	private List<Image> deckCards;
 	public Sprite[] cardSprites;
 
@@ -22,6 +24,10 @@ public class FirstDealerController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		hideOtherDeckCard (); 
+	}
+
+	public override void Reset() {
+		
 	}
 
 	// Update is called once per frame
@@ -117,6 +123,10 @@ public class FirstDealerController : MonoBehaviour {
 			gamePlayController.goToNextState ();
 	}
 
+	public void SetReadyImages(Image[] readyImages) {
+		this.readyImages = readyImages;
+	}
+
 
 	/******* 处理服务器的通知***************/
 	public void HandleResponse(FirstDealResponse notify) {
@@ -131,6 +141,9 @@ public class FirstDealerController : MonoBehaviour {
 		}
 
 		gamePlayController.game.currentRound.myBets = bets;
+		for (int i = 0; i < readyImages.Length; i++) {
+			readyImages [i].gameObject.SetActive (false);
+		}
 
 		gamePlayController.state = GameState.FirstDeal;
 	}
@@ -162,5 +175,7 @@ public class FirstDealerController : MonoBehaviour {
 		gamePlayController.game.currentRound.myBets = myBets;
 		gamePlayController.state = GameState.FirstDeal;
 	}
+
+
 
 }
