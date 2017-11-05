@@ -224,7 +224,9 @@ public class BeforeGameStartController : BaseStateController {
 			seats[seq].player.seat = seq;
 
 			SetPlayerSeatUI();
-			MoveSeats(seq);
+
+			if (seq != 0)
+				MoveSeats(seq);
 		});
 	}
 

@@ -39,6 +39,10 @@ public class SecondDealController : BaseStateController {
 
 	// Update is called once per frame
 	void Update () {
+		if (gamePlayController == null) {
+			Debug.LogError ("gamePlayController become to null");
+		}
+
 		if (gamePlayController.state.Equals (GameState.SecondDeal)) {
 			
 			if (!dealing) {

@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CompareCardController : BaseStateController {
+	private float chipMoveSpeed = 18f;
+	private float scoreLabelMoveSpeed = 5f;
+	private float MoveTime = 2f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -14,13 +17,10 @@ public class CompareCardController : BaseStateController {
 	[SerializeField]
 	private Button readyButton;
 
-	private float chipMoveSpeed = 18f;
-	private float scoreLabelMoveSpeed = 5f;
-
 	private Text[] scoreLabels;
 	private Vector3[] targetScoreLabelPositons;
-
 	private Image[][] chipsArray;
+
 	public int[] moveChipFromOtheToBankerArray;
 	public int[] moveChipFromBankerToOtherArray;
 	public bool moveToBanker;
@@ -28,8 +28,6 @@ public class CompareCardController : BaseStateController {
 	public bool showScoreLabel;
 	public bool moveScoreLabel;
 	public bool allAnimCompleted;
-
-	private float MoveTime = 2f;
 
 	private float moveTimeLeft; 
 

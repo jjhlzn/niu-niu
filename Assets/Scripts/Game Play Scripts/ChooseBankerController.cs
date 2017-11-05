@@ -35,7 +35,8 @@ public class ChooseBankerController : BaseStateController {
 	}
 
 	void Update() {
-
+		if (gamePlayController.game == null)
+			Debug.LogError ("gamePlayController.game become null");
 		Seat[] seats = gamePlayController.game.seats;
 		if (choosing) {
 			
@@ -120,10 +121,10 @@ public class ChooseBankerController : BaseStateController {
 			}
 		}
 
-		Debug.Log ("userIds = " + userIds);
-		for (int i = 0; i < userIds.Length; i++) {
-			Debug.Log ("user" + i + " = " + userIds [i]);
-		}
+		//Debug.Log ("userIds = " + userIds);
+		//for (int i = 0; i < userIds.Length; i++) {
+		//	Debug.Log ("user" + i + " = " + userIds [i]);
+		//}
 
 		chooseIndex = 0;
 		choosing = true;

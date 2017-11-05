@@ -81,7 +81,7 @@ public class SetupCardGame : BaseStateController {
 
 
 	void Awake() {
-		Debug.Log ("SetupCardGame Awake");
+		 //Debug.Log ("SetupCardGame Awake");
 		userCardsPositionsArray = new Vector3[6][];
 		showCardPositionsArray = new Vector3[6][];
 
@@ -112,7 +112,7 @@ public class SetupCardGame : BaseStateController {
 
 		GameObject[] seats = GameObject.FindGameObjectsWithTag ("UserSeat");
 		seats = SortUserSeatUIObjects (seats);
-		Debug.Log ("seats = " + seats);
+		//Debug.Log ("seats = " + seats);
 		seatImages = new Image[seats.Length];
 		for (int i = 0; i < seats.Length; i++) {
 			seatImages [i] = seats [i].GetComponent<Image> ();

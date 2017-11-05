@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
+[System.Serializable]
 public class Game
 {
 	public static int SeatCount = 6;
@@ -20,7 +22,7 @@ public class Game
 			seats [i] = new Seat ();
 			seats [i].seatNo = seatNos[i] + "";
 		}
-	}
+	}  
 
 	public string roomNo;
 

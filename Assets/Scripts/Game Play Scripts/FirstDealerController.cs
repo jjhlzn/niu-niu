@@ -4,17 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class FirstDealerController : BaseStateController {
+	public static float speed = 400f; //发牌速度
+	public static float waitTimeDelta = 0.1f;
+
 	[SerializeField]
 	private GamePlayController gamePlayController;
 
 	[SerializeField]
 	private GameObject deckCardPosition;
 
-	public static float speed = 400f; //发牌速度
-	public static float waitTimeDelta = 0.1f;
-
 	private Vector3[][] userCardPositionsArray;
-
 	private Image[] readyImages;
 
 	private List<Image> deckCards;
