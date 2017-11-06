@@ -16,7 +16,8 @@ public class BetController : BaseStateController {
 	[SerializeField]
 	private GameObject betPanel;
 
-	private float chipMoveSpeed = 40f;
+	private float user0ChipMoveSpeed = 180f;
+	private float chipMoveSpeed = 90f;
 
 	private Seat[] seats;
 
@@ -71,7 +72,13 @@ public class BetController : BaseStateController {
 					seats[i].chipImagesForBet.gameObject.SetActive (true);
 
 					Vector3 targetPosition = seats[i].chipPositionWhenBet;
-					float step = chipMoveSpeed * Time.deltaTime;
+					float step = 0;
+					if (i == 0) {
+						step = user0ChipMoveSpeed * Time.deltaTime;
+					} else {
+						step = chipMoveSpeed * Time.deltaTime;
+					}
+
 					seats[i].chipImagesForBet.gameObject.transform.position = Vector3.MoveTowards (seats[i].chipImagesForBet.gameObject.transform.position,
 						targetPosition, step);
 

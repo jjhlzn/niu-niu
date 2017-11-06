@@ -5,31 +5,18 @@ using UnityEngine.UI;
 
 public class SetupCardGame : BaseStateController {
 	private int MaxMoveChipCount = 8 * 5;
-
-	[SerializeField]
-	private FirstDealerController firstDealerController;
-
-	[SerializeField]
-	private SecondDealController secondDealController;
-
-	[SerializeField]
-	private ChooseBankerController chooseBankerController;
+	private float TransformConstant = 71.98f;
+	private int cardCount = 30; //生成多少张牌的图片，6 * 5 = 30
 
 	[SerializeField]
 	private CheckCardController checkCardController;
 
 	[SerializeField]
-	private BeforeGameStartController beforeGameStartController;
-
+	private GameObject seatUI;
 	[SerializeField]
-	private RobBankerController robBankerController;
-
+	private GameObject seatUI1;
 	[SerializeField]
-	private BetController betController;
-
-	[SerializeField]
-	private CompareCardController compareController;
-
+	private GameObject seatUI2;
 	[SerializeField]
 	private Image card;
 	[SerializeField]
@@ -40,72 +27,27 @@ public class SetupCardGame : BaseStateController {
 	private GameObject userPanel;
 	[SerializeField]
 	private Text scoreLabel;
-
 	[SerializeField]
 	private Image niuImage;
 	[SerializeField]
 	private Image mutipleImage;
 
-
-	public Sprite[] cardSprites;
-
-	private float TransformConstant = 71.98f;
-
-
-	public Image[] niuImages;  //说明是牛几的图片
-	public Image[] multipleImages; //倍数的图片
-	public Image[][] chipsArray; //计算结果，所移动的筹码
-	public Text[] scoreLabels; //在展示结果时，跳出来的本局输赢分数的展示
-	private Vector3[][] userCardsPositionsArray;
-	private Vector3[][] showCardPositionsArray;
-
-	private int cardCount = 30;
-
-	private List<Image> cards = new List<Image> ();
-	private List<Animator> cardAnims = new List<Animator>();
+	private Image[] niuImages;  //说明是牛几的图片
+	private Image[] multipleImages; //倍数的图片
 
 	public Seat[] seats;
 	public Deck deck;
 
-	[SerializeField]
-	private GameObject seatUI;
-	[SerializeField]
-	private GameObject seatUI1;
-	[SerializeField]
-	private GameObject seatUI2;
-
-
 	void Awake() {
-		 //Debug.Log ("SetupCardGame Awake");
-		userCardsPositionsArray = new Vector3[6][];
-		showCardPositionsArray = new Vector3[6][];
-
-		cardSprites = Resources.LoadAll<Sprite>("sprites/mobile");
-
-		CreateDeckCards ();
 		CreateDeck ();
-
-		GetSeats ();
-		GetUserCardsPosition ();
-		GetShowCardsPosition ();
-		GetNiuImages ();
-
-		GetUserSeatUI ();
-
-		GetChipsArray ();
-		GetScoreLabels ();
-
+		SeatSeatUIs ();
+		SetOtherSeatUIs ();
 	}
 
 	public override void Reset() {
 	}
-
-	// Update is called once per frame
-	void Update () {
 		
-	}
-		
-	private void GetUserSeatUI() {
+	private void SetOtherSeatUIs() {
 
 		//仅仅为了隐藏界面上的位置示意
 		GameObject[] userPanels = GameObject.FindGameObjectsWithTag ("UserPanel");
@@ -120,14 +62,6 @@ public class SetupCardGame : BaseStateController {
 			seats [i].isRobImage = isRobObjs [i].GetComponent<Image> ();
 			seats [i].isRobImage.gameObject.SetActive (false);
 		} 
-
-		//玩家下注时候的筹码图片
-		GameObject[] chipObjs = GameObject.FindGameObjectsWithTag ("chip");
-		chipObjs = SortUserSeatUIObjects (chipObjs);
-		for (int i = 0; i < chipObjs.Length; i++) {
-			seats [i].chipImagesForBet = chipObjs [i].GetComponent<Image> ();
-			seats [i].chipImagesForBet.gameObject.SetActive (false);
-		}
 			
 		//玩家下注的时候，筹码移动到的最终位置
 		GameObject[] chipPositionObjs = GameObject.FindGameObjectsWithTag ("chipPosition");
@@ -136,7 +70,6 @@ public class SetupCardGame : BaseStateController {
 			Image positionImage = chipPositionObjs [i].GetComponent<Image> ();
 			positionImage.gameObject.SetActive (false);
 			seats [i].chipPositionWhenBet = positionImage.transform.position;
-			  
 		}
 
 		//展示玩家下注的时候的文本，例如4
@@ -146,10 +79,17 @@ public class SetupCardGame : BaseStateController {
 			seats [i].chipCountLabel = chipCountObjs [i].GetComponent<Text> ();
 			seats [i].chipCountLabel.gameObject.SetActive (false);
 		}
+
+		SetChips ();
+		SetNiuImages ();
+		SetPlayerCardPositions ();
+		SetShowCardPositions ();
 	}
 
-
-	private void GetSeats() {
+	/**
+	 * 设置座位上各种UI元素，例如玩家的图片，玩家的ID等
+	 * */
+	private void SeatSeatUIs() {
 		seats = new Seat[Game.SeatCount];
 		string seatNos = "ABCDEF";
 		for(int i = 0 ; i < Game.SeatCount; i++) {
@@ -229,7 +169,9 @@ public class SetupCardGame : BaseStateController {
 				seat.readyImage = image;
 				break;
 			case "Chip Image":
+				image.transform.SetParent (userPanel.transform);
 				image.gameObject.SetActive (false);
+				seat.chipImagesForBet = image;
 				break;
 			}
 		}
@@ -282,15 +224,19 @@ public class SetupCardGame : BaseStateController {
 		return result;
 	}
 
-	private void GetUserCardsPosition() {
+
+	/**
+	 * 设置座位上发牌发到的位置
+	 * */
+	private void SetPlayerCardPositions() {
+		
 		for (int i = 0; i < Game.SeatCount; i++) {
-			userCardsPositionsArray [i] = GetUserCardsPosition (i);
-			seats [i].cardPositions = userCardsPositionsArray [i];
+			seats [i].cardPositions = SetPlayerCardPositions (i);
 		}
 		//secondDealController.SetUserCardPositionsArray (userCardsPositionsArray);
 	}
 
-	private Vector3[] GetUserCardsPosition(int index) {
+	private Vector3[] SetPlayerCardPositions(int index) {
 		Vector3[] result = new Vector3[5];
 		int initialX = 0, initialY = 0;
 		int stepX = 25;
@@ -327,16 +273,16 @@ public class SetupCardGame : BaseStateController {
 		return result;
 	}
 
-	private void GetShowCardsPosition() {
+	/**
+	 * 设置座位上，最后展示牌的位置 （正面朝上的时候）
+	 * */
+	private void SetShowCardPositions() {
 		for (int i = 0; i < Game.SeatCount; i++) {
-			showCardPositionsArray[i] = GetShowCardsPosition (i);
-			seats [i].showCardPositions = showCardPositionsArray [i];
+			seats [i].showCardPositions = SetShowCardPositions (i);
 		}
-
-		//checkCardController.SetShowCardPositionsArray (showCardPositionsArray);
 	}
 
-	private Vector3[] GetShowCardsPosition(int index) {
+	private Vector3[] SetShowCardPositions(int index) {
 		Vector3[] result = new Vector3[5];
 		int initialX = 0, initialY = 0;
 		int stepX = 30;
@@ -372,7 +318,10 @@ public class SetupCardGame : BaseStateController {
 		return result;
 	}
 
-	private void GetNiuImages() {
+	/**
+	 * 设置展示牛的时候，表示牛几的图片
+	 * */
+	private void SetNiuImages() {
 		this.niuImages = new Image[Game.SeatCount];
 		this.multipleImages = new Image[Game.SeatCount];
 		for (int i = 0; i < Game.SeatCount; i++) {
@@ -469,14 +418,14 @@ public class SetupCardGame : BaseStateController {
 		return image;
 	}
 
-
-	private void GetChipsArray() {
-		chipsArray = new Image[Game.SeatCount][];
+	/**
+	 * 当比牌的时候，需要一些筹码从一个座位移动到另一个座位，表示谁输谁赢
+	 * 这个函数设置座位上的筹码
+	 * */
+	private void SetChips() {
 		for (int i = 0; i < Game.SeatCount; i++) {
-			chipsArray [i] = GetChips (i);
-			seats [i].chipImages = chipsArray [i];
+			seats [i].chipImages = GetChips (i);
 		}	
-		//compareController.SetChipsArray (chipsArray);
 	}
 
 	private Image[] GetChips(int index) {
@@ -498,15 +447,7 @@ public class SetupCardGame : BaseStateController {
 		}
 		return images;
 	}
-
-	private void GetScoreLabels() {
-		this.scoreLabels = new Text[Game.SeatCount];
-		for (int i = 0; i < scoreLabels.Length; i++) {
-			scoreLabels [i] = GetScoreLabel (i);
-
-		}
-		//compareController.SetScoreLabels (scoreLabels);
-	}
+		
 
 	private Text GetScoreLabel(int index) {
 		int x = 0, y = 0;
@@ -553,24 +494,18 @@ public class SetupCardGame : BaseStateController {
 
 	}
 
+	/**
+	 * 生成一副牌的图片
+	 * */
 	void CreateDeck() {
 		deck = new Deck ();
-		deck.cardFaceSprites = cardSprites;
-		deck.cards = cards;
-		deck.Reset ();
-	}
-
-	void CreateDeckCards() {
-
-		cards = new List<Image> ();
-		cardAnims = new List<Animator> ();
+		List<Image> cards = new List<Image> ();
+		deck.cardFaceSprites = Resources.LoadAll<Sprite>("sprites/mobile");
 
 		for (int i = 0; i < cardCount; i++) {
 			Image temp = Instantiate (card);
 
 			temp.gameObject.transform.SetParent (cardPanel.transform);
-
-
 			Vector3 localScale = new Vector3 ();
 			localScale.x = 1;
 			localScale.y = 1;
@@ -578,33 +513,13 @@ public class SetupCardGame : BaseStateController {
 
 			temp.gameObject.transform.position = deckCardPosition.transform.position;
 
-			//Debug.Log ("deckCardPosition: " +  deckCardPosition.transform.position.x + ", copy  position: " + temp.transform.position.x);
-
 			temp.gameObject.name = "" + i;
 			cards.Add (temp);
 
-			cardAnims.Add (temp.gameObject.GetComponent<Animator> ());
-
 			temp.gameObject.SetActive (true);
 		}
-
-		//firstDealerController.SetDeckCards (cards);
-		//secondDealController.SetDeckCards (cards);
-		//checkCardController.SetDeckCards (cards);
-
-		//firstDealerController.SetCardSprites (cardSprites);
-		//secondDealController.SetCardSprites (cardSprites);
-		//checkCardController.SetCardSprites (cardSprites);
-
-		resetCards ();
-
-	}
-
-	private void resetCards() {
-		foreach (Image card in cards) {
-			card.gameObject.transform.position = deckCardPosition.transform.position;
-			card.gameObject.SetActive (true);
-		}
+		deck.cards = cards;
+		deck.Reset ();
 	}
 }
 
