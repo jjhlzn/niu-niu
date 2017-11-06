@@ -71,8 +71,8 @@ public class BetController : BaseStateController {
 		for (int i = 0; i < chipImages.Length; i++) {
 			chipImages [i].gameObject.SetActive (false);
 			chipImages [i].transform.position = chipOriginPositions [i];
-			chipPositionImages [i].gameObject.SetActive (false);
-			chipCountLabels [i].gameObject.SetActive (false);
+			//chipPositionImages [i].gameObject.SetActive (false);
+			//chipCountLabels [i].gameObject.SetActive (false);
 			isMoveChipArray [i] = false;
 			isBetCompletedArray [i] = false;
 		}

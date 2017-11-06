@@ -10,19 +10,26 @@ public class Game
 	
 	public Game ()
 	{
+		state = GameState.BeforeStart;
 		mySeat = -1;
 		rounds = new List<Round> ();
 		players = new Player[6];
 		currentRound = new Round();
 		rounds.Add(currentRound);
-
-		seats = new Seat[SeatCount];
-		string seatNos = "ABCDEF";
-		for(int i = 0 ; i < SeatCount; i++) {
-			seats [i] = new Seat ();
-			seats [i].seatNo = seatNos[i] + "";
-		}
 	}  
+
+	public bool isMeSeated {   //我是否已经坐下
+		get {
+			foreach (Seat seat in seats) {
+				if (seat.hasPlayer () && seat.player.userId == me.userId) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	public GameState state;
 
 	public string roomNo;
 
@@ -30,7 +37,7 @@ public class Game
 
 	public Player[] players;
 
-	public Player me;
+	public Player me = Player.Me;
 
 	public Round currentRound;
 

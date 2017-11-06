@@ -26,18 +26,7 @@ public class BeforeGameStartController : BaseStateController {
 	[SerializeField]
 	private Camera cam;
 
-	private Canvas canvas;
-
-	public GameObject[] userPanels;
-	public Image[] seatImages;
-	public Image[] playerImages;
-	public Text[] playerNames;
-	public Text[] playerScores;
-	public Button[] seatButtons;
-	public Text[] seatDescs;
-	public Image[] emptySeatImages;
-	public Image[] isRobImages;
-	public Image[] readyImages;
+	private Seat[] seats;
 
 	private bool isMoveSeat;
 	private int[] fromPositions;
@@ -49,6 +38,14 @@ public class BeforeGameStartController : BaseStateController {
 
 	// Use this for initialization
 	void Start () {
+		seats = gamePlayerController.game.seats;
+
+		positions = new Vector3[seats.Length];
+		for(int i = 0; i < seats.Length; i++) {
+			positions [i] = seats [i].playerPanel.transform.position;
+		}
+		SetSeatClick ();
+
 		isMoveSeat = false;
 		isSeat = false;
 	}
@@ -57,94 +54,46 @@ public class BeforeGameStartController : BaseStateController {
 	 * 游戏在一局之后，在下一局开始之前，需要重新设置界面或者变量
 	 * */
 	public override void Reset() {
-		foreach(Image isRobImage in isRobImages) {
-			isRobImage.gameObject.SetActive (false);
-		}
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (isMoveSeat) {
+			
 			float step = moveSeatSpeed * Time.deltaTime;
-			bool[] bools = new bool[Game.SeatCount]; 
+			bool[] moveCompletedArray = new bool[Game.SeatCount]; 
 			for (int i = 0; i < fromPositions.Length; i++) {
-				//Debug.Log ("move seat: " + fromPositions[i] + " --> " + toPositions[i]);
-				GameObject fromP = userPanels [fromPositions[i]];
-				Vector3 to = positions [toPositions[i]];
-				fromP.transform.position = Vector3.MoveTowards(fromP.transform.position, to, step);
 
-				if (fromP.transform.position == to) {
-					bools [i] = true;
+				int fromSeatIndex = fromPositions [i], toSeatIndex = toPositions [i];
+				//Debug.Log ("move seat: " + fromPositions[i] + " --> " + toPositions[i]);
+				GameObject fromSeat = seats[fromSeatIndex].playerPanel;
+				Vector3 toPosition = positions [toSeatIndex];
+				fromSeat.transform.position = Vector3.MoveTowards(fromSeat.gameObject.transform.position, toPosition, step);
+
+				if (Utils.isTwoPositionIsEqual(fromSeat.gameObject.transform.position, toPosition)) {
+					moveCompletedArray [i] = true;
 				}
 			}
 
-			bool isMoveOver = true;
+			bool isMoveCompleted = true;
 			for (int i = 0; i < fromPositions.Length; i++) {
-				isMoveOver = isMoveOver && bools [i];
+				isMoveCompleted = isMoveCompleted && moveCompletedArray [i];
 			}
 
-			if (isMoveOver) {
+			if (isMoveCompleted) {
 				isMoveSeat = false;
 				for (int i = 0; i < Game.SeatCount; i++) {
-					userPanels [i].transform.position = positions [i];
+					seats[i].playerPanel.transform.position = positions [i];
 				}
 
 				//循转之后，我总是坐在第一个位置
 				Player.Me.seat = 0;
-				SetPlayerSeatUI ();
-			}
-		} 
-	}
-		
-
-	//根据是否有玩家坐在座位上，设置位置的外观
-	public void SetPlayerSeatUI() {
-		
-		//Player[] players = gamePlayerController.game.players;
-		Seat[] seats = gamePlayerController.game.seats;
-
-		for (int i = 0; i < seats.Length; i++) {
-			Seat seat = seats [i];
-			if (seat.hasPlayer()) {
-				this.playerImages [i].gameObject.SetActive (true);
-				this.playerNames [i].gameObject.SetActive (true);
-				this.playerScores [i].gameObject.SetActive (true);
-				this.seatButtons [i].gameObject.SetActive (false);
-				this.seatImages [i].gameObject.SetActive (true);
-				this.emptySeatImages [i].gameObject.SetActive (false);
-				this.readyImages [i].gameObject.SetActive (true);
-				this.playerNames [i].text = seat.player.userId;
-				this.seatDescs [i].text = "座位 [" + seat.seatNo + "]";
-				this.playerScores [i].text = seat.player.score + "";
-			} else {
-				this.playerImages [i].gameObject.SetActive (false);
-				this.playerNames [i].gameObject.SetActive (false);
-				this.playerScores [i].gameObject.SetActive (false);
-				this.readyImages [i].gameObject.SetActive (false);
-				this.seatImages [i].gameObject.SetActive (false);
-				this.seatDescs [i].text = "座位 [" + seat.seatNo + "]";
-
-				if (isSeat) {
-					this.emptySeatImages [i].gameObject.SetActive (true);
-					this.seatButtons [i].gameObject.SetActive (false);
-				} else {
-					this.emptySeatImages [i].gameObject.SetActive (false);
-					this.seatButtons [i].gameObject.SetActive (true);
+				foreach (Seat seat in seats) {
+					seat.UpdateUI (gamePlayerController.game);
 				}
 			}
-		}
-
-		if (Player.Me.seat == -1) {
-			standUpButton.gameObject.SetActive (false);
-		} else {
-			standUpButton.gameObject.SetActive (true);
-		}
-
-		if (gamePlayerController.game.PlayerCount < 2) {
-			startButton.interactable = false;
-		} else {
-			startButton.interactable = true;
-		}
+		} 
 	}
 
 	public void StartClick() {
@@ -164,8 +113,8 @@ public class BeforeGameStartController : BaseStateController {
 		};
 
 		gameSocket.EmitJson (Messages.StartGame, JsonConvert.SerializeObject(request), (string msg) => {
-			foreach(Image image in readyImages) {
-				image.gameObject.SetActive(false);
+			foreach(Seat seat in seats) {
+				seat.readyImage.gameObject.SetActive(false);
 			}
 
 			startButton.gameObject.SetActive(false);
@@ -185,10 +134,7 @@ public class BeforeGameStartController : BaseStateController {
 
 		gameSocket.EmitJson (Messages.StartGame, JsonConvert.SerializeObject(request), (string msg) => {
 			setUpGameController.resetCards ();
-
-			foreach(Image image in readyImages) {
-				image.gameObject.SetActive(false);
-			}
+		
 
 			startButton.gameObject.SetActive(false);
 			standUpButton.gameObject.SetActive(false);
@@ -197,38 +143,83 @@ public class BeforeGameStartController : BaseStateController {
 		
 
 	public void SetSeatClick() {
-		foreach (Button button in seatButtons) {
-			button.onClick.AddListener( SitDown );
+		foreach (Seat seat in seats) {
+			seat.sitdownButton.onClick.AddListener( SitDown );
 		}
 	}
 
 	public void SitDown() {
 		string seatName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
+
 		Debug.Log ("seat: " + seatName);
+		int seatIndex = int.Parse(seatName[seatName.Length - 1] + "");
 
-		int seq = int.Parse(seatName[seatName.Length - 1] + "");
-
-		Seat[] seats = gamePlayerController.game.seats;
 
 		Socket socket = gamePlayerController.gameSocket;
-
 		var seatReq = new {
 			roomNo = gamePlayerController.game.roomNo,
-			seat = seats[seq].seatNo,
+			seat = seats[seatIndex].seatNo,
 			userId = Player.Me.userId,
 		};
 
 		socket.EmitJson (Messages.SitDown, JsonConvert.SerializeObject (seatReq), (msg) => {
 			isSeat = true;
-			seats[seq].player = Player.Me;
-			seats[seq].player.seat = seq;
 
-			SetPlayerSeatUI();
+			standUpButton.gameObject.SetActive(true);
+			if (gamePlayerController.game.PlayerCount < 2) {
+				startButton.interactable = false;
+			} else {
+				startButton.interactable = true;
+			} 
 
-			if (seq != 0)
-				MoveSeats(seq);
+			seats[seatIndex].player = Player.Me;
+			Debug.Log("Player.Me.userId = " + Player.Me.userId);
+			seats[seatIndex].player.seat = seatIndex;
+
+			foreach(Seat seat in seats) {
+				seat.UpdateUI(gamePlayerController.game);
+			}
+
+			MoveSeats(seatIndex);
 		});
 	}
+
+	//移动玩家
+	private void MoveSeats(int seatIndex) {
+		//如果坐在第一个位置，就不需要移动
+		if (seatIndex == 0)
+			return;
+
+		int[] originIndexes = new int[6];
+		for (int i = 0; i < Game.SeatCount; i++) {
+			originIndexes[i] = i;
+		}
+
+		int[] destIndexes = new int[6];
+		destIndexes [0] = seatIndex;
+
+		for(int i = 1; i < Game.SeatCount; i++) {
+			destIndexes[i] = (seatIndex + i) % 6;
+		}
+
+		Player[] players = new Player[Game.SeatCount];
+		string[] seatNos = new string[Game.SeatCount];
+		for (int i = 0; i < Game.SeatCount; i++) {
+			players [i] = seats [i].player;
+			seatNos [i] = seats [i].seatNo;
+		}
+
+		for (int i = 0; i < Game.SeatCount; i++) {
+			seats [i].player = players [destIndexes[i]];
+			seats [i].seatNo = seatNos [destIndexes[i]];
+		}
+
+		this.fromPositions = destIndexes;
+		this.toPositions = originIndexes;
+
+		isMoveSeat = true;
+	}
+
 
 	public void StandUp() {
 		Socket socket = gamePlayerController.gameSocket;
@@ -246,43 +237,12 @@ public class BeforeGameStartController : BaseStateController {
 			gamePlayerController.game.seats[Player.Me.seat].player = null;
 			Player.Me.seat = -1;
 
-			SetPlayerSeatUI();
-
+			foreach(Seat seat in seats) {
+				seat.UpdateUI(gamePlayerController.game);
+			}
 		});
 	}
 
-	//移动玩家
-	private void MoveSeats(int seatIndex) {
-		int[] originalUsers = new int[6];
-		for (int i = 0; i < Game.SeatCount; i++) {
-			originalUsers[i] = i;
-		}
-
-		int[] destUsers = new int[6];
-		destUsers [0] = seatIndex;
-
-		for(int i = 1; i < Game.SeatCount; i++) {
-			destUsers[i] = (seatIndex + i) % 6;
-		}
-
-		Player[] players = new Player[Game.SeatCount];
-		string[] positions = new string[Game.SeatCount];
-		Seat[] seats = gamePlayerController.game.seats;
-		for (int i = 0; i < Game.SeatCount; i++) {
-			players [i] = seats [i].player;
-			positions [i] = seats [i].seatNo;
-		}
-
-		for (int i = 0; i < Game.SeatCount; i++) {
-			seats [i].player = players [destUsers[i]];
-			seats [i].seatNo = positions [destUsers[i]];
-		}
-
-		this.fromPositions = destUsers;
-		this.toPositions = originalUsers;
-
-		isMoveSeat = true;
-	}
 
 	public void HandleResponse(SomePlayerSitDownNotify notify){
 		string seatNo = notify.seat;
@@ -298,74 +258,38 @@ public class BeforeGameStartController : BaseStateController {
 				player.userId = notify.userId;
 				player.seat = i;
 				seat.player = player;
-				SetPlayerSeatUI ();
+				seat.UpdateUI(gamePlayerController.game);
 				break;
 			}
 			i++;
 		}
+
+		if (gamePlayerController.game.PlayerCount < 2) {
+			startButton.interactable = false;
+		} else {
+			startButton.interactable = true;
+		} 
 	}
 
 	public void HandleResponse(SomePlayerStandUpNotify notify) {
 		foreach (Seat seat in gamePlayerController.game.seats) {
 			if (seat.player != null && seat.player.userId == notify.userId) {
 				seat.player = null;
-				SetPlayerSeatUI ();
+				foreach(Seat eachSeat in seats) {
+					eachSeat.UpdateUI(gamePlayerController.game);
+				}
 			}
 		}
-		return;
+
+		if (gamePlayerController.game.PlayerCount < 2) {
+			startButton.interactable = false;
+		} else {
+			startButton.interactable = true;
+		} 
 	}
 
 	public void HandleResponse(SomePlayerReadyNotify notify) {
 		int seatIndex = gamePlayerController.game.GetSeatIndex (notify.userId);
-		readyImages [seatIndex].gameObject.SetActive (true);
+		seats [seatIndex].readyImage.gameObject.SetActive (true);
 	}
-
-	#region 设置UI的元素
-	public void SetPlayerImages(Image[] playerImages) {
-		this.playerImages = playerImages;
-	}
-
-	public void SetPlayerNames(Text[] playerNames) {
-		this.playerNames = playerNames;
-	}
-
-	public void SetPlayerScores(Text[] scores) {
-		this.playerScores = scores;
-	}
-
-	public void SetSeatButtons(Button[] seatButtons) {
-		this.seatButtons = seatButtons;
-	}
-
-	public void SetUserPanels(GameObject[] userPanels) {
-		this.userPanels = userPanels;
-
-		positions = new Vector3[Game.SeatCount];
-		for (int i = 0; i < positions.Length; i++) {
-			positions [i] = userPanels [i].gameObject.transform.position;
-		}
-	}
-
-	public void SetSeatDescs(Text[] seatDescs) {
-		this.seatDescs = seatDescs;
-	}
-
-	public void SetSeatImages(Image[] seatImages) {
-		this.seatImages = seatImages;
-	}
-
-	public void SetEmptySeatImages(Image[] emptySeatImages) {
-		this.emptySeatImages = emptySeatImages;
-	}
-
-	public void SetIsRobImages(Image[] isRobImages) {
-		this.isRobImages = isRobImages;
-	}
-
-	public void SetReadyImages(Image[] readyImages) {
-		this.readyImages = readyImages;
-	}
-	#endregion
-
-
 }

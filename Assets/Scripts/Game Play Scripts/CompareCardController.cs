@@ -200,7 +200,7 @@ public class CompareCardController : BaseStateController {
 		Vector3 targetPosition = chipsArray [to] [0].transform.position; //TODO: 总是到同一个位置
 
 		bool moveCompleted = true;
-
+		  
 		int startIndex = to * 8;
 		for (int i = to * 8; i < to * 8 + 8; i++) {
 			Image image = chipsArray [from] [i];

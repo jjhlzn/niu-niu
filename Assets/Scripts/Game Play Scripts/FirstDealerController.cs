@@ -11,17 +11,19 @@ public class FirstDealerController : BaseStateController {
 	private GamePlayController gamePlayController;
 
 	[SerializeField]
-	private GameObject deckCardPosition;
+	private GameObject deckCardPosition; //发牌位置
 
-	private Vector3[][] userCardPositionsArray;
-	private Image[] readyImages;
+	//private Vector3[][] userCardPositionsArray;
+	//private Image[] readyImages;
+	private Seat[] seats;
 
-	private List<Image> deckCards;
+	private List<Image> deckCards;  
 	public Sprite[] cardSprites;
 
 
 	// Use this for initialization
 	void Start () {
+		seats = gamePlayController.game.seats;
 		hideOtherDeckCard (); 
 	}
 
@@ -43,7 +45,7 @@ public class FirstDealerController : BaseStateController {
 				Seat seat = seats [i];
 				if (seat.hasPlayer ()) {
 					lastSeatIndex = i;
-					FirstGiveCards (userCardPositionsArray[i], waitTime, 4 * playerIndex);
+					FirstGiveCards (seats[i].cardPositions, waitTime, 4 * playerIndex);
 					waitTime += 4 * waitTimeDelta;
 					playerIndex++;
 				}
@@ -51,7 +53,7 @@ public class FirstDealerController : BaseStateController {
 
 			int playerCount = gamePlayController.game.PlayerCount;
 			//判断最后一张牌是否已经发好
-			if (Utils.isTwoPositionIsEqual(deckCards [4 * playerCount - 1].transform.position, userCardPositionsArray [lastSeatIndex][3])) {
+			if (Utils.isTwoPositionIsEqual(deckCards [4 * playerCount - 1].transform.position, seats [lastSeatIndex].cardPositions[3])) {
 				hideOtherDeckCard ();
 
 				StartCoroutine (TurnCardUp (deckCards[0], gamePlayController.game.currentRound.myCards[0]));
@@ -100,9 +102,6 @@ public class FirstDealerController : BaseStateController {
 		this.cardSprites = cardSprites;
 	}
 
-	public void setUserCardsPositionsArray(Vector3[][] positionsArray) {
-		this.userCardPositionsArray = positionsArray;
-	}
 
 	IEnumerator TurnCardUp(Image card, string cardValue) {
 		Animator anim = card.GetComponent<Animator> ();
@@ -122,10 +121,6 @@ public class FirstDealerController : BaseStateController {
 			gamePlayController.goToNextState ();
 	}
 
-	public void SetReadyImages(Image[] readyImages) {
-		this.readyImages = readyImages;
-	}
-
 
 	/******* 处理服务器的通知***************/
 	public void HandleResponse(FirstDealResponse notify) {
@@ -140,8 +135,8 @@ public class FirstDealerController : BaseStateController {
 		}
 
 		gamePlayController.game.currentRound.myBets = bets;
-		for (int i = 0; i < readyImages.Length; i++) {
-			readyImages [i].gameObject.SetActive (false);
+		for (int i = 0; i < Game.SeatCount; i++) {
+			seats[i].readyImage.gameObject.SetActive (false);
 		}
 
 		gamePlayController.state = GameState.FirstDeal;

@@ -78,6 +78,14 @@ public class SetupCardGame : BaseStateController {
 	private List<Image> cards = new List<Image> ();
 	private List<Animator> cardAnims = new List<Animator>();
 
+	public Seat[] seats;
+
+	[SerializeField]
+	private GameObject seatUI;
+	[SerializeField]
+	private GameObject seatUI1;
+	[SerializeField]
+	private GameObject seatUI2;
 
 
 	void Awake() {
@@ -86,15 +94,17 @@ public class SetupCardGame : BaseStateController {
 		showCardPositionsArray = new Vector3[6][];
 
 		cardSprites = Resources.LoadAll<Sprite>("sprites/mobile");
-
+		CreateDeckCards ();
+		GetSeats ();
 		GetUserCardsPosition ();
 		GetShowCardsPosition ();
 		GetNiuImages ();
 
-		CreateDeckCards ();
 		GetUserSeatUI ();
+
 		GetChipsArray ();
 		GetScoreLabels ();
+
 	}
 
 	public override void Reset() {
@@ -106,27 +116,33 @@ public class SetupCardGame : BaseStateController {
 	}
 		
 	private void GetUserSeatUI() {
+		
 		userPanels = GameObject.FindGameObjectsWithTag ("UserPanel");
 		userPanels = SortUserSeatUIObjects (userPanels);
-		beforeGameStartController.SetUserPanels (userPanels);
-
-		GameObject[] seats = GameObject.FindGameObjectsWithTag ("UserSeat");
-		seats = SortUserSeatUIObjects (seats);
-		//Debug.Log ("seats = " + seats);
-		seatImages = new Image[seats.Length];
-		for (int i = 0; i < seats.Length; i++) {
-			seatImages [i] = seats [i].GetComponent<Image> ();
+		foreach (GameObject obj in userPanels) {
+			obj.SetActive (false);
 		}
-		beforeGameStartController.SetSeatImages (seatImages);
 
+		/*
+		GameObject[] seatObjss = GameObject.FindGameObjectsWithTag ("UserSeat");
+		seatObjss = SortUserSeatUIObjects (seatObjss);
+		//Debug.Log ("seats = " + seats);
+		seatImages = new Image[seatObjss.Length];
+		for (int i = 0; i < seatObjss.Length; i++) {
+			seatImages [i] = seatObjss [i].GetComponent<Image> ();
+		}
+		beforeGameStartController.SetSeatImages (seatImages); */
+
+		/*
 		GameObject[] images = GameObject.FindGameObjectsWithTag ("UserImage");
 		images = SortUserSeatUIObjects (images);
 		playerImages = new Image[images.Length];
 		for (int i = 0; i < images.Length; i++) {
 			playerImages [i] = images [i].GetComponent<Image> ();
 		}
-		beforeGameStartController.SetPlayerImages (playerImages);
+		beforeGameStartController.SetPlayerImages (playerImages); */
 
+		/*
 		GameObject[] readyObjs = GameObject.FindGameObjectsWithTag ("ReadyImage");
 		readyObjs = SortUserSeatUIObjects (readyObjs);
 		readyImages = new Image[readyObjs.Length];
@@ -134,25 +150,27 @@ public class SetupCardGame : BaseStateController {
 			readyImages [i] = readyObjs [i].GetComponent<Image> ();
 			readyImages [i].gameObject.SetActive (false);
 		}
-		beforeGameStartController.SetReadyImages (readyImages);
-		firstDealerController.SetReadyImages (readyImages);
+		beforeGameStartController.SetReadyImages (readyImages); */
 
+		/*
 		GameObject[] names = GameObject.FindGameObjectsWithTag ("UserName");
 		names = SortUserSeatUIObjects (names);
 		playerNames = new Text[names.Length];
 		for (int i = 0; i < names.Length; i++) {
 			playerNames [i] = names [i].GetComponent<Text> ();
 		}
-		beforeGameStartController.SetPlayerNames (playerNames);
+		beforeGameStartController.SetPlayerNames (playerNames); */
 
+		/*
 		GameObject[] scores = GameObject.FindGameObjectsWithTag ("UserScore");
 		scores = SortUserSeatUIObjects (scores);
 		playerScores = new Text[scores.Length];
 		for (int i = 0; i < scores.Length; i++) {
 			playerScores [i] = scores [i].GetComponent<Text> ();
 		}
-		beforeGameStartController.SetPlayerScores (playerScores);
+		beforeGameStartController.SetPlayerScores (playerScores); */
 
+		/*
 		GameObject[] buttons = GameObject.FindGameObjectsWithTag ("SeatButton");
 		buttons = SortUserSeatUIObjects (buttons);
 		seatButtons = new Button[buttons.Length];
@@ -175,15 +193,16 @@ public class SetupCardGame : BaseStateController {
 		for (int i = 0; i < emptyImages.Length; i++) {
 			emptySeatImages [i] = emptyImages [i].GetComponent<Image> ();
 		}
-		beforeGameStartController.SetEmptySeatImages (emptySeatImages);
+		beforeGameStartController.SetEmptySeatImages (emptySeatImages); */
 
 		GameObject[] isRobObjs = GameObject.FindGameObjectsWithTag ("isRobImage");
 		isRobObjs = SortUserSeatUIObjects (isRobObjs);
 		isRobImages = new Image[isRobObjs.Length];
 		for (int i = 0; i < isRobObjs.Length; i++) {
 			isRobImages [i] = isRobObjs [i].GetComponent<Image> ();
+			isRobImages [i].gameObject.SetActive (false);
 		}
-		beforeGameStartController.SetIsRobImages (isRobImages);
+		//beforeGameStartController.SetIsRobImages (isRobImages);
 		robBankerController.SetIsRobImages (isRobImages);
 		robBankerController.Reset ();
 		chooseBankerController.SetIsRobImages (isRobImages);
@@ -193,6 +212,7 @@ public class SetupCardGame : BaseStateController {
 		robingImages = new Image[robingObjs.Length];
 		for (int i = 0; i < robingObjs.Length; i++) {
 			robingImages [i] = robingObjs [i].GetComponent<Image> ();
+			robingImages [i].gameObject.SetActive (false);
 		}
 		chooseBankerController.SetRobingImages (robingImages);
 		chooseBankerController.Reset ();
@@ -203,6 +223,7 @@ public class SetupCardGame : BaseStateController {
 		for (int i = 0; i < bankerSignObjs.Length; i++) {
 			bankerSignPositions [i] = bankerSignObjs [i].GetComponent<Image> ();
 			bankerSignPositions [i].gameObject.SetActive (false);
+
 		}
 		chooseBankerController.SetBankerSignPositions (bankerSignPositions);
 		chooseBankerController.Reset ();
@@ -213,6 +234,7 @@ public class SetupCardGame : BaseStateController {
 		chipImages = new Image[chipObjs.Length];
 		for (int i = 0; i < chipObjs.Length; i++) {
 			chipImages [i] = chipObjs [i].GetComponent<Image> ();
+			chipImages [i].gameObject.SetActive (false);
 		}
 		betController.SetChipImages (chipImages);
 
@@ -222,6 +244,7 @@ public class SetupCardGame : BaseStateController {
 		chipPositionImages = new Image[chipPositionObjs.Length];
 		for (int i = 0; i < chipPositionObjs.Length; i++) {
 			chipPositionImages [i] = chipPositionObjs [i].GetComponent<Image> ();
+
 		}
 		betController.SetChipPositionImages (chipPositionImages);
 
@@ -230,11 +253,128 @@ public class SetupCardGame : BaseStateController {
 		chipCountLabels = new Text[chipCountObjs.Length];
 		for (int i = 0; i < chipCountObjs.Length; i++) {
 			chipCountLabels [i] = chipCountObjs [i].GetComponent<Text> ();
+		
 		}
 		betController.SetChipCountLabels (chipCountLabels);
 		betController.Reset ();
 	}
 
+
+	private void GetSeats() {
+		seats = new Seat[Game.SeatCount];
+		string seatNos = "ABCDEF";
+		for(int i = 0 ; i < Game.SeatCount; i++) {
+			seats [i] = new Seat ();
+			seats [i].seatNo = seatNos[i] + "";
+			SetSeatUI (i, seats[i]);
+		}
+	}
+
+	private void SetSeatUI(int index, Seat seat) {
+		GameObject seatUICopy = null;
+		if (index == 1) {
+			seatUICopy = Instantiate (seatUI1);
+		} else if (index == 5) {
+			seatUICopy = Instantiate (seatUI2);
+		} else {
+			seatUICopy = Instantiate (seatUI);
+		}
+			
+		seatUICopy.name = "PlayerSeat" + index;
+		seatUICopy.transform.SetParent (userPanel.transform);
+
+		Image[] images = seatUICopy.GetComponentsInChildren<Image> ();
+		foreach (Image image in images) {
+			Debug.Log (image.name);
+		}
+
+		int x = 0, y = 0;
+		switch (index) {
+		case 0:
+			x = -470;
+			y = -258;
+			break;
+		case 1:
+			x = -479;
+			y = -57;
+			break;
+		case 2:
+			x = -453;
+			y = 250;
+			break;
+		case 3:
+			x = -16;
+			y = 290;
+			break;
+		case 4:
+			x = 396;
+			y = 219;
+			break;
+		case 5:
+			x = 493;
+			y = -34;
+			break;
+		}
+
+		Vector3 localScale = new Vector3 ();
+		localScale.x = 0.7f;
+		localScale.y = 0.7f;
+		seatUICopy.transform.localScale = localScale;
+		seatUICopy.transform.position = new Vector3 ( x / TransformConstant, y / TransformConstant, 0);
+
+		Image[] childrenImages = seatUICopy.GetComponentsInChildren<Image>();
+		foreach (Image image in childrenImages) {
+			switch (image.name) {
+			case "Seat Border Image":
+				seat.seatBorderImage = image;
+				break;
+			case "Robing Seat Border Image":
+				seat.robingSeatBorderImage = image;
+				break;
+			case "Player Image":
+				seat.playerImage = image;
+				break;
+			case "Empty Seat Image":
+				seat.emptySeatImage = image;
+				break;
+			case "Banker Sign Image":
+				seat.bankerSignImage = image;
+				break;
+			case "Ready Image":
+				seat.readyImage = image;
+				break;
+			case "Chip Image":
+				image.gameObject.SetActive (false);
+				break;
+			}
+		}
+
+		Text[] childrenTexts = seatUICopy.GetComponentsInChildren<Text> ();
+		foreach (Text text in childrenTexts) {
+			switch (text.name) {
+			case "Player Name Label":
+				seat.playerNameLabel = text;
+				text.fontSize = 32;
+				break;
+			case "Player Score Label":
+				seat.playerScoreLabel = text;
+				text.fontSize = 32;
+				break;
+			case "Seat Number Label":
+				seat.seatNumberLabel = text;
+				break;
+			case "Score Label":
+				seat.scoreLabel = text;
+				break;
+			}
+		}
+
+		Button button = seatUICopy.GetComponentInChildren<Button> ();
+		button.name = button.name + index;
+		seat.sitdownButton = button;
+
+		seat.playerPanel = seatUICopy;
+	}
 
 	private GameObject[] SortUserSeatUIObjects(GameObject[] objs)  {
 		GameObject[] result = new GameObject[objs.Length];
@@ -254,8 +394,8 @@ public class SetupCardGame : BaseStateController {
 	private void GetUserCardsPosition() {
 		for (int i = 0; i < Game.SeatCount; i++) {
 			userCardsPositionsArray [i] = GetUserCardsPosition (i);
+			seats [i].cardPositions = userCardsPositionsArray [i];
 		}
-		firstDealerController.setUserCardsPositionsArray (userCardsPositionsArray);
 		secondDealController.SetUserCardPositionsArray (userCardsPositionsArray);
 	}
 

@@ -35,7 +35,15 @@ public class GamePlayController : MonoBehaviour {
 	[SerializeField]
 	private CompareCardController compareController;
 
-	public GameState state;
+	public GameState state {
+		get {
+			return game.state;
+		}
+
+		set {
+			game.state = value;
+		}
+	}
 
 	public Socket gameSocket;
 
@@ -47,12 +55,18 @@ public class GamePlayController : MonoBehaviour {
 		Debug.Log ("GamePlayController Start");
 		SetGameData ();
 		setupCardGame.resetCards ();
-		beforeGameStartController.SetPlayerSeatUI ();
-		beforeGameStartController.SetSeatClick ();
+		//beforeGameStartController.SetPlayerSeatUI ();
+
+
+		game.state = GameState.BeforeStart;
+		foreach (Seat seat in game.seats) {
+			seat.UpdateUI (game);
+		}
 	}
 
 	private void SetGameData() {
 		game = new Game ();
+		game.seats = setupCardGame.seats;
 		game.totalRoundCount = 10;
 		game.currentRoundNo = 1;
 		game.roomNo = GenerateRoomNo ();

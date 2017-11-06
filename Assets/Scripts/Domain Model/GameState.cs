@@ -1,6 +1,6 @@
 ﻿using System;
 
-
+[System.Serializable]
 public class GameState
 {
 	public static GameState BeforeStart = new GameState("BeforeStart");   //房主点按开始之前

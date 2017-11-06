@@ -4,7 +4,16 @@ using UnityEngine;
 [System.Serializable]
 public class Player
 {
-	public string userId;
+	private string _userId;
+	public string userId {
+		get {
+			return _userId;
+		}
+		set {
+			Debug.Log ("Player userid change to [" + value + "]");
+			_userId = value;
+		}
+	}
 	public int seat;  //座位的索引号，
 	public int score;
 	public bool hasSeat() {

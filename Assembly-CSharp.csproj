@@ -61,6 +61,7 @@
      <Compile Include="Assets\LINQtoGameObject\Scripts\GameObjectExtensions.Traverse.cs" />
      <Compile Include="Assets\Scripts\CardScript.cs" />
      <Compile Include="Assets\Scripts\Domain Model\Game.cs" />
+     <Compile Include="Assets\Scripts\Domain Model\GameState.cs" />
      <Compile Include="Assets\Scripts\Domain Model\Player.cs" />
      <Compile Include="Assets\Scripts\Domain Model\Round.cs" />
      <Compile Include="Assets\Scripts\Domain Model\Seat.cs" />
@@ -72,7 +73,6 @@
      <Compile Include="Assets\Scripts\Game Play Scripts\CompareCardController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\FirstDealerController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\GamePlayController.cs" />
-     <Compile Include="Assets\Scripts\Game Play Scripts\GameState.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\RobBankerController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\SecondDealController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\SetupCardGame.cs" />
