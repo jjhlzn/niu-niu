@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class FirstDealerController : BaseStateController {
 	public static float dealSpeed = 350f; //发牌速度
 	public static float dealWaitTimeBetweenPlayer = 0.3f;
-	public static float waitTimeDelta = 0.1f;
+	public static float waitTimeDeltaBetweenCard = 0.1f;
+	public static float turnUpTime = 0.5f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -72,7 +73,7 @@ public class FirstDealerController : BaseStateController {
 		for (int i = 0; i < 4; i++) {
 			Vector3 targetCard = targetCardPositions [i];
 			StartCoroutine(GiveCardAnimation(cards[i], targetCard, step, waitTime));
-			waitTime += waitTimeDelta;
+			waitTime += waitTimeDeltaBetweenCard;
 		}
 	}
 
@@ -91,7 +92,7 @@ public class FirstDealerController : BaseStateController {
 		//Debug.Log ("Before Play Animation TurnUp");
 		anim.Play ("TurnUp");
 		//Debug.Log ("After Play Animation TurnUp");
-		yield return new WaitForSeconds (.5f);
+		yield return new WaitForSeconds (turnUpTime);
 		card.sprite = deck.GetCardFaceImage(cardValue);
 
 		//card.transform.localEulerAngles = new Vector3(0,360,0);

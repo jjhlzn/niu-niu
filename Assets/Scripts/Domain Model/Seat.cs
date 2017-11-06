@@ -41,6 +41,9 @@ public class Seat
 	public Image isRobImage;
 
 	public Vector3[] cardPositions;
+	public Vector3[] showCardPositions;
+	public Vector3 originScoreLabelPosition;
+	public Vector3 targetScoreLabelPosition;
 
 	public Image[] cards;
 

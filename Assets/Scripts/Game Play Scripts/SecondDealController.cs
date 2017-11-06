@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SecondDealController : BaseStateController {
+	private float waitTimeBeforeSecondDeal = 0.5f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -14,32 +15,23 @@ public class SecondDealController : BaseStateController {
 	[SerializeField]
 	private GameObject deckCardPosition;
 
-	public static float waitTimeDelta = 0.1f;
-	//private GameObject[] user1CardPositions;
-	//private GameObject[] user2CardPositions;
-
-	/*
-	private Vector3[][] userCardPositionsArray;
-	private List<Image> deckCards;
-	public Sprite[] cardSprites;
-	*/
 	private Deck deck;
 	private Seat[] seats;
 
-	//private float secondDealSpeed = 350f;
-
+	private float timeLeft;
 	private bool dealing;
-
 	public bool canSecondDeal;
 
 	// Use this for initialization
 	void Start () {
 		dealing = false;
+		timeLeft = waitTimeBeforeSecondDeal;
 	}
 
 	public override void Reset() {
 		dealing = false;
 		canSecondDeal = false;
+		timeLeft = waitTimeBeforeSecondDeal;
 	}
 
 	public void Init() {
@@ -51,11 +43,15 @@ public class SecondDealController : BaseStateController {
 	void Update () {
 
 		if (gamePlayController.state.Equals (GameState.SecondDeal)) {
+			timeLeft -= Time.deltaTime;
+
+			if (timeLeft > 0) {
+				return;
+			}
 			
 			if (!dealing) {
 				dealing = true;
 				deck.ShowNotDealCardsForSecondDeal(gamePlayController.game.PlayingPlayers.Count);
-
 			}
 				
 			float waitTime = 0;
@@ -73,10 +69,7 @@ public class SecondDealController : BaseStateController {
 			//Debug.Log("playingPlayers[playingPlayers.Count - 1].seat.cards.lenth = " + playingPlayers[playingPlayers.Count - 1].seat.cards.Length);
 			//Debug.Log("playingPlayers[playingPlayers.Count - 1].seat.cardPositions.lenth = " + playingPlayers[playingPlayers.Count - 1].seat.cardPositions.Length);
 			if (Utils.isTwoPositionIsEqual(playingPlayers[playingPlayers.Count - 1].seat.cards[4].transform.position, playingPlayers[playingPlayers.Count - 1].seat.cardPositions[4])) {
-				//TODO go to next state
-
 				StartCoroutine(GoToNextState());
-
 			}
 		} 
 	}
@@ -88,7 +81,7 @@ public class SecondDealController : BaseStateController {
 
 		Vector3 targetCard = targetCardPositions [4];
 		StartCoroutine(GiveCardAnimation(cards[4], targetCard, step, waitTime));
-		waitTime += waitTimeDelta;
+		waitTime += FirstDealerController.waitTimeDeltaBetweenCard;
 	}
 
 	IEnumerator GiveCardAnimation(Image card, Vector3 targetCard, float step, float waitTime) {

@@ -302,6 +302,8 @@ public class SetupCardGame : BaseStateController {
 				break;
 			case "Score Label":
 				seat.scoreLabel = text;
+				seat.originScoreLabelPosition = seat.scoreLabel.transform.position;
+				seat.targetScoreLabelPosition = new Vector3 (seat.originScoreLabelPosition.x, seat.originScoreLabelPosition.y + 0.8f, 0);
 				break;
 			}
 		}
@@ -376,9 +378,10 @@ public class SetupCardGame : BaseStateController {
 	private void GetShowCardsPosition() {
 		for (int i = 0; i < Game.SeatCount; i++) {
 			showCardPositionsArray[i] = GetShowCardsPosition (i);
+			seats [i].showCardPositions = showCardPositionsArray [i];
 		}
 
-		checkCardController.SetShowCardPositionsArray (showCardPositionsArray);
+		//checkCardController.SetShowCardPositionsArray (showCardPositionsArray);
 	}
 
 	private Vector3[] GetShowCardsPosition(int index) {
@@ -519,8 +522,9 @@ public class SetupCardGame : BaseStateController {
 		chipsArray = new Image[Game.SeatCount][];
 		for (int i = 0; i < Game.SeatCount; i++) {
 			chipsArray [i] = GetChips (i);
+			seats [i].chipImages = chipsArray [i];
 		}	
-		compareController.SetChipsArray (chipsArray);
+		//compareController.SetChipsArray (chipsArray);
 	}
 
 	private Image[] GetChips(int index) {
@@ -546,8 +550,9 @@ public class SetupCardGame : BaseStateController {
 		this.scoreLabels = new Text[Game.SeatCount];
 		for (int i = 0; i < scoreLabels.Length; i++) {
 			scoreLabels [i] = GetScoreLabel (i);
+
 		}
-		compareController.SetScoreLabels (scoreLabels);
+		//compareController.SetScoreLabels (scoreLabels);
 	}
 
 	private Text GetScoreLabel(int index) {
@@ -632,11 +637,11 @@ public class SetupCardGame : BaseStateController {
 
 		//firstDealerController.SetDeckCards (cards);
 		//secondDealController.SetDeckCards (cards);
-		checkCardController.SetDeckCards (cards);
+		//checkCardController.SetDeckCards (cards);
 
 		//firstDealerController.SetCardSprites (cardSprites);
 		//secondDealController.SetCardSprites (cardSprites);
-		checkCardController.SetCardSprites (cardSprites);
+		//checkCardController.SetCardSprites (cardSprites);
 
 		resetCards ();
 

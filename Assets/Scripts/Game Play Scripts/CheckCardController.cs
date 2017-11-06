@@ -6,6 +6,8 @@ using socket.io;
 using Newtonsoft.Json;
 
 public class CheckCardController : BaseStateController {
+	private float user0MoveCardSpeedWhenShowCard = 7f;
+	private float moveCardSpeedWhenShowNiu = 6f;
 
 	[SerializeField] 
 	private GamePlayController gamePlayController;
@@ -13,20 +15,20 @@ public class CheckCardController : BaseStateController {
 	[SerializeField]
 	private GameObject checkCardPanel;
 
+
+	/*
 	private List<Image> deckCards;
 	public Sprite[] cardSprites;
-
 	private Vector3[][] showCardPositionsArray;
+    */
+
 	private Image[] niuImages;
 	private Image[] multipleImages;
+	private Deck deck;
+	private Seat[] seats;
 
-	private float user1MoveCardSpeedWhenShowCard = 7f;
-	private float moveCardSpeedWhenShowNiu = 6f;
-
-	public bool[] playerShowCardCompleted;
-
-	public bool[] isMoveCardArray;
-
+	private bool[] playerShowCardCompleted;
+	private bool[] isMoveCardArray;
 	private bool hasShowCard = false;
 
 	public void Awake() {
@@ -36,6 +38,11 @@ public class CheckCardController : BaseStateController {
 
 	public override void Reset() {
 		hasShowCard = false;
+	}
+
+	public void Init() {
+		deck = gamePlayController.game.deck;
+		seats = gamePlayController.game.seats;
 	}
 
 	public bool isAllPlayerShowCardAnimCompleted {
@@ -55,7 +62,6 @@ public class CheckCardController : BaseStateController {
 		}
 	}
 
-
 	void Update() {
 		//Debug.Log ("state = " + gamePlayController.state.value);
 		if (gamePlayController.state == GameState.CheckCard && !hasShowCard) {
@@ -66,13 +72,13 @@ public class CheckCardController : BaseStateController {
 
 		for (int i = 0; i < isMoveCardArray.Length; i++) {
 			if (isMoveCardArray [i]) {
-				Image[] cards = GetCards (i);
-				Vector3[] targetPositions = showCardPositionsArray [i];
+				Image[] cards = seats[i].player.cards;
+				Vector3[] targetPositions = seats [i].showCardPositions;
 				int[] sequences = gamePlayController.game.currentRound.cardSequenceArray [i];
 
 				float step;
 				if (i == 0) {
-					step = user1MoveCardSpeedWhenShowCard * Time.deltaTime;
+					step = user0MoveCardSpeedWhenShowCard * Time.deltaTime;
 				} else {
 					step = moveCardSpeedWhenShowNiu * Time.deltaTime;
 				}
@@ -113,9 +119,9 @@ public class CheckCardController : BaseStateController {
 	IEnumerator TurnCardUp(Image card) {
 		Animator anim = card.GetComponent<Animator> ();
 		anim.Play ("TurnUp");
-		yield return new WaitForSeconds (.4f);
+		yield return new WaitForSeconds (FirstDealerController.turnUpTime);
 
-		card.sprite = Utils.findCardSprite(cardSprites, gamePlayController.game.currentRound.myCards[4]);
+		card.sprite = deck.GetCardFaceImage(gamePlayController.game.currentRound.myCards[4]);
 		anim.Play ("TurnBackNow2");
 		yield return new WaitForSeconds (.2f);
 
@@ -125,45 +131,21 @@ public class CheckCardController : BaseStateController {
 	}
 
 
-	private Image[] GetCards(int seatIndex) {
-		int playerCount = gamePlayController.game.PlayerCount;
-		Seat[] seats = gamePlayController.game.seats;
-		int playerIndex = -1;
-		for (int i = 0; i <= seatIndex; i++) {
-			if (seats [i].hasPlayer ()) {
-				//Debug.Log ("seat " + i + " has palyer " + seats [i].player.userId);
-				playerIndex++;
-			}
-		}
-
-		//Debug.Log ("seatIndex = " + seatIndex);
-		//Debug.Log ("playerIndex = " + playerIndex);
-
-
-		Image[] cards = new Image[5];
-		cards [0] = deckCards [playerIndex * 4];
-		cards [1] = deckCards [playerIndex * 4 + 1];
-		cards [2] = deckCards [playerIndex * 4 + 2];
-		cards [3] = deckCards [playerIndex * 4 + 3];
-		cards [4] = deckCards [playerCount * 4 + playerIndex];
-		return cards;
-	}
-
 	IEnumerator TurnUserCardsUp(int seatIndex) {
 
-		Image[] cards = GetCards (seatIndex);
+		Image[] cards = seats[seatIndex].player.cards;
 		for (int i = 0; i < 5; i++) {
 			Image card = cards [i];
 			Animator anim = card.GetComponent<Animator> ();
 			anim.Play ("TurnUp");
 		}
 
-		yield return new WaitForSeconds (.4f);
+		yield return new WaitForSeconds (FirstDealerController.turnUpTime);
 
 		string[] cardPoints = gamePlayController.game.currentRound.playerCardsDict [gamePlayController.game.seats [seatIndex].player.userId];
 		for (int i = 0; i < 5; i++) {
 			Image card = cards [i];
-			card.sprite = Utils.findCardSprite(cardSprites, cardPoints[i]); 
+			card.sprite = deck.GetCardFaceImage(cardPoints[i]); 
 		}
 
 		for (int i = 0; i < 5; i++) {
@@ -206,11 +188,13 @@ public class CheckCardController : BaseStateController {
 
 			hasShowCard = true;
 			//user1 亮牌
-			StartCoroutine(TurnCardUp(deckCards[4 * gamePlayController.game.PlayerCount]));
+			StartCoroutine(TurnCardUp(seats[0].player.cards[4]));
 			//StartCoroutine (TurnUser1Cards ());
 		});
 	}
 
+
+	/*
 	public void SetDeckCards(List<Image> cards) {
 		this.deckCards = cards;
 	}
@@ -221,15 +205,15 @@ public class CheckCardController : BaseStateController {
 
 	public void SetShowCardPositionsArray(Vector3[][] array) {
 		this.showCardPositionsArray = array;
-	}
+	} */
 
 	public void SetNiuImages(Image[] niuImages) {
 		this.niuImages = niuImages;
 	}
-
+	
 	public void SetMutipleImages(Image[] mutipleImages) {
 		this.multipleImages = mutipleImages;
-	}
+	} 
 
 	public void HandleResponse(GoToCheckCardNotify notify) {
 		string[] cards = gamePlayController.game.currentRound.myCards;

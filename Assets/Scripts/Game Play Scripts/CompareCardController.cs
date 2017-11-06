@@ -17,9 +17,12 @@ public class CompareCardController : BaseStateController {
 	[SerializeField]
 	private Button readyButton;
 
+	/*
 	private Text[] scoreLabels;
 	private Vector3[] targetScoreLabelPositons;
-	private Image[][] chipsArray;
+	private Image[][] chipsArray; */
+
+	private Seat[] seats;
 
 	public int[] moveChipFromOtheToBankerArray;
 	public int[] moveChipFromBankerToOtherArray;
@@ -31,6 +34,10 @@ public class CompareCardController : BaseStateController {
 
 	private float moveTimeLeft; 
 
+	public void Init() {
+		seats = gamePlayController.game.seats;
+	}
+
 	// Use this for initialization
 	void Awake () {
 		moveTimeLeft = MoveTime;
@@ -39,8 +46,8 @@ public class CompareCardController : BaseStateController {
 
 	private void HideChips() {
 		for (int i = 0; i < Game.SeatCount; i++) {
-			for (int j = 0; j < chipsArray [i].Length; j++) {
-				chipsArray [i] [j].gameObject.SetActive (false);
+			for (int j = 0; j < seats[i].chipImages.Length; j++) {
+				seats[i].chipImages[j].gameObject.SetActive (false);
 			}
 		}
 	}
@@ -60,19 +67,19 @@ public class CompareCardController : BaseStateController {
 					moveToBanker = false;
 					moveFromBanker = true;
 					HideChips ();
-				}
+				} else {
+					for (int i = 0; i < moveChipFromOtheToBankerArray.Length; i++) {
+						MoveChipsFromSeat (moveChipFromOtheToBankerArray [i]);
+					}
 
-				for (int i = 0; i < moveChipFromOtheToBankerArray.Length; i++) {
-					MoveChipsFromSeat (moveChipFromOtheToBankerArray [i]);
-				}
+					moveTimeLeft -= Time.deltaTime;
 
-				moveTimeLeft -= Time.deltaTime;
-
-				if (moveTimeLeft <= 0) {
-					moveToBanker = false;
-					moveFromBanker = true;
-					moveTimeLeft = MoveTime;
-					HideChips ();
+					if (moveTimeLeft <= 0) {
+						moveToBanker = false;
+						moveFromBanker = true;
+						moveTimeLeft = MoveTime;
+						HideChips ();
+					}
 				}
 				
 			} 
@@ -83,20 +90,21 @@ public class CompareCardController : BaseStateController {
 					moveFromBanker = false;
 					showScoreLabel = true;
 					HideChips ();
-				}
+				} else {
 
-				for (int i = 0; i < moveChipFromBankerToOtherArray.Length; i++) {
-					MoveChipsToSeat (moveChipFromBankerToOtherArray [i]);
-				}
+					for (int i = 0; i < moveChipFromBankerToOtherArray.Length; i++) {
+						MoveChipsToSeat (moveChipFromBankerToOtherArray [i]);
+					}
 
-				moveTimeLeft -= Time.deltaTime;
+					moveTimeLeft -= Time.deltaTime;
 
-				if (moveTimeLeft <= 0) {
-					moveFromBanker = false;
-					moveTimeLeft = MoveTime;
-					showScoreLabel = true;
-					HideChips ();
-					//Debug.Log ("Set showScoreLabel to true");
+					if (moveTimeLeft <= 0) {
+						moveFromBanker = false;
+						moveTimeLeft = MoveTime;
+						showScoreLabel = true;
+						HideChips ();
+						//Debug.Log ("Set showScoreLabel to true");
+					}
 				}
 			}
 
@@ -124,7 +132,6 @@ public class CompareCardController : BaseStateController {
 	}
 
 	private void ShowScoreLabels() {
-		Seat[] seats = gamePlayController.game.seats;
 		for (int i = 0; i < seats.Length; i++) {
 			if (seats [i].hasPlayer()) {
 				ShowScoreLabel (i);
@@ -133,9 +140,10 @@ public class CompareCardController : BaseStateController {
 	}
 
 	private void ShowScoreLabel(int index) {
-		scoreLabels [index].gameObject.SetActive (true);
-		Animator anim = scoreLabels [index].GetComponent<Animator> ();
-		StartCoroutine(ShowScoreLabel(scoreLabels[index], anim));
+		Text scoreLabel = seats [index].scoreLabel;
+		scoreLabel.gameObject.SetActive (true);
+		Animator anim = scoreLabel.GetComponent<Animator> ();
+		StartCoroutine(ShowScoreLabel(scoreLabel, anim));
 	}
 
 	IEnumerator ShowScoreLabel(Text text, Animator anim) {
@@ -143,7 +151,6 @@ public class CompareCardController : BaseStateController {
 		yield return new WaitForSeconds (.4f);
 		showScoreLabel = false;	
 		moveScoreLabel = true;
-
 	}
 
 	private void MoveScoreLabels () {
@@ -156,11 +163,11 @@ public class CompareCardController : BaseStateController {
 	}
 
 	private void MoveScoreLabel(int index) {
-		Text text = scoreLabels [index];
-		text.transform.position = Vector3.MoveTowards (text.transform.position, targetScoreLabelPositons [index], scoreLabelMoveSpeed * Time.deltaTime);
+		Text text = seats [index].scoreLabel;
+		text.transform.position = Vector3.MoveTowards (text.transform.position, seats[index].targetScoreLabelPosition, scoreLabelMoveSpeed * Time.deltaTime);
 
-		if (Utils.isTwoPositionIsEqual(text.transform.position, targetScoreLabelPositons[index])) {
-			text.gameObject.SetActive (false);
+		if (Utils.isTwoPositionIsEqual(text.transform.position, seats[index].targetScoreLabelPosition)) {
+			//text.gameObject.SetActive (false);
 			readyButton.gameObject.SetActive (true);
 		}
 	}
@@ -179,16 +186,6 @@ public class CompareCardController : BaseStateController {
 		MoveChips (fromSeat, seat);
 	}
 
-
-	public void SetScoreLabels(Text[] scoreLabels) {
-		this.scoreLabels = scoreLabels;
-		targetScoreLabelPositons = new Vector3[this.scoreLabels.Length];
-		for (int i = 0; i < this.scoreLabels.Length; i++) {
-			Vector3 v = this.scoreLabels [i].transform.position;
-			targetScoreLabelPositons [i] = new Vector3(v.x, v.y + 1.5f, v.z);
-		}
-	}
-
 	//private Dictionary<string, bool> moveChipFunctionDict = new Dictionary<string, bool>();
 	private void MoveChips( int from,  int to) {
 		
@@ -197,13 +194,13 @@ public class CompareCardController : BaseStateController {
 		float waitTime = 0;
 
 
-		Vector3 targetPosition = chipsArray [to] [0].transform.position; //TODO: 总是到同一个位置
+		Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
 
 		bool moveCompleted = true;
 		  
 		int startIndex = to * 8;
 		for (int i = to * 8; i < to * 8 + 8; i++) {
-			Image image = chipsArray [from] [i];
+			Image image = seats [from].chipImages [i];
 			if (!image.gameObject.activeInHierarchy)
 				image.gameObject.SetActive (true);
 	
@@ -264,10 +261,5 @@ public class CompareCardController : BaseStateController {
 		Debug.Log ("moveToBanker = " + moveToBanker);
 		gamePlayController.state = GameState.CompareCard;
 	}
-
-	public void SetChipsArray(Image[][] chipsArray) {
-		this.chipsArray = chipsArray;
-	}
-
 
 }

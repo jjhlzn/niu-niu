@@ -66,6 +66,8 @@ public class GamePlayController : MonoBehaviour {
 		chooseBankerController.Init ();
 		betController.Init ();
 		secondDealController.Init ();
+		checkCardController.Init ();
+		compareController.Init ();
 	}
 
 	private void SetGameData() {
