@@ -17,11 +17,16 @@ public class SecondDealController : BaseStateController {
 	public static float waitTimeDelta = 0.1f;
 	//private GameObject[] user1CardPositions;
 	//private GameObject[] user2CardPositions;
-	private Vector3[][] userCardPositionsArray;
 
+	/*
+	private Vector3[][] userCardPositionsArray;
 	private List<Image> deckCards;
 	public Sprite[] cardSprites;
-	private float secondDealSpeed = 300f;
+	*/
+	private Deck deck;
+	private Seat[] seats;
+
+	//private float secondDealSpeed = 350f;
 
 	private bool dealing;
 
@@ -37,97 +42,56 @@ public class SecondDealController : BaseStateController {
 		canSecondDeal = false;
 	}
 
+	public void Init() {
+		seats = gamePlayController.game.seats;
+		deck = gamePlayController.game.deck;
+	}
+
 	// Update is called once per frame
 	void Update () {
-		if (gamePlayController == null) {
-			Debug.LogError ("gamePlayController become to null");
-		}
 
 		if (gamePlayController.state.Equals (GameState.SecondDeal)) {
 			
 			if (!dealing) {
-				ShowOtherDeckCards ();
 				dealing = true;
+				deck.ShowNotDealCardsForSecondDeal(gamePlayController.game.PlayingPlayers.Count);
+
 			}
-
-			/*
+				
 			float waitTime = 0;
-			FirstDealCards (user1CardPositions, waitTime, 8);
-			waitTime += FirstDealerController.waitTimeDelta;
-			FirstDealCards (user2CardPositions, waitTime, 9);
+			int playerCount = gamePlayController.game.PlayingPlayers.Count;
+			List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
+			for (int i = 0; i < playingPlayers.Count; i++) {
+				Player player = playingPlayers [i];
+				SecondDealCardsAnimation (player, waitTime);
 
-			if (Utils.isTwoPositionIsEqual(deckCards [4 * 2 - 1 + 2].transform.position, 
-				user2CardPositions [4].transform.position)) {
-				dealing = false;
-				//Debug.Log("first deal card over");
-				HideOtherDeckCards ();
-
-				if (gamePlayController.state == GameState.SecondDeal)
-					gamePlayController.goToNextState ();
-			} */
-
-
-			float waitTime = 0;
-
-			Seat[] seats = gamePlayController.game.seats;
-			int playerCount = gamePlayController.game.PlayerCount;
-			//int index = 0;
-			int lastSeatIndex = 0;
-			//int playerIndex = 0;
-			int playerIndex = 0;
-			for (int i = 0; i < Game.SeatCount; i++) {
-				Seat seat = seats [i];
-				if (seat.hasPlayer ()) {
-					lastSeatIndex = i;
-					SecondDealCards (userCardPositionsArray[i], waitTime, 4 * playerCount + playerIndex);
-					waitTime += 1 * waitTimeDelta;
-					playerIndex++;
-					//playerIndex++;
-				}
+				//每个成员之间加入一个延时
+				waitTime += FirstDealerController.dealWaitTimeBetweenPlayer;
 			}
-
-
+				
 			//判断最后一张牌是否已经发好
-			Vector3 lastCardPosition = deckCards [5 * playerCount - 1].gameObject.transform.position;
-			Vector3 lastUserLastCardPosition = userCardPositionsArray [lastSeatIndex] [4];
-			//Debug .Log("(x, y): " + lastCardPosition.x + "," + lastCardPosition.y + "     (x1, y1): " + lastUserLastCardPosition.x + "," + lastUserLastCardPosition.y);
-			if (Utils.isTwoPositionIsEqual(deckCards [5 * playerCount - 1].gameObject.transform.position, userCardPositionsArray [lastSeatIndex][4])) {
-				HideOtherDeckCards ();
+			//Debug.Log("playingPlayers[playingPlayers.Count - 1].seat.cards.lenth = " + playingPlayers[playingPlayers.Count - 1].seat.cards.Length);
+			//Debug.Log("playingPlayers[playingPlayers.Count - 1].seat.cardPositions.lenth = " + playingPlayers[playingPlayers.Count - 1].seat.cardPositions.Length);
+			if (Utils.isTwoPositionIsEqual(playingPlayers[playingPlayers.Count - 1].seat.cards[4].transform.position, playingPlayers[playingPlayers.Count - 1].seat.cardPositions[4])) {
+				//TODO go to next state
 
-				dealing = false;
-			
-				gamePlayController.goToNextState (); 
+				StartCoroutine(GoToNextState());
+
 			}
 		} 
 	}
 
-	private void ShowOtherDeckCards() {
-		for (int i = 0; i < deckCards.Count; i++) {
-			deckCards[i].gameObject.SetActive (true);
-		}
+	private void SecondDealCardsAnimation(Player player,  float waitTime) {
+		float step = FirstDealerController.dealSpeed * Time.deltaTime;
+		Image[] cards = player.seat.cards;
+		Vector3[] targetCardPositions = player.seat.cardPositions;
+
+		Vector3 targetCard = targetCardPositions [4];
+		StartCoroutine(GiveCardAnimation(cards[4], targetCard, step, waitTime));
+		waitTime += waitTimeDelta;
 	}
 
-	private void HideOtherDeckCards() {
-		//Debug.Log ("hideOtherDeckCard called");
-		foreach (Image card in deckCards) {
-			//Debug.Log ("deckCardPosition: " +  deckCardPosition.transform.position.x + ", copy  position: " + card.transform.position.x);
-			if (Utils.isTwoPositionIsEqual(card.transform.position, deckCardPosition.transform.position))
-				card.gameObject.SetActive (false);
-		}
-	}
-		
-	private void SecondDealCards(Vector3[] targetCards, float waitTime, int deckCardStartIndex) {
-		float step = secondDealSpeed * Time.deltaTime;
-
-		Image card = deckCards [deckCardStartIndex];
-		Vector3 targetCard = targetCards [4];
-
-		StartCoroutine(GiveCard(card, targetCard, step, waitTime));
-		waitTime += FirstDealerController.waitTimeDelta;
-
-	}
-
-	IEnumerator GiveCard(Image card, Vector3 targetCard, float step, float waitTime) {
+	IEnumerator GiveCardAnimation(Image card, Vector3 targetCard, float step, float waitTime) {
 		yield return new WaitForSeconds (waitTime);
 		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
 	}
@@ -141,22 +105,24 @@ public class SecondDealController : BaseStateController {
 
 	}
 
-	public void SetDeckCards(List<Image> deckCards) {
-		this.deckCards = deckCards;
-	}	
+	private void SecondDeal() {
+		List<Player> players = gamePlayController.game.PlayingPlayers;
 
-	public void SetCardSprites(Sprite[] cardSprites) {
-		this.cardSprites = cardSprites;
+		for (int i = 0; i < players.Count; i++) {
+			Debug.Log ("Second Deal to player: " + players [i].userId);
+			SecondDeal (players[i]);
+		}
 	}
 
-	public void SetUserCardPositionsArray(Vector3[][] userCardPositionsArray) {
-		this.userCardPositionsArray = userCardPositionsArray;
+	private void SecondDeal(Player player) {
+		player.seat.cards [4] = deck.Deal ();
 	}
-
-
+		
 	public void HandleResponse(GoToSecondDealNotify notify) {
 		string[] cards = gamePlayController.game.currentRound.myCards;
 		cards [4] =  notify.cardsDict[Player.Me.userId];
+
+		SecondDeal ();
 
 		if (betController.IsAllBetCompleted) {
 			gamePlayController.state = GameState.SecondDeal;

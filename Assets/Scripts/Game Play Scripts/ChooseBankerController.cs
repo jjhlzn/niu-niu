@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class ChooseBankerController : BaseStateController {
 	public static int ChooseTotalCount = 15;
-	private float timeInterval = .03f;
-	private float moveBankerSignSpeed = 16f;
+	private float BankerSignMoveTimeInterval = .03f;
+	private float moveBankerSignSpeed = 200f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -15,14 +15,16 @@ public class ChooseBankerController : BaseStateController {
 	private Image bankerSign;
 	private Vector3 bankerSignOriginPosition;
 
-
+	/*
 	private Image[] robingImages;
 	private Image[] bankerSignPositions;
 	private Image[] isRobImages;
+	*/
+	private Seat[] seats;
 
 	private bool chooseCompleted;
 	private string[] userIds;
-	private bool choosing;
+	private bool isChoosingBanker;
 	private int chooseIndex;
 	private int chooseCount;
 	private float waitTime;
@@ -34,40 +36,43 @@ public class ChooseBankerController : BaseStateController {
 		bankerSignOriginPosition = bankerSign.gameObject.transform.position;
 	}
 
+	void Start() {
+	}
+
+	public void Init() {
+		seats = gamePlayController.game.seats;
+		bankerSign.gameObject.SetActive (false);
+	}
+
 	void Update() {
-		if (gamePlayController.game == null)
-			Debug.LogError ("gamePlayController.game become null");
-		Seat[] seats = gamePlayController.game.seats;
-		if (choosing) {
-			
-				
+
+		if (isChoosingBanker) {
 			timeLeft -= Time.deltaTime;
 			if ( timeLeft < 0 )
 			{
-				for (int i = 0; i < Game.SeatCount; i++) {
-					if (seats [i].hasPlayer()) {
-
-						if (seats [i].player.userId == userIds [chooseIndex]) {
-							robingImages [i].gameObject.SetActive (true);
-						} else {
-							robingImages [i].gameObject.SetActive (false);
-						}
+				List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
+				for (int i = 0; i < playingPlayers.Count; i++) {
+					Player player = playingPlayers [i];
+					if (player.userId == userIds [chooseIndex]) {
+						player.seat.robingSeatBorderImage.gameObject.SetActive (true);
 					} else {
-						robingImages [i].gameObject.SetActive (false);
+						player.seat.robingSeatBorderImage.gameObject.SetActive (false);
 					}
 				}
+					
 
-				if (chooseCount > ChooseTotalCount
+				if (   chooseCount > ChooseTotalCount
 					&& seats [gamePlayController.game.GetSeatIndex(userIds[chooseIndex])].player.userId == gamePlayController.game.currentRound.banker) {
-					choosing = false;
-					foreach (Image image in robingImages) {
-						image.gameObject.SetActive (false);
+
+					isChoosingBanker = false;
+					foreach (Seat seat in seats) {
+						seat.robingSeatBorderImage.gameObject.SetActive (false);
 					}
 
 					movingBankerSign = true;
 					bankerSign.gameObject.SetActive (true);
 				} else {
-					timeLeft = timeInterval;
+					timeLeft = BankerSignMoveTimeInterval;
 					chooseIndex = ++chooseIndex % userIds.Length;
 					chooseCount++;
 				}
@@ -75,39 +80,35 @@ public class ChooseBankerController : BaseStateController {
 		}
 
 		if (movingBankerSign) {
-			int seatIndex = gamePlayController.game.GetSeatIndex (userIds[chooseIndex]);
-			Vector3 targetPosition = bankerSignPositions [seatIndex].transform.position;
+			//int seatIndex = gamePlayController.game.GetSeatIndex (userIds[chooseIndex]);
+
+			int bankerSeatIndex = gamePlayController.game.GetSeatIndex (gamePlayController.game.currentRound.banker);
+			Vector3 targetPosition = seats[bankerSeatIndex].bankerSignImage.transform.position;
 			float step = moveBankerSignSpeed * Time.deltaTime;
 			bankerSign.gameObject.transform.position = Vector3.MoveTowards(bankerSign.transform.position, targetPosition, step);
 
 			if (Utils.isTwoPositionIsEqual(bankerSign.gameObject.transform.position , targetPosition)) {
 				Debug.Log ("banker sing move over");
-				foreach (Image image in isRobImages) {
-					image.gameObject.SetActive (false);
+				foreach (Seat seat in seats) {
+					seat.isRobImage.gameObject.SetActive (false);
 				}
 				movingBankerSign = false;
 
 				gamePlayController.goToNextState ();
-
 			}
 		} 
 	}
 
 
 	public override void Reset() {
-		bankerSign.gameObject.SetActive (false);
-		choosing = false;
+		isChoosingBanker = false;
 		movingBankerSign = false;
-		timeLeft = timeInterval;
+		timeLeft = BankerSignMoveTimeInterval;
 		waitTime = 0f;
 		chooseIndex = -1;
-		foreach (Image image in robingImages) {
-			image.gameObject.SetActive (false);
-		}
 	}
 
 	public void HandleResponse(GoToChooseBankerNotity resp) {
-		return;
 
 		gamePlayController.state = GameState.ChooseBanker;
 		gamePlayController.game.currentRound.banker = resp.banker;
@@ -123,27 +124,11 @@ public class ChooseBankerController : BaseStateController {
 			}
 		}
 
-		//Debug.Log ("userIds = " + userIds);
-		//for (int i = 0; i < userIds.Length; i++) {
-		//	Debug.Log ("user" + i + " = " + userIds [i]);
-		//}
-
 		chooseIndex = 0;
-		choosing = true;
-		//gamePlayController.goToNextState ();
+		isChoosingBanker = true;
 
 	}
 
-	public void SetRobingImages(Image[] robingImages) {
-		this.robingImages = robingImages;
-	}
 
-	public void SetIsRobImages(Image[] isRobImages) {
-		this.isRobImages = isRobImages;
-	}
-
-	public void SetBankerSignPositions(Image[] bankerSignPositions) {
-		this.bankerSignPositions = bankerSignPositions;
-	}
 		
 }

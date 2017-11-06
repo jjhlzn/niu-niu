@@ -33,6 +33,9 @@ public class Seat
 	public Image bankerSignImage;
 	public Image readyImage;
 	public Text scoreLabel;
+	public Image chipImagesForBet;
+	public Vector3 chipPositionWhenBet;
+	public Text chipCountLabel;
 
 
 	public Image isRobImage;

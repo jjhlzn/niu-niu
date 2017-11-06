@@ -16,11 +16,13 @@ public class BetController : BaseStateController {
 	[SerializeField]
 	private GameObject betPanel;
 
-	private float chipMoveSpeed = 24f;
-
+	private float chipMoveSpeed = 50f;
+	/*
 	private Image[] chipImages;
 	private Image[] chipPositionImages;
 	private Text[] chipCountLabels;
+	*/
+	private Seat[] seats;
 
 	private Vector3[] chipOriginPositions;
 
@@ -41,21 +43,10 @@ public class BetController : BaseStateController {
 		}
 	}
 
-	public void SetChipImages(Image[] chipImages) {
-		this.chipImages = chipImages;
-		chipOriginPositions = new Vector3[chipImages.Length];
-		for (int i = 0; i < chipImages.Length; i++) {
-			chipOriginPositions [i] = chipImages [i].gameObject.transform.position;
-		}
+	public void Init() {
+		seats = gamePlayController.game.seats;
 	}
-
-	public void SetChipPositionImages(Image[] chipPositionImages) {
-		this.chipPositionImages = chipPositionImages;
-	}
-
-	public void SetChipCountLabels(Text[] labels) {
-		this.chipCountLabels = labels;
-	}
+		
 		
 	public void Awake() {
 		isMoveChipArray = new bool[Game.SeatCount];
@@ -68,40 +59,32 @@ public class BetController : BaseStateController {
 
 	public override void Reset() {
 		hasBet = false;
-		for (int i = 0; i < chipImages.Length; i++) {
-			chipImages [i].gameObject.SetActive (false);
-			chipImages [i].transform.position = chipOriginPositions [i];
-			//chipPositionImages [i].gameObject.SetActive (false);
-			//chipCountLabels [i].gameObject.SetActive (false);
-			isMoveChipArray [i] = false;
-			isBetCompletedArray [i] = false;
-		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (gamePlayController.state == GameState.Bet) {
+			
 			if (!hasBet) {
 				betPanel.SetActive (true);
 			} else {
 				betPanel.SetActive (false);
 			}
 
-			for (int i = 0; i < isMoveChipArray.Length; i++) {
+			for (int i = 0; i < Game.SeatCount; i++) {
 				
 				if (isMoveChipArray [i]) {
-					chipImages [i].gameObject.SetActive (true);
+					seats[i].chipImagesForBet.gameObject.SetActive (true);
 
-
-					Vector3 targetPosition = chipPositionImages [i].transform.position;
+					Vector3 targetPosition = seats[i].chipPositionWhenBet;
 					float step = chipMoveSpeed * Time.deltaTime;
-					chipImages [i].gameObject.transform.position = Vector3.MoveTowards (chipImages [i].gameObject.transform.position,
+					seats[i].chipImagesForBet.gameObject.transform.position = Vector3.MoveTowards (seats[i].chipImagesForBet.gameObject.transform.position,
 						targetPosition, step);
 
-					if (Utils.isTwoPositionIsEqual (chipImages [i].gameObject.transform.position, targetPosition)) {
+					if (Utils.isTwoPositionIsEqual (seats[i].chipImagesForBet.gameObject.transform.position, targetPosition)) {
 						isMoveChipArray [i] = false;
-						chipCountLabels [i].text = gamePlayController.game.currentRound.playerBets[i] + "";
-						chipCountLabels [i].gameObject.SetActive (true);
+						seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
+						seats[i].chipCountLabel.gameObject.SetActive (true);
 						isBetCompletedArray [i] = true;
 
 						if (IsAllBetCompleted && secondDealController.canSecondDeal) {
@@ -137,8 +120,9 @@ public class BetController : BaseStateController {
 		socket.EmitJson (Messages.Bet, JsonConvert.SerializeObject(req), (string msg) => {
 			betPanel.gameObject.SetActive (false);
 			hasBet = true;
-			isMoveChipArray[0] = true;
 			gamePlayController.game.currentRound.playerBets[0] = 8;
+			isMoveChipArray[0] = true;
+
 		}); 
 
 	}

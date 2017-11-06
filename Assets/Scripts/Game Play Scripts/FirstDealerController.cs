@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class FirstDealerController : BaseStateController {
-	public static float speed = 400f; //发牌速度
+	public static float dealSpeed = 350f; //发牌速度
+	public static float dealWaitTimeBetweenPlayer = 0.3f;
 	public static float waitTimeDelta = 0.1f;
 
 	[SerializeField]
@@ -38,7 +39,7 @@ public class FirstDealerController : BaseStateController {
 				FirstGiveCardsAnimation (player, waitTime);
 
 				//每个成员之间加入一个延时
-				waitTime += 0.3f;
+				waitTime += dealWaitTimeBetweenPlayer;
 
 			}
 
@@ -65,7 +66,7 @@ public class FirstDealerController : BaseStateController {
 	 * */
 
 	private void FirstGiveCardsAnimation(Player player, float waitTime) {
-		float step = speed * Time.deltaTime;
+		float step = dealSpeed * Time.deltaTime;
 		Image[] cards = player.seat.cards;
 		Vector3[] targetCardPositions = player.seat.cardPositions;
 		for (int i = 0; i < 4; i++) {

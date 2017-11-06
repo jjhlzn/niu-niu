@@ -138,13 +138,14 @@ public class SetupCardGame : BaseStateController {
 			seats [i].isRobImage = isRobImages [i];
 
 			//Debug.Log ("seats ["+i+"].isRobImage = " + seats [i].isRobImage);
-		}
+		} 
 		//beforeGameStartController.SetIsRobImages (isRobImages);
 		//robBankerController.SetIsRobImages (isRobImages);
-		robBankerController.Reset ();
-		chooseBankerController.SetIsRobImages (isRobImages);
+		//robBankerController.Reset ();
+		//chooseBankerController.SetIsRobImages (isRobImages);
 
 
+		/*
 		GameObject[] robingObjs = GameObject.FindGameObjectsWithTag ("RobingImage");
 		robingObjs = SortUserSeatUIObjects (robingObjs);
 		robingImages = new Image[robingObjs.Length];
@@ -152,9 +153,10 @@ public class SetupCardGame : BaseStateController {
 			robingImages [i] = robingObjs [i].GetComponent<Image> ();
 			robingImages [i].gameObject.SetActive (false);
 		}
-		chooseBankerController.SetRobingImages (robingImages);
-		chooseBankerController.Reset ();
+		//chooseBankerController.SetRobingImages (robingImages);
+		chooseBankerController.Reset ();  */
 
+		/*
 		GameObject[] bankerSignObjs = GameObject.FindGameObjectsWithTag ("BankerSign");
 		bankerSignObjs = SortUserSeatUIObjects (bankerSignObjs);
 		bankerSignPositions = new Image[bankerSignObjs.Length];
@@ -163,8 +165,8 @@ public class SetupCardGame : BaseStateController {
 			bankerSignPositions [i].gameObject.SetActive (false);
 
 		}
-		chooseBankerController.SetBankerSignPositions (bankerSignPositions);
-		chooseBankerController.Reset ();
+		//chooseBankerController.SetBankerSignPositions (bankerSignPositions);
+		chooseBankerController.Reset (); */
 
 
 		GameObject[] chipObjs = GameObject.FindGameObjectsWithTag ("chip");
@@ -173,8 +175,9 @@ public class SetupCardGame : BaseStateController {
 		for (int i = 0; i < chipObjs.Length; i++) {
 			chipImages [i] = chipObjs [i].GetComponent<Image> ();
 			chipImages [i].gameObject.SetActive (false);
+
+			seats [i].chipImagesForBet = chipImages [i];
 		}
-		betController.SetChipImages (chipImages);
 
 
 		GameObject[] chipPositionObjs = GameObject.FindGameObjectsWithTag ("chipPosition");
@@ -182,19 +185,19 @@ public class SetupCardGame : BaseStateController {
 		chipPositionImages = new Image[chipPositionObjs.Length];
 		for (int i = 0; i < chipPositionObjs.Length; i++) {
 			chipPositionImages [i] = chipPositionObjs [i].GetComponent<Image> ();
-
+			chipPositionImages [i].gameObject.SetActive (false);
+			seats [i].chipPositionWhenBet = chipPositionImages [i].transform.position;
+			  
 		}
-		betController.SetChipPositionImages (chipPositionImages);
 
 		GameObject[] chipCountObjs = GameObject.FindGameObjectsWithTag ("chipCountLabel");
 		chipCountObjs = SortUserSeatUIObjects (chipCountObjs);
 		chipCountLabels = new Text[chipCountObjs.Length];
 		for (int i = 0; i < chipCountObjs.Length; i++) {
 			chipCountLabels [i] = chipCountObjs [i].GetComponent<Text> ();
-		
+			seats [i].chipCountLabel = chipCountLabels [i];
+			chipCountLabels [i].gameObject.SetActive (false);
 		}
-		betController.SetChipCountLabels (chipCountLabels);
-		betController.Reset ();
 	}
 
 
@@ -330,7 +333,7 @@ public class SetupCardGame : BaseStateController {
 			userCardsPositionsArray [i] = GetUserCardsPosition (i);
 			seats [i].cardPositions = userCardsPositionsArray [i];
 		}
-		secondDealController.SetUserCardPositionsArray (userCardsPositionsArray);
+		//secondDealController.SetUserCardPositionsArray (userCardsPositionsArray);
 	}
 
 	private Vector3[] GetUserCardsPosition(int index) {
@@ -628,11 +631,11 @@ public class SetupCardGame : BaseStateController {
 		}
 
 		//firstDealerController.SetDeckCards (cards);
-		secondDealController.SetDeckCards (cards);
+		//secondDealController.SetDeckCards (cards);
 		checkCardController.SetDeckCards (cards);
 
 		//firstDealerController.SetCardSprites (cardSprites);
-		secondDealController.SetCardSprites (cardSprites);
+		//secondDealController.SetCardSprites (cardSprites);
 		checkCardController.SetCardSprites (cardSprites);
 
 		resetCards ();

@@ -18,26 +18,19 @@ public class Deck
 	private int validStart = 0;
 
 	public Image Deal() {
-		Debug.Log ("cardIndex = " + validStart);
+		Debug.Log ("deal card cardIndex  = " + validStart);
 		return cards [validStart++];
 	}
 
-	/*
-	public void HideNotDealCards () {
-		Debug.Log ("validStart = " + validStart);
-		for (int i = validStart; i < DeckCount; i++) {
-			cards [i].gameObject.SetActive (false);
-		}
-	}*/
-
 	public void ShowNotDealCardsForFirstDeal(int playerCount) {
-		for (int i = validStart; i < DeckCount && i < validStart + playerCount * 4; i++) {
+		for (int i = 0; i < playerCount * 4; i++) {
 			cards [i].gameObject.SetActive (true);
 		}
 	}
 
 	public void ShowNotDealCardsForSecondDeal(int playerCount) {
-		for (int i = validStart; i < DeckCount && i < validStart + playerCount; i++) {
+		Debug.Log ("Show NotDeal Cards For SecondDeal");
+		for (int i = playerCount * 4; i < playerCount * 5; i++) {
 			cards [i].gameObject.SetActive (true);
 		}
 	}

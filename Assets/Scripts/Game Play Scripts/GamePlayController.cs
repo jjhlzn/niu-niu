@@ -62,6 +62,10 @@ public class GamePlayController : MonoBehaviour {
 		foreach (Seat seat in game.seats) {
 			seat.UpdateUI (game);
 		}
+
+		chooseBankerController.Init ();
+		betController.Init ();
+		secondDealController.Init ();
 	}
 
 	private void SetGameData() {
