@@ -1,7 +1,8 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
-[System.Serializable]
+
 public class Player
 {
 	private string _userId;
@@ -14,25 +15,38 @@ public class Player
 			_userId = value;
 		}
 	}
-	public int seat;  //座位的索引号，
+	public Seat seat;  //座位的索引号，
 	public int score;
-	public bool hasSeat() {
-		return seat >= 0 && seat < 6;
+	public bool isPlaying;  //是否已经在完，用于区分仅仅坐下，但是没有玩的玩家
+	public Image[] cards {
+		get {
+			return seat.cards;
+		}
 	}
 
 	public Player ()
 	{
-		seat = -1;
 		score = 0;
 	}
 
 	public Player(string userId) {
-		seat = -1;
 		score = 0;
 		this.userId = userId;
 	}
 
 	public static Player Me = new Player("jinjunhang");
+
+	public void Sit(Seat seat) {
+		this.seat = seat;
+		this.seat.player = this;
+	}
+
+	public void Standup() {
+		if (seat != null) {
+			seat.player = null;
+			this.seat = null;
+		}
+	}
 }
 
 

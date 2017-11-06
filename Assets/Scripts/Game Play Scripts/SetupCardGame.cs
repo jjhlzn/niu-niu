@@ -79,6 +79,7 @@ public class SetupCardGame : BaseStateController {
 	private List<Animator> cardAnims = new List<Animator>();
 
 	public Seat[] seats;
+	public Deck deck;
 
 	[SerializeField]
 	private GameObject seatUI;
@@ -94,7 +95,10 @@ public class SetupCardGame : BaseStateController {
 		showCardPositionsArray = new Vector3[6][];
 
 		cardSprites = Resources.LoadAll<Sprite>("sprites/mobile");
+
 		CreateDeckCards ();
+		CreateDeck ();
+
 		GetSeats ();
 		GetUserCardsPosition ();
 		GetShowCardsPosition ();
@@ -123,77 +127,7 @@ public class SetupCardGame : BaseStateController {
 			obj.SetActive (false);
 		}
 
-		/*
-		GameObject[] seatObjss = GameObject.FindGameObjectsWithTag ("UserSeat");
-		seatObjss = SortUserSeatUIObjects (seatObjss);
-		//Debug.Log ("seats = " + seats);
-		seatImages = new Image[seatObjss.Length];
-		for (int i = 0; i < seatObjss.Length; i++) {
-			seatImages [i] = seatObjss [i].GetComponent<Image> ();
-		}
-		beforeGameStartController.SetSeatImages (seatImages); */
 
-		/*
-		GameObject[] images = GameObject.FindGameObjectsWithTag ("UserImage");
-		images = SortUserSeatUIObjects (images);
-		playerImages = new Image[images.Length];
-		for (int i = 0; i < images.Length; i++) {
-			playerImages [i] = images [i].GetComponent<Image> ();
-		}
-		beforeGameStartController.SetPlayerImages (playerImages); */
-
-		/*
-		GameObject[] readyObjs = GameObject.FindGameObjectsWithTag ("ReadyImage");
-		readyObjs = SortUserSeatUIObjects (readyObjs);
-		readyImages = new Image[readyObjs.Length];
-		for (int i = 0; i < readyObjs.Length; i++) {
-			readyImages [i] = readyObjs [i].GetComponent<Image> ();
-			readyImages [i].gameObject.SetActive (false);
-		}
-		beforeGameStartController.SetReadyImages (readyImages); */
-
-		/*
-		GameObject[] names = GameObject.FindGameObjectsWithTag ("UserName");
-		names = SortUserSeatUIObjects (names);
-		playerNames = new Text[names.Length];
-		for (int i = 0; i < names.Length; i++) {
-			playerNames [i] = names [i].GetComponent<Text> ();
-		}
-		beforeGameStartController.SetPlayerNames (playerNames); */
-
-		/*
-		GameObject[] scores = GameObject.FindGameObjectsWithTag ("UserScore");
-		scores = SortUserSeatUIObjects (scores);
-		playerScores = new Text[scores.Length];
-		for (int i = 0; i < scores.Length; i++) {
-			playerScores [i] = scores [i].GetComponent<Text> ();
-		}
-		beforeGameStartController.SetPlayerScores (playerScores); */
-
-		/*
-		GameObject[] buttons = GameObject.FindGameObjectsWithTag ("SeatButton");
-		buttons = SortUserSeatUIObjects (buttons);
-		seatButtons = new Button[buttons.Length];
-		for (int i = 0; i < buttons.Length; i++) {
-			seatButtons [i] = buttons [i].GetComponent<Button> ();
-		}
-		beforeGameStartController.SetSeatButtons (seatButtons);
-
-		GameObject[] descs = GameObject.FindGameObjectsWithTag ("SeatDesc");
-		descs = SortUserSeatUIObjects (descs);
-		seatDescs = new Text[descs.Length];
-		for (int i = 0; i < descs.Length; i++) {
-			seatDescs [i] = descs [i].GetComponent<Text> ();
-		}
-		beforeGameStartController.SetSeatDescs (seatDescs);
-
-		GameObject[] emptyImages = GameObject.FindGameObjectsWithTag ("EmptySeatImage");
-		emptyImages = SortUserSeatUIObjects (emptyImages);
-		emptySeatImages = new Image[emptyImages.Length];
-		for (int i = 0; i < emptyImages.Length; i++) {
-			emptySeatImages [i] = emptyImages [i].GetComponent<Image> ();
-		}
-		beforeGameStartController.SetEmptySeatImages (emptySeatImages); */
 
 		GameObject[] isRobObjs = GameObject.FindGameObjectsWithTag ("isRobImage");
 		isRobObjs = SortUserSeatUIObjects (isRobObjs);
@@ -201,11 +135,15 @@ public class SetupCardGame : BaseStateController {
 		for (int i = 0; i < isRobObjs.Length; i++) {
 			isRobImages [i] = isRobObjs [i].GetComponent<Image> ();
 			isRobImages [i].gameObject.SetActive (false);
+			seats [i].isRobImage = isRobImages [i];
+
+			//Debug.Log ("seats ["+i+"].isRobImage = " + seats [i].isRobImage);
 		}
 		//beforeGameStartController.SetIsRobImages (isRobImages);
-		robBankerController.SetIsRobImages (isRobImages);
+		//robBankerController.SetIsRobImages (isRobImages);
 		robBankerController.Reset ();
 		chooseBankerController.SetIsRobImages (isRobImages);
+
 
 		GameObject[] robingObjs = GameObject.FindGameObjectsWithTag ("RobingImage");
 		robingObjs = SortUserSeatUIObjects (robingObjs);
@@ -283,11 +221,7 @@ public class SetupCardGame : BaseStateController {
 		seatUICopy.name = "PlayerSeat" + index;
 		seatUICopy.transform.SetParent (userPanel.transform);
 
-		Image[] images = seatUICopy.GetComponentsInChildren<Image> ();
-		foreach (Image image in images) {
-			Debug.Log (image.name);
-		}
-
+	
 		int x = 0, y = 0;
 		switch (index) {
 		case 0:
@@ -658,6 +592,13 @@ public class SetupCardGame : BaseStateController {
 
 	}
 
+	void CreateDeck() {
+		deck = new Deck ();
+		deck.cardFaceSprites = cardSprites;
+		deck.cards = cards;
+		deck.Reset ();
+	}
+
 	void CreateDeckCards() {
 
 		cards = new List<Image> ();
@@ -686,17 +627,19 @@ public class SetupCardGame : BaseStateController {
 			temp.gameObject.SetActive (true);
 		}
 
-		firstDealerController.SetDeckCards (cards);
+		//firstDealerController.SetDeckCards (cards);
 		secondDealController.SetDeckCards (cards);
 		checkCardController.SetDeckCards (cards);
 
-		firstDealerController.SetCardSprites (cardSprites);
+		//firstDealerController.SetCardSprites (cardSprites);
 		secondDealController.SetCardSprites (cardSprites);
 		checkCardController.SetCardSprites (cardSprites);
 
+		resetCards ();
+
 	}
 
-	public void resetCards() {
+	private void resetCards() {
 		foreach (Image card in cards) {
 			card.gameObject.transform.position = deckCardPosition.transform.position;
 			card.gameObject.SetActive (true);

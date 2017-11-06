@@ -6,7 +6,6 @@ using UnityEngine;
 [System.Serializable]
 public class Round
 {
-	
 	public string[] myCards;
 	public int[] myBets;
 	public int myBet;

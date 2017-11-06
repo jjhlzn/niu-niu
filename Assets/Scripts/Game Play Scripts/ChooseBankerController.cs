@@ -107,6 +107,8 @@ public class ChooseBankerController : BaseStateController {
 	}
 
 	public void HandleResponse(GoToChooseBankerNotity resp) {
+		return;
+
 		gamePlayController.state = GameState.ChooseBanker;
 		gamePlayController.game.currentRound.banker = resp.banker;
 

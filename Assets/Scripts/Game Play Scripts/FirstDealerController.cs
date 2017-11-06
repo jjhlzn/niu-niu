@@ -13,23 +13,18 @@ public class FirstDealerController : BaseStateController {
 	[SerializeField]
 	private GameObject deckCardPosition; //发牌位置
 
-	//private Vector3[][] userCardPositionsArray;
-	//private Image[] readyImages;
-	private Seat[] seats;
 
-	private List<Image> deckCards;  
-	public Sprite[] cardSprites;
+	private Deck deck;
+	private Seat[] seats;
 
 
 	// Use this for initialization
 	void Start () {
 		seats = gamePlayController.game.seats;
-		hideOtherDeckCard (); 
+		deck = gamePlayController.game.deck;
+		//hideOtherDeckCard (); 
 	}
 
-	public override void Reset() {
-		
-	}
 
 	// Update is called once per frame
 	void Update () {
@@ -37,29 +32,27 @@ public class FirstDealerController : BaseStateController {
 		if (gamePlayController.state.Equals (GameState.FirstDeal)) {
 			float waitTime = 0;
 
-			Seat[] seats = gamePlayController.game.seats;
-			//int index = 0;
-			int lastSeatIndex = 0;
-			int playerIndex = 0;
-			for (int i = 0; i < Game.SeatCount; i++) {
-				Seat seat = seats [i];
-				if (seat.hasPlayer ()) {
-					lastSeatIndex = i;
-					FirstGiveCards (seats[i].cardPositions, waitTime, 4 * playerIndex);
-					waitTime += 4 * waitTimeDelta;
-					playerIndex++;
-				}
+			List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
+			for (int i = 0; i < playingPlayers.Count; i++) {
+				Player player = playingPlayers [i];
+				FirstGiveCardsAnimation (player, waitTime);
+
+				//每个成员之间加入一个延时
+				waitTime += 0.3f;
+
 			}
 
 			int playerCount = gamePlayController.game.PlayerCount;
 			//判断最后一张牌是否已经发好
-			if (Utils.isTwoPositionIsEqual(deckCards [4 * playerCount - 1].transform.position, seats [lastSeatIndex].cardPositions[3])) {
-				hideOtherDeckCard ();
+			//Debug.Log("playingPlayers[playingPlayers.Count - 1].seat.cards.lenth = " + playingPlayers[playingPlayers.Count - 1].seat.cards.Length);
+			//Debug.Log("playingPlayers[playingPlayers.Count - 1].seat.cardPositions.lenth = " + playingPlayers[playingPlayers.Count - 1].seat.cardPositions.Length);
+			if (Utils.isTwoPositionIsEqual(playingPlayers[playingPlayers.Count - 1].seat.cards[3].transform.position, playingPlayers[playingPlayers.Count - 1].seat.cardPositions[3])) {
+				//deck.HideNotDealCards ();
 
-				StartCoroutine (TurnCardUp (deckCards[0], gamePlayController.game.currentRound.myCards[0]));
-				StartCoroutine (TurnCardUp (deckCards[1], gamePlayController.game.currentRound.myCards[1]));
-				StartCoroutine (TurnCardUp (deckCards[2], gamePlayController.game.currentRound.myCards[2]));
-				StartCoroutine (TurnCardUp (deckCards[3], gamePlayController.game.currentRound.myCards[3]));
+				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[0], gamePlayController.game.currentRound.myCards[0]));
+				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[1], gamePlayController.game.currentRound.myCards[1]));
+				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[2], gamePlayController.game.currentRound.myCards[2]));
+				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[3], gamePlayController.game.currentRound.myCards[3]));
 
 				StartCoroutine (GoToNextState ());
 			}
@@ -67,64 +60,70 @@ public class FirstDealerController : BaseStateController {
 
 	}
 
-	private void hideOtherDeckCard() {
-		foreach (Image card in deckCards) {
-			if (Utils.isTwoPositionIsEqual(card.transform.position, deckCardPosition.transform.position))
-				card.gameObject.SetActive (false);
-		}
-	}
-
 	/**
-	 * 发4张牌给指定的玩家
+	 * 发4张牌给指定的玩家的动画
 	 * */
-	private void FirstGiveCards(Vector3[] targetCards, float waitTime, int deckCardStartIndex) {
+
+	private void FirstGiveCardsAnimation(Player player, float waitTime) {
 		float step = speed * Time.deltaTime;
+		Image[] cards = player.seat.cards;
+		Vector3[] targetCardPositions = player.seat.cardPositions;
 		for (int i = 0; i < 4; i++) {
-			Image card = deckCards [deckCardStartIndex + i];
-			Vector3 targetCard = targetCards [i];
-			StartCoroutine(GiveCard(card, targetCard, step, waitTime));
+			Vector3 targetCard = targetCardPositions [i];
+			StartCoroutine(GiveCardAnimation(cards[i], targetCard, step, waitTime));
 			waitTime += waitTimeDelta;
 		}
 	}
 
-	IEnumerator GiveCard(Image card, Vector3 targetCard, float step, float waitTime) {
+	IEnumerator GiveCardAnimation(Image card, Vector3 targetCard, float step, float waitTime) {
 		yield return new WaitForSeconds (waitTime);
 		//Debug.Log ("waitTime = " + waitTime);
 		//Debug.Log ("(x, y): (" + targetCard.x + " , " + targetCard.y + ")");
 		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
 	}
-		
-	public void SetDeckCards(List<Image> cards) {
-		this.deckCards = cards;
-	}
 
-	public void SetCardSprites(Sprite[] cardSprites) {
-		this.cardSprites = cardSprites;
-	}
 
 
 	IEnumerator TurnCardUp(Image card, string cardValue) {
 		Animator anim = card.GetComponent<Animator> ();
+		//Debug.Log ("cardValue = " + cardValue);
+		//Debug.Log ("Before Play Animation TurnUp");
 		anim.Play ("TurnUp");
-		yield return new WaitForSeconds (.4f);
-		card.sprite = Utils.findCardSprite(cardSprites, cardValue);
+		//Debug.Log ("After Play Animation TurnUp");
+		yield return new WaitForSeconds (.5f);
+		card.sprite = deck.GetCardFaceImage(cardValue);
 
 		//card.transform.localEulerAngles = new Vector3(0,360,0);
 		anim.Play ("TurnBackNow2");
-		yield return new WaitForSeconds (.1f);
+		//yield return new WaitForSeconds (.1f);
 	}
 
 
 	IEnumerator GoToNextState() {
-		yield return new WaitForSeconds (.4f);
+		yield return new WaitForSeconds (.3f);
 		if (gamePlayController.state == GameState.FirstDeal)
 			gamePlayController.goToNextState ();
 	}
 
+	private void FirstDeal() {
+		List<Player> players = gamePlayController.game.PlayingPlayers;
+
+		for (int i = 0; i < players.Count; i++) {
+			FirstDeal (players[i]);
+		}
+	}
+
+	private void FirstDeal(Player player) {
+		player.seat.cards [0] = deck.Deal ();
+		player.seat.cards [1] = deck.Deal ();
+		player.seat.cards [2] = deck.Deal ();
+		player.seat.cards [3] = deck.Deal ();
+	}
 
 	/******* 处理服务器的通知***************/
 	public void HandleResponse(FirstDealResponse notify) {
 
+		/*
 		string[] cards = notify.cards;
 		//Debug.Log ("cards: " + cards);
 		int[] bets = notify.bets;
@@ -139,7 +138,10 @@ public class FirstDealerController : BaseStateController {
 			seats[i].readyImage.gameObject.SetActive (false);
 		}
 
-		gamePlayController.state = GameState.FirstDeal;
+		//先把数据结构设置好，再在Update()中执行发牌的动画。
+		FirstDeal ();
+		deck.ShowNotDealCardsForFirstDeal (gamePlayController.game.PlayingPlayers.Count);
+		gamePlayController.state = GameState.FirstDeal; */
 	}
 
 	public void HandleResponse(StartGameNotify notify) {
@@ -167,7 +169,20 @@ public class FirstDealerController : BaseStateController {
 		}
 
 		gamePlayController.game.currentRound.myBets = myBets;
+
+		gamePlayController.game.StartGame ();
+	
+		deck.ShowNotDealCardsForFirstDeal (gamePlayController.game.PlayingPlayers.Count);
+
+		//先把数据结构设置好，再在Update()中执行发牌的动画。
+		FirstDeal ();
+
 		gamePlayController.state = GameState.FirstDeal;
+	}
+		
+
+	public override void Reset() {
+
 	}
 
 

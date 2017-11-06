@@ -5,8 +5,19 @@ using UnityEngine.UI;
 [System.Serializable]
 public class Seat
 {
+	public Game game;
 	public string seatNo;
 	public Player player;
+	public int seatIndex {
+		get {
+			for (int i = 0; i < game.seats.Length; i++) {
+				if (game.seats [i] == this) {
+					return i;
+				}
+			}
+			throw new UnityException ("can't find index for seat: " + seatNo);
+		}
+	}
 
 	//UI元素
 	public GameObject playerPanel;
@@ -23,7 +34,16 @@ public class Seat
 	public Image readyImage;
 	public Text scoreLabel;
 
+
+	public Image isRobImage;
+
 	public Vector3[] cardPositions;
+
+	public Image[] cards;
+
+	public Seat() {
+		cards = new Image[5];
+	}
 
 	public bool hasPlayer() {
 		return player != null;

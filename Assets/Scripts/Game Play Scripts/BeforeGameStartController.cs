@@ -88,7 +88,8 @@ public class BeforeGameStartController : BaseStateController {
 				}
 
 				//循转之后，我总是坐在第一个位置
-				Player.Me.seat = 0;
+				Player.Me.seat = seats[0];
+				seats [0].player = Player.Me;
 				foreach (Seat seat in seats) {
 					seat.UpdateUI (gamePlayerController.game);
 				}
@@ -97,14 +98,12 @@ public class BeforeGameStartController : BaseStateController {
 	}
 
 	public void StartClick() {
+		Debug.Log ("start game click");
+
 		Socket gameSocket = gamePlayerController.gameSocket;
 		if (gameSocket == null || !gameSocket.IsConnected) {
 			return;
 		}
-
-		setUpGameController.resetCards ();
-		Debug.Log ("start game click");
-
 
 		//make start game request
 		var request = new {
@@ -133,7 +132,7 @@ public class BeforeGameStartController : BaseStateController {
 		};
 
 		gameSocket.EmitJson (Messages.StartGame, JsonConvert.SerializeObject(request), (string msg) => {
-			setUpGameController.resetCards ();
+			//setUpGameController.resetCards ();
 		
 
 			startButton.gameObject.SetActive(false);
@@ -161,7 +160,7 @@ public class BeforeGameStartController : BaseStateController {
 			seat = seats[seatIndex].seatNo,
 			userId = Player.Me.userId,
 		};
-
+			
 		socket.EmitJson (Messages.SitDown, JsonConvert.SerializeObject (seatReq), (msg) => {
 			isSeat = true;
 
@@ -173,8 +172,8 @@ public class BeforeGameStartController : BaseStateController {
 			} 
 
 			seats[seatIndex].player = Player.Me;
+			Player.Me.seat = seats[seatIndex];
 			Debug.Log("Player.Me.userId = " + Player.Me.userId);
-			seats[seatIndex].player.seat = seatIndex;
 
 			foreach(Seat seat in seats) {
 				seat.UpdateUI(gamePlayerController.game);
@@ -226,7 +225,7 @@ public class BeforeGameStartController : BaseStateController {
 
 		var standUpReq = new {
 			roomNo = gamePlayerController.game.roomNo,
-			seat = Player.Me.seat,
+			seat = Player.Me.seat.seatNo,
 			userId = Player.Me.userId,
 		};
 
@@ -234,8 +233,8 @@ public class BeforeGameStartController : BaseStateController {
 			isSeat = false;
 
 			Debug.Log("standup from seat: " + Player.Me.seat );
-			gamePlayerController.game.seats[Player.Me.seat].player = null;
-			Player.Me.seat = -1;
+
+			Player.Me.Standup();
 
 			foreach(Seat seat in seats) {
 				seat.UpdateUI(gamePlayerController.game);
@@ -256,7 +255,7 @@ public class BeforeGameStartController : BaseStateController {
 			if (seat.seatNo == seatNo && seat.player == null) {
 				Player player = new Player ();
 				player.userId = notify.userId;
-				player.seat = i;
+				player.seat = seat;
 				seat.player = player;
 				seat.UpdateUI(gamePlayerController.game);
 				break;

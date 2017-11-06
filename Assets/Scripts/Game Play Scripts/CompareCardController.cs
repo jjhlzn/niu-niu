@@ -196,7 +196,7 @@ public class CompareCardController : BaseStateController {
 
 		float waitTime = 0;
 
-		Game game = gamePlayController.game;
+
 		Vector3 targetPosition = chipsArray [to] [0].transform.position; //TODO: 总是到同一个位置
 
 		bool moveCompleted = true;

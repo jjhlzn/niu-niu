@@ -54,7 +54,7 @@ public class GamePlayController : MonoBehaviour {
 	void Start () {
 		Debug.Log ("GamePlayController Start");
 		SetGameData ();
-		setupCardGame.resetCards ();
+		//setupCardGame.resetCards ();
 		//beforeGameStartController.SetPlayerSeatUI ();
 
 
@@ -67,6 +67,11 @@ public class GamePlayController : MonoBehaviour {
 	private void SetGameData() {
 		game = new Game ();
 		game.seats = setupCardGame.seats;
+		for (int i = 0; i < game.seats.Length; i++) {
+			game.seats [i].game = game;
+		}
+		game.deck = setupCardGame.deck;
+
 		game.totalRoundCount = 10;
 		game.currentRoundNo = 1;
 		game.roomNo = GenerateRoomNo ();

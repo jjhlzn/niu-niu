@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+
 public class Game
 {
 	public static int SeatCount = 6;
@@ -13,9 +13,9 @@ public class Game
 		state = GameState.BeforeStart;
 		mySeat = -1;
 		rounds = new List<Round> ();
-		players = new Player[6];
 		currentRound = new Round();
 		rounds.Add(currentRound);
+		deck = new Deck ();
 	}  
 
 	public bool isMeSeated {   //我是否已经坐下
@@ -35,8 +35,6 @@ public class Game
 
 	public List<Round> rounds;
 
-	public Player[] players;
-
 	public Player me = Player.Me;
 
 	public Round currentRound;
@@ -47,6 +45,7 @@ public class Game
 	public int currentRoundNo;
 
 	public Seat[] seats;
+	public Deck deck;
 
 	public int PlayerCount {
 		get {
@@ -69,8 +68,25 @@ public class Game
 		return -1;
 	}
 
+	public List<Player> PlayingPlayers {
+		get {
+			List<Player>  players = new List<Player>();
+			for (int i = 0; i < seats.Length; i++) {
+				if (seats [i].hasPlayer () && seats[i].player.isPlaying) {
+					players.Add (seats [i].player);
+				}
+			}
+			return players;
+		}
+	}
 
-
+	public void StartGame() {
+		for (int i = 0; i < seats.Length; i++) {
+			if (seats [i].hasPlayer ()) {
+				seats [i].player.isPlaying = true;
+			}
+		}
+	}
 }
 
 
