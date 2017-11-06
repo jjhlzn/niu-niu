@@ -51,21 +51,7 @@ public class SetupCardGame : BaseStateController {
 
 	private float TransformConstant = 71.98f;
 
-	public GameObject[] userPanels;
-	public Image[] seatImages;
-	public Image[] playerImages;
-	public Text[] playerNames;
-	public Text[] playerScores;
-	public Button[] seatButtons;
-	public Text[] seatDescs;
-	public Image[] emptySeatImages;
-	public Image[] isRobImages;
-	public Image[] robingImages;
-	public Image[] bankerSignPositions;
-	public Image[] chipImages;   //下注的筹码
-	public Image[] chipPositionImages;
-	public Text[] chipCountLabels;
-	public Image[] readyImages;
+
 	public Image[] niuImages;  //说明是牛几的图片
 	public Image[] multipleImages; //倍数的图片
 	public Image[][] chipsArray; //计算结果，所移动的筹码
@@ -120,83 +106,45 @@ public class SetupCardGame : BaseStateController {
 	}
 		
 	private void GetUserSeatUI() {
-		
-		userPanels = GameObject.FindGameObjectsWithTag ("UserPanel");
-		userPanels = SortUserSeatUIObjects (userPanels);
+
+		//仅仅为了隐藏界面上的位置示意
+		GameObject[] userPanels = GameObject.FindGameObjectsWithTag ("UserPanel");
 		foreach (GameObject obj in userPanels) {
 			obj.SetActive (false);
 		}
 
-
-
+		//展示玩家抢庄、不抢庄的图片
 		GameObject[] isRobObjs = GameObject.FindGameObjectsWithTag ("isRobImage");
 		isRobObjs = SortUserSeatUIObjects (isRobObjs);
-		isRobImages = new Image[isRobObjs.Length];
 		for (int i = 0; i < isRobObjs.Length; i++) {
-			isRobImages [i] = isRobObjs [i].GetComponent<Image> ();
-			isRobImages [i].gameObject.SetActive (false);
-			seats [i].isRobImage = isRobImages [i];
-
-			//Debug.Log ("seats ["+i+"].isRobImage = " + seats [i].isRobImage);
+			seats [i].isRobImage = isRobObjs [i].GetComponent<Image> ();
+			seats [i].isRobImage.gameObject.SetActive (false);
 		} 
-		//beforeGameStartController.SetIsRobImages (isRobImages);
-		//robBankerController.SetIsRobImages (isRobImages);
-		//robBankerController.Reset ();
-		//chooseBankerController.SetIsRobImages (isRobImages);
 
-
-		/*
-		GameObject[] robingObjs = GameObject.FindGameObjectsWithTag ("RobingImage");
-		robingObjs = SortUserSeatUIObjects (robingObjs);
-		robingImages = new Image[robingObjs.Length];
-		for (int i = 0; i < robingObjs.Length; i++) {
-			robingImages [i] = robingObjs [i].GetComponent<Image> ();
-			robingImages [i].gameObject.SetActive (false);
-		}
-		//chooseBankerController.SetRobingImages (robingImages);
-		chooseBankerController.Reset ();  */
-
-		/*
-		GameObject[] bankerSignObjs = GameObject.FindGameObjectsWithTag ("BankerSign");
-		bankerSignObjs = SortUserSeatUIObjects (bankerSignObjs);
-		bankerSignPositions = new Image[bankerSignObjs.Length];
-		for (int i = 0; i < bankerSignObjs.Length; i++) {
-			bankerSignPositions [i] = bankerSignObjs [i].GetComponent<Image> ();
-			bankerSignPositions [i].gameObject.SetActive (false);
-
-		}
-		//chooseBankerController.SetBankerSignPositions (bankerSignPositions);
-		chooseBankerController.Reset (); */
-
-
+		//玩家下注时候的筹码图片
 		GameObject[] chipObjs = GameObject.FindGameObjectsWithTag ("chip");
 		chipObjs = SortUserSeatUIObjects (chipObjs);
-		chipImages = new Image[chipObjs.Length];
 		for (int i = 0; i < chipObjs.Length; i++) {
-			chipImages [i] = chipObjs [i].GetComponent<Image> ();
-			chipImages [i].gameObject.SetActive (false);
-
-			seats [i].chipImagesForBet = chipImages [i];
+			seats [i].chipImagesForBet = chipObjs [i].GetComponent<Image> ();
+			seats [i].chipImagesForBet.gameObject.SetActive (false);
 		}
-
-
+			
+		//玩家下注的时候，筹码移动到的最终位置
 		GameObject[] chipPositionObjs = GameObject.FindGameObjectsWithTag ("chipPosition");
 		chipPositionObjs = SortUserSeatUIObjects (chipPositionObjs);
-		chipPositionImages = new Image[chipPositionObjs.Length];
 		for (int i = 0; i < chipPositionObjs.Length; i++) {
-			chipPositionImages [i] = chipPositionObjs [i].GetComponent<Image> ();
-			chipPositionImages [i].gameObject.SetActive (false);
-			seats [i].chipPositionWhenBet = chipPositionImages [i].transform.position;
+			Image positionImage = chipPositionObjs [i].GetComponent<Image> ();
+			positionImage.gameObject.SetActive (false);
+			seats [i].chipPositionWhenBet = positionImage.transform.position;
 			  
 		}
 
+		//展示玩家下注的时候的文本，例如4
 		GameObject[] chipCountObjs = GameObject.FindGameObjectsWithTag ("chipCountLabel");
 		chipCountObjs = SortUserSeatUIObjects (chipCountObjs);
-		chipCountLabels = new Text[chipCountObjs.Length];
 		for (int i = 0; i < chipCountObjs.Length; i++) {
-			chipCountLabels [i] = chipCountObjs [i].GetComponent<Text> ();
-			seats [i].chipCountLabel = chipCountLabels [i];
-			chipCountLabels [i].gameObject.SetActive (false);
+			seats [i].chipCountLabel = chipCountObjs [i].GetComponent<Text> ();
+			seats [i].chipCountLabel.gameObject.SetActive (false);
 		}
 	}
 
@@ -533,8 +481,9 @@ public class SetupCardGame : BaseStateController {
 
 	private Image[] GetChips(int index) {
 		Image[] images = new Image[MaxMoveChipCount];
+
 		for (int i = 0; i < MaxMoveChipCount; i++) {
-			Image image = Instantiate (chipImages[index]);
+			Image image = Instantiate (seats[index].chipImagesForBet);
 			image.name = "user" + index + "chip" + i;
 			image.gameObject.transform.SetParent (cardPanel.transform);
 
@@ -543,7 +492,7 @@ public class SetupCardGame : BaseStateController {
 			localScale.y = 0.3f;
 			image.transform.localScale = localScale;
 
-			image.transform.position = chipImages [index].transform.position;
+			image.transform.position = seats[index].chipImagesForBet.transform.position;
 			images [i] = image;
 			image.gameObject.SetActive (false);
 		}
