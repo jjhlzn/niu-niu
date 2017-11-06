@@ -303,7 +303,11 @@ public class SetupCardGame : BaseStateController {
 			case "Score Label":
 				seat.scoreLabel = text;
 				seat.originScoreLabelPosition = seat.scoreLabel.transform.position;
-				seat.targetScoreLabelPosition = new Vector3 (seat.originScoreLabelPosition.x, seat.originScoreLabelPosition.y + 0.8f, 0);
+				if (index == 3) {
+					seat.targetScoreLabelPosition = new Vector3 (seat.originScoreLabelPosition.x, seat.originScoreLabelPosition.y + 0.8f, 0);
+				} else {
+					seat.targetScoreLabelPosition = new Vector3 (seat.originScoreLabelPosition.x, seat.originScoreLabelPosition.y + 1.0f, 0);
+				}
 				break;
 			}
 		}

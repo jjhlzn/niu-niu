@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CompareCardController : BaseStateController {
-	private float chipMoveSpeed = 18f;
+	private float chipMoveSpeed = 14f;
 	private float scoreLabelMoveSpeed = 5f;
 	private float MoveTime = 2f;
 

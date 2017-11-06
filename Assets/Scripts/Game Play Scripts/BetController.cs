@@ -16,15 +16,9 @@ public class BetController : BaseStateController {
 	[SerializeField]
 	private GameObject betPanel;
 
-	private float chipMoveSpeed = 50f;
-	/*
-	private Image[] chipImages;
-	private Image[] chipPositionImages;
-	private Text[] chipCountLabels;
-	*/
-	private Seat[] seats;
+	private float chipMoveSpeed = 40f;
 
-	private Vector3[] chipOriginPositions;
+	private Seat[] seats;
 
 	private bool[] isMoveChipArray;
 	private bool[] isBetCompletedArray;
