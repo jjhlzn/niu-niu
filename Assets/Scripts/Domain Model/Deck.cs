@@ -70,6 +70,11 @@ public class Deck
 			card.transform.SetSiblingIndex (i);
 			card.gameObject.SetActive (false);
 
+			Vector3 localScale = new Vector3 ();
+			localScale.x = 1f;
+			localScale.y = 1f;
+			card.transform.localScale = localScale;
+
 		}
 	}
 }

@@ -272,8 +272,8 @@ public class SetupCardGame : BaseStateController {
 		switch (index) {
 		case 0:
 			initialX = -240;
-			initialY = -277;
-			stepX = 100;
+			initialY = -260;
+			stepX = 110;
 			break;
 		case 1:
 			initialX = -448;
@@ -318,7 +318,8 @@ public class SetupCardGame : BaseStateController {
 		switch (index) {
 		case 0:
 			initialX = -100;
-			initialY = -277;
+			initialY = -260;
+			stepX = 40;
 			break;
 		case 1:
 			initialX = -448;

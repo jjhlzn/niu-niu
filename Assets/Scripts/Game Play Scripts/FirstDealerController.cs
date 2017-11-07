@@ -9,6 +9,7 @@ public class FirstDealerController : BaseStateController {
 	public static float dealWaitTimeBetweenPlayerForSecondDeal = 0.1f;
 	public static float waitTimeDeltaBetweenCard = 0.1f;
 	public static float turnUpTime = 0.5f;
+	public static float user0CardScale = 1.28f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -80,16 +81,23 @@ public class FirstDealerController : BaseStateController {
 		Vector3[] targetCardPositions = player.seat.cardPositions;
 		for (int i = 0; i < 4; i++) {
 			Vector3 targetCard = targetCardPositions [i];
-			StartCoroutine(GiveCardAnimation(cards[i], targetCard, step, waitTime));
+			StartCoroutine(GiveCardAnimation(player, cards[i], targetCard, step, waitTime));
 			waitTime += waitTimeDeltaBetweenCard;
 		}
 	}
 
-	IEnumerator GiveCardAnimation(Image card, Vector3 targetCard, float step, float waitTime) {
+	IEnumerator GiveCardAnimation(Player player, Image card, Vector3 targetCard, float step, float waitTime) {
 		yield return new WaitForSeconds (waitTime);
 		//Debug.Log ("waitTime = " + waitTime);
 		//Debug.Log ("(x, y): (" + targetCard.x + " , " + targetCard.y + ")");
+
 		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
+		if (player.seat.seatIndex == 0) {
+			Vector3 localScale = new Vector3 ();
+			localScale.x = user0CardScale;
+			localScale.y = user0CardScale;
+			card.transform.localScale = localScale;
+		}
 	}
 
 

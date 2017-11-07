@@ -80,13 +80,19 @@ public class SecondDealController : BaseStateController {
 		Vector3[] targetCardPositions = player.seat.cardPositions;
 
 		Vector3 targetCard = targetCardPositions [4];
-		StartCoroutine(GiveCardAnimation(cards[4], targetCard, step, waitTime));
+		StartCoroutine(GiveCardAnimation(player, cards[4], targetCard, step, waitTime));
 		waitTime += FirstDealerController.waitTimeDeltaBetweenCard;
 	}
 
-	IEnumerator GiveCardAnimation(Image card, Vector3 targetCard, float step, float waitTime) {
+	IEnumerator GiveCardAnimation(Player player, Image card, Vector3 targetCard, float step, float waitTime) {
 		yield return new WaitForSeconds (waitTime);
 		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
+		if (player.seat.seatIndex == 0) {
+			Vector3 localScale = new Vector3 ();
+			localScale.x = FirstDealerController.user0CardScale;
+			localScale.y = FirstDealerController.user0CardScale;
+			card.transform.localScale = localScale;
+		}
 	}
 
 
