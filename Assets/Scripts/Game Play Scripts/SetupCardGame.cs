@@ -32,6 +32,8 @@ public class SetupCardGame : BaseStateController {
 	[SerializeField]
 	private Image mutipleImage;
 
+	[SerializeField]
+	public Image bankerSignImage;
 	public Seat[] seats;
 	public Deck deck;
 
@@ -160,7 +162,8 @@ public class SetupCardGame : BaseStateController {
 				seat.emptySeatImage = image;
 				break;
 			case "Banker Sign Image":
-				seat.bankerSignImage = image;
+				image.gameObject.SetActive (false);
+				seat.bankerSignPosition = image.transform.position;
 				break;
 			case "Ready Image":
 				seat.readyImage = image;
@@ -424,11 +427,13 @@ public class SetupCardGame : BaseStateController {
 
 	private Image[] GetChips(int index) {
 		Image[] images = new Image[MaxMoveChipCount];
+		int startSiblings = 100;
 
 		for (int i = 0; i < MaxMoveChipCount; i++) {
 			Image image = Instantiate (seats[index].chipImageForBet);
 			image.name = "user" + index + "chip" + i;
-			image.gameObject.transform.SetParent (cardPanel.transform);
+			image.gameObject.transform.SetParent (userPanel.transform);
+			image.transform.SetSiblingIndex (startSiblings + i);
 
 			Vector3 localScale = new Vector3 ();
 			localScale.x = 0.3f;

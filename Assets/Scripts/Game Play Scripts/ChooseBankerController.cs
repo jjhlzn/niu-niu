@@ -93,7 +93,7 @@ public class ChooseBankerController : BaseStateController {
 			//int seatIndex = gamePlayController.game.GetSeatIndex (userIds[chooseIndex]);
 
 			int bankerSeatIndex = gamePlayController.game.GetSeatIndex (gamePlayController.game.currentRound.banker);
-			Vector3 targetPosition = seats[bankerSeatIndex].bankerSignImage.transform.position;
+			Vector3 targetPosition = seats[bankerSeatIndex].bankerSignPosition;
 			float step = moveBankerSignSpeed * Time.deltaTime;
 			bankerSign.gameObject.transform.position = Vector3.MoveTowards(bankerSign.transform.position, targetPosition, step);
 

@@ -49,7 +49,6 @@ public class FirstDealerController : BaseStateController {
 
 				//每个成员之间加入一个延时
 				waitTime += dealWaitTimeBetweenPlayer;
-
 			}
 
 			int playerCount = gamePlayController.game.PlayerCount;
@@ -152,7 +151,12 @@ public class FirstDealerController : BaseStateController {
 		
 
 	private void HandleResponse(Dictionary<string, string[]> cardsDict, Dictionary<string, int[]> betsDict) {
-
+		for (int i = 0; i < seats.Length; i++) {
+			if (seats [i].hasPlayer ()) {
+				seats [i].player.isReady = false;
+				seats [i].UpdateUI (gamePlayController.game);
+			}
+		}
 
 		string[] myCards;
 		if (cardsDict.ContainsKey (Player.Me.userId)) {

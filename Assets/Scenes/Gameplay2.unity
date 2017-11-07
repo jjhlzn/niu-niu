@@ -1669,7 +1669,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 446184237}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 139, y: 57, z: 0}
+  m_LocalPosition: {x: 139, y: 98, z: 0}
   m_LocalScale: {x: 0.4373998, y: 0.4373998, z: 1}
   m_Children: []
   m_Father: {fileID: 701353008}
@@ -1677,7 +1677,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 139, y: 57}
+  m_AnchoredPosition: {x: 139, y: 98}
   m_SizeDelta: {x: 117, y: 117}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &446184239
@@ -5275,6 +5275,7 @@ MonoBehaviour:
   scoreLabel: {fileID: 826207293}
   niuImage: {fileID: 660592632}
   mutipleImage: {fileID: 514241161}
+  bankerSignImage: {fileID: 489148643}
   seats: []
   deck:
     cardBack: {fileID: 0}
@@ -7072,7 +7073,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1633689137}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 139, y: 57, z: 0}
+  m_LocalPosition: {x: -14, y: 90, z: 0}
   m_LocalScale: {x: 0.4373998, y: 0.4373998, z: 1}
   m_Children: []
   m_Father: {fileID: 1168990244}
@@ -7080,7 +7081,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 139, y: 57}
+  m_AnchoredPosition: {x: -14, y: 90}
   m_SizeDelta: {x: 117, y: 117}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1633689139

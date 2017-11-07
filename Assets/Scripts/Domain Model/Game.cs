@@ -2,10 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public class Game
 {
+	public Vector3 originBankerSignPosition;
+	private Image _bankerSignImage;
+	public Image bankerSignImage {
+		get {
+			return _bankerSignImage;
+		}
+		set {
+			_bankerSignImage = value;
+			originBankerSignPosition = value.transform.position;
+		}
+	}
+
+	public Text gameStateLabel;
+	
 	public static int SeatCount = 6;
 	
 	public Game ()
@@ -89,6 +103,8 @@ public class Game
 
 	public void GoToNextRound() {
 		currentRoundNo++;
+		bankerSignImage.transform.position = originBankerSignPosition;
+		bankerSignImage.gameObject.SetActive (false);
 		//设置CurrentRound的数据
 		currentRound = new Round();
 		rounds.Add (currentRound);
