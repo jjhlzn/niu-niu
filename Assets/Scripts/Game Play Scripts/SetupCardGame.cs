@@ -49,7 +49,7 @@ public class SetupCardGame : BaseStateController {
 	private void SetOtherSeatUIs() {
 
 		//仅仅为了隐藏界面上的位置示意
-		GameObject[] userPanels = GameObject.FindGameObjectsWithTag ("UserPanel");
+		GameObject[] userPanels = GameObject.FindGameObjectsWithTag ("RobingImage");
 		foreach (GameObject obj in userPanels) {
 			obj.SetActive (false);
 		}
@@ -123,8 +123,8 @@ public class SetupCardGame : BaseStateController {
 			y = -57;
 			break;
 		case 2:
-			x = -453;
-			y = 250;
+			x = -380;
+			y = 230;
 			break;
 		case 3:
 			x = -16;
