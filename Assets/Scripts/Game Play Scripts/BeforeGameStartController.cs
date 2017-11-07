@@ -11,20 +11,18 @@ public class BeforeGameStartController : BaseStateController {
 
 	[SerializeField]
 	private GamePlayController gamePlayerController;
-
 	[SerializeField]
 	private SetupCardGame setUpGameController; 
 
 	[SerializeField]
 	private Button standUpButton;
-
 	[SerializeField]
 	private Button startButton;
+	[SerializeField]
+	private Button readyButton;
 
 	[SerializeField]
 	private Image card;
-	[SerializeField]
-	private Camera cam;
 
 	private Seat[] seats;
 
@@ -131,12 +129,14 @@ public class BeforeGameStartController : BaseStateController {
 			userId = Player.Me.userId
 		};
 
-		gameSocket.EmitJson (Messages.StartGame, JsonConvert.SerializeObject(request), (string msg) => {
+		gameSocket.EmitJson (Messages.Ready, JsonConvert.SerializeObject(request), (string msg) => {
 			//setUpGameController.resetCards ();
-		
+			//startButton.gameObject.SetActive(false);
+			//standUpButton.gameObject.SetActive(false);
 
-			startButton.gameObject.SetActive(false);
-			standUpButton.gameObject.SetActive(false);
+			//界面的元素全部还原，各个Controller全部Reset
+			readyButton.gameObject.SetActive(false);
+			gamePlayerController.PrepareForNewRound();
 		}); 
 	}
 		

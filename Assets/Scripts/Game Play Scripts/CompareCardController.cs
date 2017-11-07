@@ -17,11 +17,6 @@ public class CompareCardController : BaseStateController {
 	[SerializeField]
 	private Button readyButton;
 
-	/*
-	private Text[] scoreLabels;
-	private Vector3[] targetScoreLabelPositons;
-	private Image[][] chipsArray; */
-
 	private Seat[] seats;
 
 	public int[] moveChipFromOtheToBankerArray;
@@ -38,6 +33,16 @@ public class CompareCardController : BaseStateController {
 		seats = gamePlayController.game.seats;
 	}
 
+	public override void Reset() {
+		moveChipFromOtheToBankerArray = null;
+		moveChipFromBankerToOtherArray = null;
+		moveToBanker = false;
+		moveFromBanker = false;
+		showScoreLabel = false;
+		moveScoreLabel = false;
+		allAnimCompleted = false;
+	}
+
 	// Use this for initialization
 	void Awake () {
 		moveTimeLeft = MoveTime;
@@ -52,8 +57,7 @@ public class CompareCardController : BaseStateController {
 		}
 	}
 
-	public override void Reset() {
-	}
+
 	
 	// Update is called once per frame
 	void Update () {
@@ -192,8 +196,7 @@ public class CompareCardController : BaseStateController {
 		float step = chipMoveSpeed * Time.deltaTime;
 
 		float waitTime = 0;
-
-
+	
 		Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
 
 		bool moveCompleted = true;

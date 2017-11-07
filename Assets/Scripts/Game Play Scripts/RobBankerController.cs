@@ -29,6 +29,10 @@ public class RobBankerController : BaseStateController {
 	void Start() {
 		seats = gamePlayerController.game.seats;
 	}
+
+	public void Init() {
+		seats = gamePlayerController.game.seats;
+	}
 		
 	// Update is called once per frame
 	void Update () {

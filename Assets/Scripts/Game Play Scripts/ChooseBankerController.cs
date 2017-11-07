@@ -29,7 +29,6 @@ public class ChooseBankerController : BaseStateController {
 	private int chooseCount;
 	private float waitTime;
 	private float timeLeft;
-
 	private bool movingBankerSign;
 
 	void Awake() {
@@ -42,6 +41,17 @@ public class ChooseBankerController : BaseStateController {
 	public void Init() {
 		seats = gamePlayController.game.seats;
 		bankerSign.gameObject.SetActive (false);
+	}
+
+	public override void Reset() {
+		chooseCompleted = false;
+		userIds = null;
+		isChoosingBanker = false;
+		chooseIndex = -1;
+		chooseCount = -1;
+		timeLeft = BankerSignMoveTimeInterval;
+		waitTime = 0f;
+		movingBankerSign = false;
 	}
 
 	void Update() {
@@ -100,13 +110,7 @@ public class ChooseBankerController : BaseStateController {
 	}
 
 
-	public override void Reset() {
-		isChoosingBanker = false;
-		movingBankerSign = false;
-		timeLeft = BankerSignMoveTimeInterval;
-		waitTime = 0f;
-		chooseIndex = -1;
-	}
+
 
 	public void HandleResponse(GoToChooseBankerNotity resp) {
 

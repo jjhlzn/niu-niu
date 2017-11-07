@@ -15,6 +15,7 @@ public class Player
 			_userId = value;
 		}
 	}
+	public bool isReady;
 	public Seat seat;  //座位的索引号，
 	public int score;
 	public bool isPlaying;  //是否已经在完，用于区分仅仅坐下，但是没有玩的玩家

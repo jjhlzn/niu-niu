@@ -52,9 +52,8 @@ public class BaseGameResponse {
 
 public class FirstDealResponse : BaseGameResponse {
 	public string roomNo;
-	public int number;
-	public string[] cards;
-	public int[] bets;
+	public Dictionary<string, string[]> cardsDict = new Dictionary<string, string[]>();
+	public Dictionary<string, int[]> betsDict = new Dictionary<string, int[]>();
 }
 
 public class GoToChooseBankerNotity : BaseGameResponse {

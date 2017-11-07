@@ -27,6 +27,14 @@ public class FirstDealerController : BaseStateController {
 		//hideOtherDeckCard (); 
 	}
 
+	public void Init() {
+		seats = gamePlayController.game.seats;
+		deck = gamePlayController.game.deck;
+	}
+
+	public override void Reset() {
+
+	}
 
 	// Update is called once per frame
 	void Update () {
@@ -125,25 +133,12 @@ public class FirstDealerController : BaseStateController {
 	/******* 处理服务器的通知***************/
 	public void HandleResponse(FirstDealResponse notify) {
 
-		/*
-		string[] cards = notify.cards;
+		Dictionary<string, string[]> cardsDict = notify.cardsDict;
 		//Debug.Log ("cards: " + cards);
-		int[] bets = notify.bets;
+		Dictionary<string, int[]> betsDict = notify.betsDict;
 		//Debug.Log ("bets: " + bets);
 
-		for (int i = 0; i < cards.Length; i++) {
-			gamePlayController.game.currentRound.myCards[i] = cards[i];
-		}
-
-		gamePlayController.game.currentRound.myBets = bets;
-		for (int i = 0; i < Game.SeatCount; i++) {
-			seats[i].readyImage.gameObject.SetActive (false);
-		}
-
-		//先把数据结构设置好，再在Update()中执行发牌的动画。
-		FirstDeal ();
-		deck.ShowNotDealCardsForFirstDeal (gamePlayController.game.PlayingPlayers.Count);
-		gamePlayController.state = GameState.FirstDeal; */
+		HandleResponse (cardsDict, betsDict);
 	}
 
 	public void HandleResponse(StartGameNotify notify) {
@@ -151,6 +146,13 @@ public class FirstDealerController : BaseStateController {
 		//Debug.Log ("cards: " + cards);
 		Dictionary<string, int[]> betsDict = notify.betsDict;
 		//Debug.Log ("bets: " + bets);
+
+		HandleResponse (cardsDict, betsDict);
+	}
+		
+
+	private void HandleResponse(Dictionary<string, string[]> cardsDict, Dictionary<string, int[]> betsDict) {
+
 
 		string[] myCards;
 		if (cardsDict.ContainsKey (Player.Me.userId)) {
@@ -173,18 +175,13 @@ public class FirstDealerController : BaseStateController {
 		gamePlayController.game.currentRound.myBets = myBets;
 
 		gamePlayController.game.StartGame ();
-	
+
 		deck.ShowNotDealCardsForFirstDeal (gamePlayController.game.PlayingPlayers.Count);
 
 		//先把数据结构设置好，再在Update()中执行发牌的动画。
 		FirstDeal ();
 
 		gamePlayController.state = GameState.FirstDeal;
-	}
-		
-
-	public override void Reset() {
-
 	}
 
 

@@ -33,9 +33,12 @@ public class Seat
 	public Image bankerSignImage;
 	public Image readyImage;
 	public Text scoreLabel;
-	public Image chipImagesForBet;
-	public Vector3 chipPositionWhenBet;
+	public Image chipImageForBet;
+	public Vector3 originChipImagePositionForBet;
+	public Vector3 chipPositionWhenBet; //下注的时候，筹码移动到的目的位置
 	public Text chipCountLabel;
+	public Image niuImage; //显示牛几的图片
+	public Image mutipleImage; //显示牛的倍数的图片
 
 
 	public Image isRobImage;
@@ -58,7 +61,8 @@ public class Seat
 	public void UpdateUI(Game game) {
 		if (game.state == GameState.BeforeStart) {
 			robingSeatBorderImage.gameObject.SetActive (false);
-			bankerSignImage.gameObject.SetActive (false);
+
+
 			scoreLabel.gameObject.SetActive (false);
 
 			if (player != null) {  
@@ -74,6 +78,11 @@ public class Seat
 				emptySeatImage.gameObject.SetActive (false);
 				sitdownButton.gameObject.SetActive (false);
 				readyImage.gameObject.SetActive (true);
+				if (game.currentRound.banker == player.userId) {
+					bankerSignImage.gameObject.SetActive (true);
+				} else {
+					bankerSignImage.gameObject.SetActive (false);
+				}
 			} else {
 				seatBorderImage.gameObject.SetActive (false);
 				playerImage.gameObject.SetActive (false);
@@ -90,10 +99,34 @@ public class Seat
 					emptySeatImage.gameObject.SetActive (true);
 				}
 				readyImage.gameObject.SetActive (false);
+				bankerSignImage.gameObject.SetActive (false);
 			} 
 
 		} else {
 		}
+	}
+
+	public void Reset() {
+		
+
+		UpdateUI (game);
+
+		for (int i = 0; i < cards.Length; i++) {
+			cards [i] = null;
+		}
+
+		scoreLabel.gameObject.SetActive (false);
+		scoreLabel.transform.position = originScoreLabelPosition;
+
+		chipImageForBet.gameObject.SetActive (false);
+		chipImageForBet.transform.position = originChipImagePositionForBet;
+
+		chipCountLabel.gameObject.SetActive (false);
+
+		niuImage.gameObject.SetActive (false);
+		mutipleImage.gameObject.SetActive (false);
+
+		bankerSignImage.gameObject.SetActive (false);
 	}
 
 }

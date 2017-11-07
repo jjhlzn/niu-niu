@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class SetupCardGame : BaseStateController {
 	private int MaxMoveChipCount = 8 * 5;
 	private float TransformConstant = 71.98f;
-	private int cardCount = 30; //生成多少张牌的图片，6 * 5 = 30
+	private int cardCount = 10; //生成多少张牌的图片，6 * 5 = 30
 
 	[SerializeField]
 	private CheckCardController checkCardController;
@@ -31,9 +31,6 @@ public class SetupCardGame : BaseStateController {
 	private Image niuImage;
 	[SerializeField]
 	private Image mutipleImage;
-
-	private Image[] niuImages;  //说明是牛几的图片
-	private Image[] multipleImages; //倍数的图片
 
 	public Seat[] seats;
 	public Deck deck;
@@ -171,7 +168,8 @@ public class SetupCardGame : BaseStateController {
 			case "Chip Image":
 				image.transform.SetParent (userPanel.transform);
 				image.gameObject.SetActive (false);
-				seat.chipImagesForBet = image;
+				seat.chipImageForBet = image;
+				seat.originChipImagePositionForBet = image.transform.position;
 				break;
 			}
 		}
@@ -322,16 +320,12 @@ public class SetupCardGame : BaseStateController {
 	 * 设置展示牛的时候，表示牛几的图片
 	 * */
 	private void SetNiuImages() {
-		this.niuImages = new Image[Game.SeatCount];
-		this.multipleImages = new Image[Game.SeatCount];
 		for (int i = 0; i < Game.SeatCount; i++) {
-			niuImages [i] = GetNiuImage (i);
-			niuImages [i].gameObject.SetActive (false);
-			multipleImages [i] = GetMutipleImage (i);
-			multipleImages [i].gameObject.SetActive (false);
+			seats[i].niuImage = GetNiuImage (i);
+			seats[i].niuImage.gameObject.SetActive (false);
+			seats[i].mutipleImage = GetMutipleImage (i);
+			seats[i].mutipleImage.gameObject.SetActive (false);
 		}
-		checkCardController.SetNiuImages (niuImages);
-		checkCardController.SetMutipleImages (multipleImages);
 	}
 
 	private Image GetNiuImage(int index) {
@@ -432,7 +426,7 @@ public class SetupCardGame : BaseStateController {
 		Image[] images = new Image[MaxMoveChipCount];
 
 		for (int i = 0; i < MaxMoveChipCount; i++) {
-			Image image = Instantiate (seats[index].chipImagesForBet);
+			Image image = Instantiate (seats[index].chipImageForBet);
 			image.name = "user" + index + "chip" + i;
 			image.gameObject.transform.SetParent (cardPanel.transform);
 
@@ -441,7 +435,7 @@ public class SetupCardGame : BaseStateController {
 			localScale.y = 0.3f;
 			image.transform.localScale = localScale;
 
-			image.transform.position = seats[index].chipImagesForBet.transform.position;
+			image.transform.position = seats[index].chipImageForBet.transform.position;
 			images [i] = image;
 			image.gameObject.SetActive (false);
 		}
@@ -519,6 +513,8 @@ public class SetupCardGame : BaseStateController {
 			temp.gameObject.SetActive (true);
 		}
 		deck.cards = cards;
+		deck.originPosition = cards [0].transform.position;
+		deck.cardBack = cards [0].sprite;
 		deck.Reset ();
 	}
 }

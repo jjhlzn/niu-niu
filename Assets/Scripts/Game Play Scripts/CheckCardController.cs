@@ -15,15 +15,6 @@ public class CheckCardController : BaseStateController {
 	[SerializeField]
 	private GameObject checkCardPanel;
 
-
-	/*
-	private List<Image> deckCards;
-	public Sprite[] cardSprites;
-	private Vector3[][] showCardPositionsArray;
-    */
-
-	private Image[] niuImages;
-	private Image[] multipleImages;
 	private Deck deck;
 	private Seat[] seats;
 
@@ -38,6 +29,8 @@ public class CheckCardController : BaseStateController {
 
 	public override void Reset() {
 		hasShowCard = false;
+		isMoveCardArray = new bool[Game.SeatCount];
+		playerShowCardCompleted = new bool[Game.SeatCount];
 	}
 
 	public void Init() {
@@ -91,8 +84,8 @@ public class CheckCardController : BaseStateController {
 					} 
 					cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, targetV, step);
 
-					cards [j].gameObject.layer = sequences [j];
-					cards [j].transform.SetSiblingIndex (sequences [j]);
+					//cards [j].gameObject.layer = j * 5 + sequences [j];
+					cards [j].transform.SetSiblingIndex (i * 5 + sequences [j]);
 
 					if (!Utils.isTwoPositionIsEqual (cards [j].gameObject.transform.position, targetV)) {
 						moveCompleted = false;
@@ -102,8 +95,8 @@ public class CheckCardController : BaseStateController {
 				if (moveCompleted) {
 					isMoveCardArray[i] = false;
 					Debug.Log ("seat " + i + " show card anim completed");
-					niuImages [i].gameObject.SetActive (true);
-					multipleImages [i].gameObject.SetActive (true);
+					seats [i].niuImage.gameObject.SetActive (true);
+					seats [i].mutipleImage.gameObject.SetActive (true);
 					//playerShowCardCompleted [i] = true;
 					StartCoroutine(SetPlayerShowCardCompleted(i));
 				} 
@@ -192,28 +185,6 @@ public class CheckCardController : BaseStateController {
 			//StartCoroutine (TurnUser1Cards ());
 		});
 	}
-
-
-	/*
-	public void SetDeckCards(List<Image> cards) {
-		this.deckCards = cards;
-	}
-
-	public void SetCardSprites(Sprite[] cardSprites) {
-		this.cardSprites = cardSprites;
-	}
-
-	public void SetShowCardPositionsArray(Vector3[][] array) {
-		this.showCardPositionsArray = array;
-	} */
-
-	public void SetNiuImages(Image[] niuImages) {
-		this.niuImages = niuImages;
-	}
-	
-	public void SetMutipleImages(Image[] mutipleImages) {
-		this.multipleImages = mutipleImages;
-	} 
 
 	public void HandleResponse(GoToCheckCardNotify notify) {
 		string[] cards = gamePlayController.game.currentRound.myCards;

@@ -46,14 +46,12 @@ public class BetController : BaseStateController {
 	public void Awake() {
 		isMoveChipArray = new bool[Game.SeatCount];
 		isBetCompletedArray = new bool[Game.SeatCount];
-		for (int i = 0; i < Game.SeatCount; i++) {
-			isMoveChipArray [i] = false;
-			isBetCompletedArray [i] = false;
-		}
 	}
 
 	public override void Reset() {
 		hasBet = false;
+		isMoveChipArray = new bool[Game.SeatCount];
+		isBetCompletedArray = new bool[Game.SeatCount];
 	}
 	
 	// Update is called once per frame
@@ -69,7 +67,7 @@ public class BetController : BaseStateController {
 			for (int i = 0; i < Game.SeatCount; i++) {
 				
 				if (isMoveChipArray [i]) {
-					seats[i].chipImagesForBet.gameObject.SetActive (true);
+					seats[i].chipImageForBet.gameObject.SetActive (true);
 
 					Vector3 targetPosition = seats[i].chipPositionWhenBet;
 					float step = 0;
@@ -79,10 +77,10 @@ public class BetController : BaseStateController {
 						step = chipMoveSpeed * Time.deltaTime;
 					}
 
-					seats[i].chipImagesForBet.gameObject.transform.position = Vector3.MoveTowards (seats[i].chipImagesForBet.gameObject.transform.position,
+					seats[i].chipImageForBet.gameObject.transform.position = Vector3.MoveTowards (seats[i].chipImageForBet.gameObject.transform.position,
 						targetPosition, step);
 
-					if (Utils.isTwoPositionIsEqual (seats[i].chipImagesForBet.gameObject.transform.position, targetPosition)) {
+					if (Utils.isTwoPositionIsEqual (seats[i].chipImageForBet.gameObject.transform.position, targetPosition)) {
 						isMoveChipArray [i] = false;
 						seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
 						seats[i].chipCountLabel.gameObject.SetActive (true);

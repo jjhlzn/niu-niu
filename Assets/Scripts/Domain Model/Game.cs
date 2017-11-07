@@ -11,7 +11,6 @@ public class Game
 	public Game ()
 	{
 		state = GameState.BeforeStart;
-		mySeat = -1;
 		rounds = new List<Round> ();
 		currentRound = new Round();
 		rounds.Add(currentRound);
@@ -30,17 +29,10 @@ public class Game
 	}
 
 	public GameState state;
-
 	public string roomNo;
-
 	public List<Round> rounds;
-
 	public Player me = Player.Me;
-
 	public Round currentRound;
-
-	public int mySeat;
-
 	public int totalRoundCount;
 	public int currentRoundNo;
 
@@ -88,7 +80,24 @@ public class Game
 		}
 	}
 
+	public bool HasNextRound() {
+		if (currentRoundNo < totalRoundCount) {
+			return true;
+		}
+		return false;
+	}
 
+	public void GoToNextRound() {
+		currentRoundNo++;
+		//设置CurrentRound的数据
+		currentRound = new Round();
+		rounds.Add (currentRound);
+		for (int i = 0; i < Game.SeatCount; i++) {
+			if (seats [i].hasPlayer ()) {
+				seats [i].player.isPlaying = true;
+			}
+		}
+	}
 }
 
 

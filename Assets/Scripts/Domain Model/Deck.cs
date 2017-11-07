@@ -11,7 +11,8 @@ public class Deck
 	
 	public Deck (){
 	}
-
+	public Sprite cardBack;
+	public Vector3 originPosition;
 	public List<Image> cards;  
 	public Sprite[] cardFaceSprites;
 
@@ -19,7 +20,11 @@ public class Deck
 
 	public Image Deal() {
 		Debug.Log ("deal card cardIndex  = " + validStart);
-		return cards [validStart++];
+
+		Image card = cards [validStart];
+		card.transform.SetSiblingIndex (validStart);
+		validStart++;
+		return card;
 	}
 
 	public void ShowNotDealCardsForFirstDeal(int playerCount) {
@@ -54,8 +59,17 @@ public class Deck
 	}
 
 	public void Reset() {
-		foreach (Image image in cards) {
-			image.gameObject.SetActive (false);
+		validStart = 0;
+
+		Image card = null;
+		for (int i = 0; i < cards.Count; i++) {
+			card = cards [i];
+
+			card.transform.position = originPosition;
+			card.sprite = cardBack;
+			card.transform.SetSiblingIndex (i);
+			card.gameObject.SetActive (false);
+
 		}
 	}
 }

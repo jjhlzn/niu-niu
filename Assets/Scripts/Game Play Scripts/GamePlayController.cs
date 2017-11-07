@@ -92,6 +92,23 @@ public class GamePlayController : MonoBehaviour {
 	public void Reset() {
 	}
 
+	public void PrepareForNewRound() {
+		game.deck.Reset ();
+		game.GoToNextRound ();
+		for (int i = 0; i < Game.SeatCount; i++) {
+			game.seats [i].Reset ();
+		}
+
+		beforeGameStartController.Reset ();
+		firstDealerController.Reset ();
+		robBankerController.Reset ();
+		chooseBankerController.Reset ();
+		betController.Reset ();
+		secondDealController.Reset ();
+		checkCardController.Reset ();
+		compareController.Reset ();
+	}
+
 	public void SetGameSocket(Socket socket) {
 		gameSocket = socket;
 
