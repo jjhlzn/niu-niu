@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class SetupCardGame : BaseStateController {
 	private int MaxMoveChipCount = 8 * 5;
-	private float TransformConstant = 71.98f;
-	private int cardCount = 10; //生成多少张牌的图片，6 * 5 = 30
+	public static float TransformConstant = 71.98f;
+	private int cardCount = 30; //生成多少张牌的图片，6 * 5 = 30
 
 	[SerializeField]
 	private CheckCardController checkCardController;
@@ -34,6 +34,9 @@ public class SetupCardGame : BaseStateController {
 
 	[SerializeField]
 	public Image bankerSignImage;
+	[SerializeField]
+	public Text gameStateLabel;
+
 	public Seat[] seats;
 	public Deck deck;
 
@@ -41,6 +44,31 @@ public class SetupCardGame : BaseStateController {
 		CreateDeck ();
 		SeatSeatUIs ();
 		SetOtherSeatUIs ();
+
+
+	}
+
+	void Start() {
+	}
+
+	int CalculateLengthOfMessage(string message)
+	{
+		int totalLength = 0;
+
+		Font myFont = gameStateLabel.font;  //chatText is my Text component
+		CharacterInfo characterInfo = new CharacterInfo();
+
+		char[] arr = message.ToCharArray();
+
+		foreach(char c in arr)
+		{
+			myFont.GetCharacterInfo(c, out characterInfo, gameStateLabel.fontSize);  
+
+			totalLength += characterInfo.advance;
+			Debug.Log ("totalLength: " + totalLength);
+		}
+
+		return totalLength;
 	}
 
 	public override void Reset() {

@@ -17,7 +17,7 @@ public class BetController : BaseStateController {
 	private GameObject betPanel;
 
 	private float user0ChipMoveSpeed = 180f;
-	private float chipMoveSpeed = 90f;
+	private float chipMoveSpeed = 150f;
 
 	private Seat[] seats;
 
@@ -56,7 +56,10 @@ public class BetController : BaseStateController {
 	
 	// Update is called once per frame
 	void Update () {
+
 		if (gamePlayController.state == GameState.Bet) {
+
+			gamePlayController.game.ShowStateLabel ("请选择下注分数");
 			
 			if (!hasBet) {
 				betPanel.SetActive (true);
@@ -88,6 +91,7 @@ public class BetController : BaseStateController {
 
 						if (IsAllBetCompleted && secondDealController.canSecondDeal) {
 							Debug.Log ("In BetControoler: change to SecondSeal state");
+							gamePlayController.game.HideStateLabel ();
 							gamePlayController.state = GameState.SecondDeal;
 						}
 					}

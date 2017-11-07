@@ -36,6 +36,10 @@ public class RobBankerController : BaseStateController {
 		
 	// Update is called once per frame
 	void Update () {
+		if (gamePlayerController.state == GameState.RobBanker) {
+			gamePlayerController.game.ShowStateLabel("抢庄");
+		}
+
 		//Debug.Log ("game state is : " + gamePlayerController.state.value);
 		if (gamePlayerController.state == GameState.RobBanker && !hasRobBanker) {
 			robRankerPanel.gameObject.SetActive (true);

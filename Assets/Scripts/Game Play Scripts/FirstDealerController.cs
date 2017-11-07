@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class FirstDealerController : BaseStateController {
 	public static float dealSpeed = 350f; //发牌速度
 	public static float dealWaitTimeBetweenPlayer = 0.3f;
+	public static float dealWaitTimeBetweenPlayerForSecondDeal = 0.1f;
 	public static float waitTimeDeltaBetweenCard = 0.1f;
 	public static float turnUpTime = 0.5f;
 

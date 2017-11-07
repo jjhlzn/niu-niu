@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ChooseBankerController : BaseStateController {
 	public static int ChooseTotalCount = 15;
 	private float BankerSignMoveTimeInterval = .03f;
-	private float moveBankerSignSpeed = 200f;
+	private float moveBankerSignSpeed = 10f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -15,11 +15,6 @@ public class ChooseBankerController : BaseStateController {
 	private Image bankerSign;
 	private Vector3 bankerSignOriginPosition;
 
-	/*
-	private Image[] robingImages;
-	private Image[] bankerSignPositions;
-	private Image[] isRobImages;
-	*/
 	private Seat[] seats;
 
 	private bool chooseCompleted;
@@ -30,6 +25,7 @@ public class ChooseBankerController : BaseStateController {
 	private float waitTime;
 	private float timeLeft;
 	private bool movingBankerSign;
+	private bool isShowStateLabel;
 
 	void Awake() {
 		bankerSignOriginPosition = bankerSign.gameObject.transform.position;
@@ -57,9 +53,9 @@ public class ChooseBankerController : BaseStateController {
 	void Update() {
 
 		if (isChoosingBanker) {
+			
 			timeLeft -= Time.deltaTime;
-			if ( timeLeft < 0 )
-			{
+			if (timeLeft < 0) {
 				List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
 				for (int i = 0; i < playingPlayers.Count; i++) {
 					Player player = playingPlayers [i];
@@ -71,21 +67,26 @@ public class ChooseBankerController : BaseStateController {
 				}
 					
 
-				if (   chooseCount > ChooseTotalCount
-					&& seats [gamePlayController.game.GetSeatIndex(userIds[chooseIndex])].player.userId == gamePlayController.game.currentRound.banker) {
+				if (chooseCount > ChooseTotalCount
+				    && seats [gamePlayController.game.GetSeatIndex (userIds [chooseIndex])].player.userId == gamePlayController.game.currentRound.banker) {
 
 					isChoosingBanker = false;
 					foreach (Seat seat in seats) {
 						seat.robingSeatBorderImage.gameObject.SetActive (false);
 					}
-
+					Game game = gamePlayController.game;
+					game.ShowStateLabel (game.currentRound.banker + "成为庄家");
 					movingBankerSign = true;
+					bankerSign.gameObject.transform.position = new Vector3 (game.gameStateLabel.transform.position.x - game.gameStateLabel.preferredWidth / SetupCardGame.TransformConstant / 2,
+						game.gameStateLabel.transform.position.y, 0);
 					bankerSign.gameObject.SetActive (true);
 				} else {
 					timeLeft = BankerSignMoveTimeInterval;
 					chooseIndex = ++chooseIndex % userIds.Length;
 					chooseCount++;
 				}
+			} else {
+				gamePlayController.game.ShowStateLabel ("多人抢庄，现在随机抢庄");
 			}
 		}
 
@@ -103,7 +104,7 @@ public class ChooseBankerController : BaseStateController {
 					seat.isRobImage.gameObject.SetActive (false);
 				}
 				movingBankerSign = false;
-
+				gamePlayController.game.HideStateLabel ();
 				gamePlayController.goToNextState ();
 			}
 		} 
@@ -127,7 +128,7 @@ public class ChooseBankerController : BaseStateController {
 				userIds [index++] = seats[i].player.userId;
 			}
 		}
-
+		gamePlayController.game.HideStateLabel ();
 		chooseIndex = 0;
 		isChoosingBanker = true;
 

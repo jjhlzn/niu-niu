@@ -56,6 +56,10 @@ public class CheckCardController : BaseStateController {
 	}
 
 	void Update() {
+		if (gamePlayController.state == GameState.CheckCard) {
+			gamePlayController.game.ShowStateLabel ("查看手牌");
+		}
+
 		//Debug.Log ("state = " + gamePlayController.state.value);
 		if (gamePlayController.state == GameState.CheckCard && !hasShowCard) {
 			checkCardPanel.SetActive (true);
@@ -189,6 +193,7 @@ public class CheckCardController : BaseStateController {
 		string[] cards = gamePlayController.game.currentRound.myCards;
 		cards [4] = notify.card;
 
+		gamePlayController.game.HideStateLabel ();
 		gamePlayController.state = GameState.CheckCard;
 	}
 

@@ -62,7 +62,7 @@ public class SecondDealController : BaseStateController {
 				SecondDealCardsAnimation (player, waitTime);
 
 				//每个成员之间加入一个延时
-				waitTime += FirstDealerController.dealWaitTimeBetweenPlayer;
+				waitTime += FirstDealerController.dealWaitTimeBetweenPlayerForSecondDeal;
 			}
 				
 			//判断最后一张牌是否已经发好
@@ -112,6 +112,7 @@ public class SecondDealController : BaseStateController {
 	}
 		
 	public void HandleResponse(GoToSecondDealNotify notify) {
+		gamePlayController.game.HideStateLabel ();
 		string[] cards = gamePlayController.game.currentRound.myCards;
 		cards [4] =  notify.cardsDict[Player.Me.userId];
 

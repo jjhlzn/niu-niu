@@ -114,6 +114,22 @@ public class Game
 			}
 		}
 	}
+
+	public void ShowStateLabel(string msg) {
+		this.gameStateLabel.text = msg;
+		this.gameStateLabel.gameObject.SetActive (true);
+	}
+
+	public void HideStateLabel() {
+		this.gameStateLabel.gameObject.SetActive (false);
+	}
+
+	/*
+	public void UpdateGateStateLabel() {
+		if (state == GameState.RobBanker) {
+		} else if (state == GameState.ChooseBanker) {
+		} else if (state == Game.
+	} */
 }
 
 

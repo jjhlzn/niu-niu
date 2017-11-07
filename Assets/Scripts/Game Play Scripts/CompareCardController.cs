@@ -62,6 +62,10 @@ public class CompareCardController : BaseStateController {
 	// Update is called once per frame
 	void Update () {
 
+		if (gamePlayController.state == GameState.CompareCard) {
+			gamePlayController.game.ShowStateLabel ("比牌中");
+		}
+
 		if (gamePlayController.state == GameState.CompareCard && checkCardController.isAllPlayerShowCardAnimCompleted) {
 
 			//Debug.Log ("moveToBanker = " + moveToBanker + ", moveFromBanker = " + moveFromBanker + ", showScoreLabel = " + showScoreLabel + ", moveTimeLeft = " + moveTimeLeft);
@@ -127,11 +131,10 @@ public class CompareCardController : BaseStateController {
 				if (moveTimeLeft < 0) {
 					moveScoreLabel = false;
 					allAnimCompleted = true;
+					gamePlayController.game.HideStateLabel ();
 				}
 				moveTimeLeft -= Time.deltaTime;
 			}
-
-	
 		} 
 	}
 
@@ -202,7 +205,7 @@ public class CompareCardController : BaseStateController {
 		bool moveCompleted = true;
 		  
 		int startIndex = to * 8;
-		for (int i = to * 8; i < to * 8 + 8; i++) {
+		for (int i = 0; i < 8; i++) {
 			Image image = seats [from].chipImages [i];
 			if (!image.gameObject.activeInHierarchy)
 				image.gameObject.SetActive (true);
@@ -262,6 +265,7 @@ public class CompareCardController : BaseStateController {
 
 		//Debug.Log ("Go to compare card state");
 		//Debug.Log ("moveToBanker = " + moveToBanker);
+		gamePlayController.game.HideStateLabel();
 		gamePlayController.state = GameState.CompareCard;
 	}
 
