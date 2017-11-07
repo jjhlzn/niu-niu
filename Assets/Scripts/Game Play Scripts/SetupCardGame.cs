@@ -119,8 +119,8 @@ public class SetupCardGame : BaseStateController {
 			y = -258;
 			break;
 		case 1:
-			x = -479;
-			y = -57;
+			x = -482;
+			y = -24;
 			break;
 		case 2:
 			x = -380;
