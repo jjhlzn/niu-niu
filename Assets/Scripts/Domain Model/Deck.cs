@@ -19,7 +19,7 @@ public class Deck
 	private int validStart = 0;
 
 	public Image Deal() {
-		Debug.Log ("deal card cardIndex  = " + validStart);
+		//Debug.Log ("deal card cardIndex  = " + validStart);
 
 		Image card = cards [validStart];
 		card.transform.SetSiblingIndex (validStart);
@@ -34,7 +34,7 @@ public class Deck
 	}
 
 	public void ShowNotDealCardsForSecondDeal(int playerCount) {
-		Debug.Log ("Show NotDeal Cards For SecondDeal");
+		//Debug.Log ("Show NotDeal Cards For SecondDeal");
 		for (int i = playerCount * 4; i < playerCount * 5; i++) {
 			cards [i].gameObject.SetActive (true);
 		}

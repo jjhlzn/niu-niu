@@ -84,7 +84,6 @@ public class CheckCardController : BaseStateController {
 					} 
 					cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, targetV, step);
 
-					//cards [j].gameObject.layer = j * 5 + sequences [j];
 					cards [j].transform.SetSiblingIndex (i * 5 + sequences [j]);
 
 					if (!Utils.isTwoPositionIsEqual (cards [j].gameObject.transform.position, targetV)) {

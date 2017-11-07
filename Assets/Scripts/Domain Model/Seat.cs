@@ -80,15 +80,6 @@ public class Seat
 			else
 				readyImage.gameObject.SetActive (false);
 
-			Debug.Log ("game.currentRound.banker = " + game.currentRound.banker);
-			Debug.Log (" player.userId = " + player.userId);
-			if (game.currentRound.banker == player.userId) {
-				//bankerSignPosition.gameObject.SetActive (true);
-				Debug.Log (" show banker sign image");
-			} else {
-				//bankerSignPosition.gameObject.SetActive (false);
-				Debug.Log (" hide banker sign image");
-			}
 		} else {
 			seatBorderImage.gameObject.SetActive (false);
 			playerImage.gameObject.SetActive (false);
@@ -130,8 +121,6 @@ public class Seat
 
 		niuImage.gameObject.SetActive (false);
 		mutipleImage.gameObject.SetActive (false);
-
-		//bankerSignPosition.gameObject.SetActive (false);
 
 		for (int i = 0; i < chipImages.Length; i++) {
 			chipImages [i].transform.position = originChipImagePositionForBet;

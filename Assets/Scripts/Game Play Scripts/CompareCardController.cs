@@ -260,8 +260,8 @@ public class CompareCardController : BaseStateController {
 			}
 		}
 
-		Debug.Log ("Go to compare card state");
-		Debug.Log ("moveToBanker = " + moveToBanker);
+		//Debug.Log ("Go to compare card state");
+		//Debug.Log ("moveToBanker = " + moveToBanker);
 		gamePlayController.state = GameState.CompareCard;
 	}
 

@@ -102,7 +102,7 @@ public class SecondDealController : BaseStateController {
 		List<Player> players = gamePlayController.game.PlayingPlayers;
 
 		for (int i = 0; i < players.Count; i++) {
-			Debug.Log ("Second Deal to player: " + players [i].userId);
+			//Debug.Log ("Second Deal to player: " + players [i].userId);
 			SecondDeal (players[i]);
 		}
 	}
