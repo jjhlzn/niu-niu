@@ -19,11 +19,12 @@ public class RobBankerController : BaseStateController {
 
 	private Seat[] seats;
 
-
+	private float stateTimeLeft; //这状态停留的时间
 	private bool hasRobBanker = false; 
 
 	public override void Reset() {
 		hasRobBanker = false;
+		stateTimeLeft = Constants.MaxStateTimeLeft;
 	}
 
 	void Start() {
@@ -32,15 +33,18 @@ public class RobBankerController : BaseStateController {
 
 	public void Init() {
 		seats = gamePlayerController.game.seats;
+		stateTimeLeft = Constants.MaxStateTimeLeft;
 	}
 		
 	// Update is called once per frame
 	void Update () {
 		if (gamePlayerController.state == GameState.RobBanker) {
-			gamePlayerController.game.ShowStateLabel("抢庄");
+			if (stateTimeLeft >= 0) {
+				gamePlayerController.game.ShowStateLabel ("抢庄: " + Mathf.Round (stateTimeLeft));
+				stateTimeLeft -= Time.deltaTime;
+			}
 		}
-
-		//Debug.Log ("game state is : " + gamePlayerController.state.value);
+			
 		if (gamePlayerController.state == GameState.RobBanker && !hasRobBanker) {
 			robRankerPanel.gameObject.SetActive (true);
 		} else {
@@ -56,6 +60,16 @@ public class RobBankerController : BaseStateController {
 		SendRobBankerRequest (false);
 	}
 
+	private void HandleSeat0RobBanker(bool isRob) {
+		hasRobBanker = true;
+		seats[0].isRobImage.gameObject.SetActive(true);
+		if (isRob) {
+			seats[0].isRobImage.sprite = robSprite;
+		} else {
+			seats[0].isRobImage.sprite = notRobSprite;
+		}
+	}
+
 	private void SendRobBankerRequest(bool isRob) {
 		if (gamePlayerController.state != GameState.RobBanker) {
 			return;
@@ -68,32 +82,27 @@ public class RobBankerController : BaseStateController {
 		};
 
 		gamePlayerController.gameSocket.EmitJson (Messages.RobBanker, JsonConvert.SerializeObject (robReq), (string msg) => {
-			hasRobBanker = true;
-			Debug.Log("seats[0].isRobImage.gameObject = " + seats[0].isRobImage.gameObject);
-			seats[0].isRobImage.gameObject.SetActive(true);
-			if (isRob) {
-				seats[0].isRobImage.sprite = robSprite;
-			} else {
-				seats[0].isRobImage.sprite = notRobSprite;
-			}
+			HandleSeat0RobBanker(isRob);
 		});
-
 	}
 		
 
 	public void HanldeResponse(SomePlayerRobBankerNotify notify) {
-		Debug.Log ("game.state = " + gamePlayerController.state.value);
 		if (gamePlayerController.state == GameState.RobBanker) {
 			int seatIndex = gamePlayerController.game.GetSeatIndex (notify.userId);
 			if (seatIndex == -1) {
 				throw new UnityException ("不能找到UserId = " + notify.userId + "的座位");
 			}
 
-			seats[seatIndex].isRobImage.gameObject.SetActive(true);
-			if (notify.isRob) {
-				seats[seatIndex].isRobImage.sprite = robSprite;
+			if (seatIndex == 0) {
+				HandleSeat0RobBanker (notify.isRob);
 			} else {
-				seats[seatIndex].isRobImage.sprite = notRobSprite;
+				seats[seatIndex].isRobImage.gameObject.SetActive(true);
+				if (notify.isRob) {
+					seats[seatIndex].isRobImage.sprite = robSprite;
+				} else {
+					seats[seatIndex].isRobImage.sprite = notRobSprite;
+				}
 			}
 		}
 	}

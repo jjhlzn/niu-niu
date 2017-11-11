@@ -57,6 +57,15 @@ public class BeforeGameStartController : BaseStateController {
 	
 	// Update is called once per frame
 	void Update () {
+		if (gamePlayerController.state == GameState.BeforeStart) {
+			gamePlayerController.game.ShowStateLabel ("等待其他玩家加入...");
+		}
+
+		/*
+		if (gamePlayerController.state == GameState.WaitForNextRound) {
+			gamePlayerController.game.ShowStateLabel("下一局即将开始: " + )
+		} */
+
 		if (isMoveSeat) {
 			
 			float step = moveSeatSpeed * Time.deltaTime;
@@ -119,6 +128,13 @@ public class BeforeGameStartController : BaseStateController {
 		}); 
 	}
 
+
+	private void HandleUser0Ready() {
+		//界面的元素全部还原，各个Controller全部Reset
+		readyButton.gameObject.SetActive(false);
+		gamePlayerController.PrepareForNewRound();
+	}
+
 	public void ReadyClick() {
 		Socket gameSocket = gamePlayerController.gameSocket;
 		Debug.Log ("ready  click");
@@ -130,13 +146,7 @@ public class BeforeGameStartController : BaseStateController {
 		};
 
 		gameSocket.EmitJson (Messages.Ready, JsonConvert.SerializeObject(request), (string msg) => {
-			//setUpGameController.resetCards ();
-			//startButton.gameObject.SetActive(false);
-			//standUpButton.gameObject.SetActive(false);
-
-			//界面的元素全部还原，各个Controller全部Reset
-			readyButton.gameObject.SetActive(false);
-			gamePlayerController.PrepareForNewRound();
+			HandleUser0Ready();
 		}); 
 	}
 		
@@ -180,6 +190,12 @@ public class BeforeGameStartController : BaseStateController {
 			}
 
 			MoveSeats(seatIndex);
+
+			if (gamePlayerController.game.PlayerCount < 2) {
+				startButton.interactable = false;
+			} else {
+				startButton.interactable = true;
+			} 
 		});
 	}
 
@@ -245,13 +261,8 @@ public class BeforeGameStartController : BaseStateController {
 
 	public void HandleResponse(SomePlayerSitDownNotify notify){
 		string seatNo = notify.seat;
-		Seat[] seats = gamePlayerController.game.seats;
-
-		//Debug.Log ("seatNo = " + seatNo);
 		int i = 0;
 		foreach (Seat seat in seats) {
-			//Debug.Log ("seat.seatNo =  " + seat.seatNo);
-			//Debug.Log ("seat.player = " + seat.player);
 			if (seat.seatNo == seatNo && seat.player == null) {
 				Player player = new Player ();
 				player.userId = notify.userId;
@@ -271,7 +282,7 @@ public class BeforeGameStartController : BaseStateController {
 	}
 
 	public void HandleResponse(SomePlayerStandUpNotify notify) {
-		foreach (Seat seat in gamePlayerController.game.seats) {
+		foreach (Seat seat in seats) {
 			if (seat.player != null && seat.player.userId == notify.userId) {
 				seat.player = null;
 				foreach(Seat eachSeat in seats) {
@@ -289,6 +300,13 @@ public class BeforeGameStartController : BaseStateController {
 
 	public void HandleResponse(SomePlayerReadyNotify notify) {
 		int seatIndex = gamePlayerController.game.GetSeatIndex (notify.userId);
-		seats [seatIndex].readyImage.gameObject.SetActive (true);
+
+		if (seatIndex == 0) {
+			HandleUser0Ready ();
+		} else {
+			seats [seatIndex].readyImage.gameObject.SetActive (true);
+		}
+
+
 	}
 }

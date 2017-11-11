@@ -24,6 +24,8 @@ public class BetController : BaseStateController {
 	private bool[] isMoveChipArray;
 	private bool[] isBetCompletedArray;
 	private bool hasBet = false;
+	private float stateTimeLeft; //这状态停留的时间
+	private float animationTime = 1f;
 
 	public bool IsAllBetCompleted {
 		get {
@@ -40,8 +42,8 @@ public class BetController : BaseStateController {
 
 	public void Init() {
 		seats = gamePlayController.game.seats;
+		stateTimeLeft = Constants.MaxStateTimeLeft - animationTime;
 	}
-		
 		
 	public void Awake() {
 		isMoveChipArray = new bool[Game.SeatCount];
@@ -52,15 +54,20 @@ public class BetController : BaseStateController {
 		hasBet = false;
 		isMoveChipArray = new bool[Game.SeatCount];
 		isBetCompletedArray = new bool[Game.SeatCount];
+		stateTimeLeft = Constants.MaxStateTimeLeft - animationTime;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
+
 		if (gamePlayController.state == GameState.Bet) {
 
-			gamePlayController.game.ShowStateLabel ("请选择下注分数");
-			
+			if (stateTimeLeft > 0) {
+				gamePlayController.game.ShowStateLabel ("请选择下注分数: " + Mathf.Round(stateTimeLeft));
+				stateTimeLeft -= Time.deltaTime;
+			}
+				
 			if (!hasBet) {
 				betPanel.SetActive (true);
 			} else {
@@ -105,14 +112,20 @@ public class BetController : BaseStateController {
 
 	}
 
+	private void HandleUser0BetNotify(int bet) {
+		betPanel.gameObject.SetActive (false);
+		hasBet = true;
+		gamePlayController.game.currentRound.playerBets[0] = 8;
+		isMoveChipArray[0] = true;
+	}
+
 	public void BetClick() {
 		Debug.Log ("bet button click");
 		if (gamePlayController.state != GameState.Bet) {
 			Debug.LogError ("current state is not bet, the state is " + gamePlayController.state.value);
 			return;
 		}
-
-
+			
 		Socket socket = gamePlayController.gameSocket; 
 		var req = new {
 			roomNo = gamePlayController.game.roomNo,
@@ -121,11 +134,7 @@ public class BetController : BaseStateController {
 		};
 
 		socket.EmitJson (Messages.Bet, JsonConvert.SerializeObject(req), (string msg) => {
-			betPanel.gameObject.SetActive (false);
-			hasBet = true;
-			gamePlayController.game.currentRound.playerBets[0] = 8;
-			isMoveChipArray[0] = true;
-
+			HandleUser0BetNotify(8);
 		}); 
 
 	}
@@ -134,9 +143,14 @@ public class BetController : BaseStateController {
 		Game game = gamePlayController.game;
 		int index = game.GetSeatIndex (notify.userId);
 
-		if (game.currentRound.playerBets[index] == 0){
+		if (index == 0) {
+			HandleUser0BetNotify (notify.bet);
+		} else {
 			game.currentRound.playerBets [index] = notify.bet;
 			isMoveChipArray [index] = true;
 		}
+		//if (game.currentRound.playerBets[index] == 0){
+
+		//}
 	}
 }

@@ -15,6 +15,9 @@ public class GamePlayController : MonoBehaviour {
 	private BeforeGameStartController beforeGameStartController;
 
 	[SerializeField]
+	private WaitForNextRoundController waitForNextRoundController;
+
+	[SerializeField]
 	private FirstDealerController firstDealerController;
 
 	[SerializeField]
@@ -35,36 +38,36 @@ public class GamePlayController : MonoBehaviour {
 	[SerializeField]
 	private CompareCardController compareController;
 
+
+
 	public GameState state {
 		get {
 			return game.state;
 		}
-
 		set {
 			game.state = value;
 		}
 	}
 
 	public Socket gameSocket;
-
 	public Game game;
-
 
 	// Use this for initialization
 	void Start () {
 		Debug.Log ("GamePlayController Start");
 		SetGameData ();
-		//setupCardGame.resetCards ();
-		//beforeGameStartController.SetPlayerSeatUI ();
-
 
 		game.state = GameState.BeforeStart;
 		game.bankerSignImage = setupCardGame.bankerSignImage;
 		game.gameStateLabel = setupCardGame.gameStateLabel;
+
 		foreach (Seat seat in game.seats) {
 			seat.UpdateUI (game);
 		}
 
+		//初始化各个控制器
+		waitForNextRoundController.Init();
+		robBankerController.Init();
 		chooseBankerController.Init ();
 		betController.Init ();
 		secondDealController.Init ();
@@ -85,13 +88,13 @@ public class GamePlayController : MonoBehaviour {
 		game.totalRoundCount = 10;
 		game.currentRoundNo = 1;
 		game.roomNo = GenerateRoomNo ();
-		state = GameState.Ready;
+		state = GameState.BeforeStart;
 	}
 
-
+	/*
 	public void goToNextState() {
 		state = state.nextState ();
-	}
+	}*/
 
 	public void Reset() {
 	}

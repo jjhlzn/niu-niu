@@ -22,7 +22,6 @@ public class SecondDealController : BaseStateController {
 	private bool dealing;
 	public bool canSecondDeal;
 
-	// Use this for initialization
 	void Start () {
 		dealing = false;
 		timeLeft = waitTimeBeforeSecondDeal;
@@ -38,8 +37,7 @@ public class SecondDealController : BaseStateController {
 		seats = gamePlayController.game.seats;
 		deck = gamePlayController.game.deck;
 	}
-
-	// Update is called once per frame
+		
 	void Update () {
 
 		if (gamePlayController.state.Equals (GameState.SecondDeal)) {
@@ -66,8 +64,6 @@ public class SecondDealController : BaseStateController {
 			}
 				
 			//判断最后一张牌是否已经发好
-			//Debug.Log("playingPlayers[playingPlayers.Count - 1].seat.cards.lenth = " + playingPlayers[playingPlayers.Count - 1].seat.cards.Length);
-			//Debug.Log("playingPlayers[playingPlayers.Count - 1].seat.cardPositions.lenth = " + playingPlayers[playingPlayers.Count - 1].seat.cardPositions.Length);
 			if (Utils.isTwoPositionIsEqual(playingPlayers[playingPlayers.Count - 1].seat.cards[4].transform.position, playingPlayers[playingPlayers.Count - 1].seat.cardPositions[4])) {
 				StartCoroutine(GoToNextState());
 			}
@@ -97,18 +93,15 @@ public class SecondDealController : BaseStateController {
 
 
 	IEnumerator GoToNextState() {
-
 		yield return new WaitForSeconds (.4f);
 		if (gamePlayController.state == GameState.SecondDeal)
-			gamePlayController.goToNextState ();
+			gamePlayController.state = GameState.CheckCard;
 
 	}
 
 	private void SecondDeal() {
 		List<Player> players = gamePlayController.game.PlayingPlayers;
-
 		for (int i = 0; i < players.Count; i++) {
-			//Debug.Log ("Second Deal to player: " + players [i].userId);
 			SecondDeal (players[i]);
 		}
 	}
@@ -123,7 +116,6 @@ public class SecondDealController : BaseStateController {
 		cards [4] =  notify.cardsDict[Player.Me.userId];
 
 		SecondDeal ();
-
 		if (betController.IsAllBetCompleted) {
 			gamePlayController.state = GameState.SecondDeal;
 		} else {

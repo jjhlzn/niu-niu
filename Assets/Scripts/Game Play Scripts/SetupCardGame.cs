@@ -44,31 +44,9 @@ public class SetupCardGame : BaseStateController {
 		CreateDeck ();
 		SeatSeatUIs ();
 		SetOtherSeatUIs ();
-
-
 	}
 
 	void Start() {
-	}
-
-	int CalculateLengthOfMessage(string message)
-	{
-		int totalLength = 0;
-
-		Font myFont = gameStateLabel.font;  //chatText is my Text component
-		CharacterInfo characterInfo = new CharacterInfo();
-
-		char[] arr = message.ToCharArray();
-
-		foreach(char c in arr)
-		{
-			myFont.GetCharacterInfo(c, out characterInfo, gameStateLabel.fontSize);  
-
-			totalLength += characterInfo.advance;
-			Debug.Log ("totalLength: " + totalLength);
-		}
-
-		return totalLength;
 	}
 
 	public override void Reset() {
@@ -258,11 +236,9 @@ public class SetupCardGame : BaseStateController {
 	 * 设置座位上发牌发到的位置
 	 * */
 	private void SetPlayerCardPositions() {
-		
 		for (int i = 0; i < Game.SeatCount; i++) {
 			seats [i].cardPositions = SetPlayerCardPositions (i);
 		}
-		//secondDealController.SetUserCardPositionsArray (userCardsPositionsArray);
 	}
 
 	private Vector3[] SetPlayerCardPositions(int index) {

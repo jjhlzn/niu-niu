@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 public class Messages
 {
-	public static string GoToReady = "GoToReady";
 	public static string GoToFirstDeal = "GoToFirstDeal";
 	public static string GoToRobBanker = "GoToRobBanker"; 
 	public static string GoToChooseBanker = "GoToChooseBanker";
@@ -23,7 +22,7 @@ public class Messages
 	public static string StandUp = "StandUp";
 	public static string StartGame = "StartGame";
 	public static string RobBanker = "RobBanker";
-	public static string SomePlayerRobBanker = "SomePlayerRobRanker";
+	public static string SomePlayerRobBanker = "SomePlayerRobBanker";
 	public static string Bet = "Bet";
 	public static string SomePlayerBet = "SomePlayerBet";
 	public static string ShowCard = "ShowCard";

@@ -105,14 +105,11 @@ public class ChooseBankerController : BaseStateController {
 				}
 				movingBankerSign = false;
 				gamePlayController.game.HideStateLabel ();
-				gamePlayController.goToNextState ();
+				gamePlayController.state = GameState.Bet;
 			}
 		} 
 	}
-
-
-
-
+		
 	public void HandleResponse(GoToChooseBankerNotity resp) {
 
 		gamePlayController.state = GameState.ChooseBanker;
@@ -131,9 +128,7 @@ public class ChooseBankerController : BaseStateController {
 		gamePlayController.game.HideStateLabel ();
 		chooseIndex = 0;
 		isChoosingBanker = true;
-
 	}
-
-
+		
 		
 }

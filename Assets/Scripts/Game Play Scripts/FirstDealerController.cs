@@ -21,27 +21,28 @@ public class FirstDealerController : BaseStateController {
 	private Deck deck;
 	private Seat[] seats;
 
+	private bool isFirstStartDealUpdate;
 
-	// Use this for initialization
 	void Start () {
 		seats = gamePlayController.game.seats;
 		deck = gamePlayController.game.deck;
-		//hideOtherDeckCard (); 
 	}
 
 	public void Init() {
 		seats = gamePlayController.game.seats;
 		deck = gamePlayController.game.deck;
+		isFirstStartDealUpdate = false;
 	}
 
 	public override void Reset() {
-
+		isFirstStartDealUpdate = false;
 	}
-
-	// Update is called once per frame
+		
 	void Update () {
 
 		if (gamePlayController.state.Equals (GameState.FirstDeal)) {
+			gamePlayController.game.HideStateLabel ();
+			
 			float waitTime = 0;
 
 			List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
@@ -55,11 +56,7 @@ public class FirstDealerController : BaseStateController {
 
 			int playerCount = gamePlayController.game.PlayerCount;
 			//判断最后一张牌是否已经发好
-			//Debug.Log("playingPlayers[playingPlayers.Count - 1].seat.cards.lenth = " + playingPlayers[playingPlayers.Count - 1].seat.cards.Length);
-			//Debug.Log("playingPlayers[playingPlayers.Count - 1].seat.cardPositions.lenth = " + playingPlayers[playingPlayers.Count - 1].seat.cardPositions.Length);
 			if (Utils.isTwoPositionIsEqual(playingPlayers[playingPlayers.Count - 1].seat.cards[3].transform.position, playingPlayers[playingPlayers.Count - 1].seat.cardPositions[3])) {
-				//deck.HideNotDealCards ();
-
 				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[0], gamePlayController.game.currentRound.myCards[0]));
 				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[1], gamePlayController.game.currentRound.myCards[1]));
 				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[2], gamePlayController.game.currentRound.myCards[2]));
@@ -68,7 +65,6 @@ public class FirstDealerController : BaseStateController {
 				StartCoroutine (GoToNextState ());
 			}
 		} 
-
 	}
 
 	/**
@@ -87,9 +83,10 @@ public class FirstDealerController : BaseStateController {
 	}
 
 	IEnumerator GiveCardAnimation(Player player, Image card, Vector3 targetCard, float step, float waitTime) {
-		yield return new WaitForSeconds (waitTime);
-		//Debug.Log ("waitTime = " + waitTime);
-		//Debug.Log ("(x, y): (" + targetCard.x + " , " + targetCard.y + ")");
+		if (!isFirstStartDealUpdate)
+			yield return new WaitForSeconds (waitTime);
+		else
+			yield return new WaitForSeconds (0);
 
 		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
 		if (player.seat.seatIndex == 0) {
@@ -98,29 +95,29 @@ public class FirstDealerController : BaseStateController {
 			localScale.y = user0CardScale;
 			card.transform.localScale = localScale;
 		}
+
+
+		if (!isFirstStartDealUpdate && gamePlayController.game.LastPlayerSeatIndex == player.seat.seatIndex) {
+			isFirstStartDealUpdate = true;
+		}
 	}
 
 
 
 	IEnumerator TurnCardUp(Image card, string cardValue) {
 		Animator anim = card.GetComponent<Animator> ();
-		//Debug.Log ("cardValue = " + cardValue);
-		//Debug.Log ("Before Play Animation TurnUp");
 		anim.Play ("TurnUp");
-		//Debug.Log ("After Play Animation TurnUp");
 		yield return new WaitForSeconds (turnUpTime);
 		card.sprite = deck.GetCardFaceImage(cardValue);
 
-		//card.transform.localEulerAngles = new Vector3(0,360,0);
 		anim.Play ("TurnBackNow2");
-		//yield return new WaitForSeconds (.1f);
 	}
 
 
 	IEnumerator GoToNextState() {
 		yield return new WaitForSeconds (.3f);
 		if (gamePlayController.state == GameState.FirstDeal)
-			gamePlayController.goToNextState ();
+			gamePlayController.state = GameState.RobBanker;
 	}
 
 	private void FirstDeal() {
@@ -140,20 +137,15 @@ public class FirstDealerController : BaseStateController {
 
 	/******* 处理服务器的通知***************/
 	public void HandleResponse(FirstDealResponse notify) {
-
 		Dictionary<string, string[]> cardsDict = notify.cardsDict;
-		//Debug.Log ("cards: " + cards);
 		Dictionary<string, int[]> betsDict = notify.betsDict;
-		//Debug.Log ("bets: " + bets);
 
 		HandleResponse (cardsDict, betsDict);
 	}
 
 	public void HandleResponse(StartGameNotify notify) {
 		Dictionary<string, string[]> cardsDict = notify.cardsDict;
-		//Debug.Log ("cards: " + cards);
 		Dictionary<string, int[]> betsDict = notify.betsDict;
-		//Debug.Log ("bets: " + bets);
 
 		HandleResponse (cardsDict, betsDict);
 	}

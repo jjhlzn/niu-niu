@@ -53,6 +53,16 @@ public class Game
 	public Seat[] seats;
 	public Deck deck;
 
+	public int LastPlayerSeatIndex {
+		get {
+			List<Player> players = PlayingPlayers;
+			if (players.Count == 0) {
+				return -1;
+			}
+			return players [players.Count - 1].seat.seatIndex; 
+		}
+	}
+
 	public int PlayerCount {
 		get {
 			int count = 0;

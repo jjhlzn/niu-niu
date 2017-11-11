@@ -15,7 +15,7 @@ public class Connect : MonoBehaviour {
 
 	// Use this for initialization
 	void Start() {
-		var serverUrl = "http://192.168.31.175:3000";
+		var serverUrl = "http://localhost:3000";
 		var gameSocket = Socket.Connect(serverUrl);
 
 		gameSocket.On(SystemEvents.connect, () => {

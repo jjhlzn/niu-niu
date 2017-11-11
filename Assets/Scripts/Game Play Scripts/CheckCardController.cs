@@ -21,6 +21,7 @@ public class CheckCardController : BaseStateController {
 	private bool[] playerShowCardCompleted;
 	private bool[] isMoveCardArray;
 	private bool hasShowCard = false;
+	private float stateTimeLeft; //这状态停留的时间
 
 	public void Awake() {
 		isMoveCardArray = new bool[Game.SeatCount];
@@ -31,11 +32,13 @@ public class CheckCardController : BaseStateController {
 		hasShowCard = false;
 		isMoveCardArray = new bool[Game.SeatCount];
 		playerShowCardCompleted = new bool[Game.SeatCount];
+		stateTimeLeft = Constants.MaxStateTimeLeft;
 	}
 
 	public void Init() {
 		deck = gamePlayController.game.deck;
 		seats = gamePlayController.game.seats;
+		stateTimeLeft = Constants.MaxStateTimeLeft;
 	}
 
 	public bool isAllPlayerShowCardAnimCompleted {
@@ -57,10 +60,12 @@ public class CheckCardController : BaseStateController {
 
 	void Update() {
 		if (gamePlayController.state == GameState.CheckCard) {
-			gamePlayController.game.ShowStateLabel ("查看手牌");
+			if (stateTimeLeft >= 0) {
+				gamePlayController.game.ShowStateLabel ("查看手牌: " + Mathf.Round(stateTimeLeft));
+				stateTimeLeft -= Time.deltaTime;
+			}
 		}
-
-		//Debug.Log ("state = " + gamePlayController.state.value);
+			
 		if (gamePlayController.state == GameState.CheckCard && !hasShowCard) {
 			checkCardPanel.SetActive (true);
 		} else {
@@ -87,7 +92,6 @@ public class CheckCardController : BaseStateController {
 						targetV = new Vector3 (targetV.x + 0.3f, targetV.y, targetV.z);
 					} 
 					cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, targetV, step);
-
 					cards [j].transform.SetSiblingIndex (i * 5 + sequences [j]);
 
 					if (!Utils.isTwoPositionIsEqual (cards [j].gameObject.transform.position, targetV)) {
@@ -96,11 +100,11 @@ public class CheckCardController : BaseStateController {
 				}
 
 				if (moveCompleted) {
+					gamePlayController.game.HideStateLabel ();
 					isMoveCardArray[i] = false;
 					Debug.Log ("seat " + i + " show card anim completed");
 					seats [i].niuImage.gameObject.SetActive (true);
 					seats [i].mutipleImage.gameObject.SetActive (true);
-					//playerShowCardCompleted [i] = true;
 					StartCoroutine(SetPlayerShowCardCompleted(i));
 				} 
 			} 
@@ -125,7 +129,6 @@ public class CheckCardController : BaseStateController {
 			isMoveCardArray [0] = true;
 		}
 	}
-
 
 	IEnumerator TurnUserCardsUp(int seatIndex) {
 
@@ -162,6 +165,20 @@ public class CheckCardController : BaseStateController {
 		ShowCard ();
 	}
 
+	private void HandleUser0ShowCardNotify(int niu, int[] cardSequences, int mutiple) {
+		
+
+
+		Round round = gamePlayController.game.currentRound;
+		round.niuArray[0] = niu;
+		round.cardSequenceArray[0] = cardSequences;
+		round.multipleArray[0] = mutiple;
+
+		hasShowCard = true;
+		//user1 亮牌
+		StartCoroutine(TurnCardUp(seats[0].player.cards[4]));
+	}
+
 	private void ShowCard() {
 		if (gamePlayController.state != GameState.CheckCard) {
 			return;
@@ -177,15 +194,7 @@ public class CheckCardController : BaseStateController {
 			Debug.Log("ShowCardAck: " + msg);
 
 			ShowCardAck notify = JsonConvert.DeserializeObject<ShowCardAck[]>(msg)[0];
-			Round round = gamePlayController.game.currentRound;
-			round.niuArray[0] = notify.niu;
-			round.cardSequenceArray[0] = notify.cardSequences;
-			round.multipleArray[0] = notify.multiple;
-
-			hasShowCard = true;
-			//user1 亮牌
-			StartCoroutine(TurnCardUp(seats[0].player.cards[4]));
-			//StartCoroutine (TurnUser1Cards ());
+			HandleUser0ShowCardNotify(notify.niu, notify.cardSequences, notify.multiple);
 		});
 	}
 
@@ -205,7 +214,12 @@ public class CheckCardController : BaseStateController {
 		game.currentRound.multipleArray [seatIndex] = notify.multiple;
 		game.currentRound.niuArray [seatIndex] = notify.niu;
 
-		StartCoroutine(TurnUserCardsUp (seatIndex));
+		if (seatIndex == 0) {
+			HandleUser0ShowCardNotify (notify.niu, notify.cardSequences, notify.multiple);
+		} else {
+			StartCoroutine(TurnUserCardsUp (seatIndex));
+		}
+
 	}
 
 }

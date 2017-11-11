@@ -26,7 +26,6 @@ public class CompareCardController : BaseStateController {
 	public bool showScoreLabel;
 	public bool moveScoreLabel;
 	public bool allAnimCompleted;
-
 	private float moveTimeLeft; 
 
 	public void Init() {
@@ -42,13 +41,11 @@ public class CompareCardController : BaseStateController {
 		moveScoreLabel = false;
 		allAnimCompleted = false;
 	}
-
-	// Use this for initialization
+		
 	void Awake () {
 		moveTimeLeft = MoveTime;
 	}
-
-
+		
 	private void HideChips() {
 		for (int i = 0; i < Game.SeatCount; i++) {
 			for (int j = 0; j < seats[i].chipImages.Length; j++) {
@@ -56,21 +53,19 @@ public class CompareCardController : BaseStateController {
 			}
 		}
 	}
-
-
-	
-	// Update is called once per frame
+		
 	void Update () {
 
-		if (gamePlayController.state == GameState.CompareCard) {
-			gamePlayController.game.ShowStateLabel ("比牌中");
+		if (gamePlayController.state == GameState.CompareCard ) {
+			gamePlayController.game.ShowStateLabel ("比牌中...");
 		}
 
 		if (gamePlayController.state == GameState.CompareCard && checkCardController.isAllPlayerShowCardAnimCompleted) {
 
-			//Debug.Log ("moveToBanker = " + moveToBanker + ", moveFromBanker = " + moveFromBanker + ", showScoreLabel = " + showScoreLabel + ", moveTimeLeft = " + moveTimeLeft);
 			if (moveToBanker) {
+				
 				if (moveChipFromOtheToBankerArray.Length == 0) {
+					//moveToBanker结束
 					moveTimeLeft = MoveTime;
 					moveToBanker = false;
 					moveFromBanker = true;
@@ -79,13 +74,12 @@ public class CompareCardController : BaseStateController {
 					for (int i = 0; i < moveChipFromOtheToBankerArray.Length; i++) {
 						MoveChipsFromSeat (moveChipFromOtheToBankerArray [i]);
 					}
-
 					moveTimeLeft -= Time.deltaTime;
-
 					if (moveTimeLeft <= 0) {
+						//moveToBanker结束
+						moveTimeLeft = MoveTime;
 						moveToBanker = false;
 						moveFromBanker = true;
-						moveTimeLeft = MoveTime;
 						HideChips ();
 					}
 				}
@@ -94,6 +88,7 @@ public class CompareCardController : BaseStateController {
 
 			if (moveFromBanker) {
 				if (moveChipFromBankerToOtherArray.Length == 0) {
+					//moveFromBanker结束
 					moveTimeLeft = MoveTime;
 					moveFromBanker = false;
 					showScoreLabel = true;
@@ -103,37 +98,34 @@ public class CompareCardController : BaseStateController {
 					for (int i = 0; i < moveChipFromBankerToOtherArray.Length; i++) {
 						MoveChipsToSeat (moveChipFromBankerToOtherArray [i]);
 					}
-
 					moveTimeLeft -= Time.deltaTime;
-
 					if (moveTimeLeft <= 0) {
-						moveFromBanker = false;
+						//moveFromBanker结束
 						moveTimeLeft = MoveTime;
+						moveFromBanker = false;
 						showScoreLabel = true;
 						HideChips ();
-						//Debug.Log ("Set showScoreLabel to true");
 					}
 				}
 			}
 
 
 			if (showScoreLabel) {
-				HideChips ();
 				showScoreLabel = false;
-				//Debug.Log ("showScoreLabel = " + showScoreLabel);
 				ShowScoreLabels ();
-				moveTimeLeft = MoveTime;
+				//moveTimeLeft = MoveTime;
 			}
 
 			if (moveScoreLabel) {
-				//Debug.Log ("moveScoreLabel = " + moveScoreLabel);
 				MoveScoreLabels ();
+
+				/*
 				if (moveTimeLeft < 0) {
 					moveScoreLabel = false;
 					allAnimCompleted = true;
 					gamePlayController.game.HideStateLabel ();
 				}
-				moveTimeLeft -= Time.deltaTime;
+				moveTimeLeft -= Time.deltaTime; */
 			}
 		} 
 	}
@@ -176,6 +168,13 @@ public class CompareCardController : BaseStateController {
 		if (Utils.isTwoPositionIsEqual(text.transform.position, seats[index].targetScoreLabelPosition)) {
 			//text.gameObject.SetActive (false);
 			readyButton.gameObject.SetActive (true);
+			moveScoreLabel = false;
+			allAnimCompleted = true;
+			gamePlayController.game.HideStateLabel ();
+			if (gamePlayController.game.HasNextRound ())
+				gamePlayController.state = GameState.WaitForNextRound;
+			else
+				gamePlayController.state = GameState.GameOver;
 		}
 	}
 
@@ -192,8 +191,7 @@ public class CompareCardController : BaseStateController {
 
 		MoveChips (fromSeat, seat);
 	}
-
-	//private Dictionary<string, bool> moveChipFunctionDict = new Dictionary<string, bool>();
+		
 	private void MoveChips( int from,  int to) {
 		
 		float step = chipMoveSpeed * Time.deltaTime;
@@ -263,8 +261,6 @@ public class CompareCardController : BaseStateController {
 			}
 		}
 
-		//Debug.Log ("Go to compare card state");
-		//Debug.Log ("moveToBanker = " + moveToBanker);
 		gamePlayController.game.HideStateLabel();
 		gamePlayController.state = GameState.CompareCard;
 	}
