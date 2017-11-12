@@ -39,11 +39,14 @@ public class SetupCardGame : BaseStateController {
 
 	public Seat[] seats;
 	public Deck deck;
+	public Sprite[] niuSprites;
+	public Sprite[] multipleSprites;
 
 	void Awake() {
 		CreateDeck ();
 		SeatSeatUIs ();
 		SetOtherSeatUIs ();
+		LoadNiuAndMultipleImages ();
 	}
 
 	void Start() {
@@ -526,6 +529,11 @@ public class SetupCardGame : BaseStateController {
 		deck.originPosition = cards [0].transform.position;
 		deck.cardBack = cards [0].sprite;
 		deck.Reset ();
+	}
+
+	void LoadNiuAndMultipleImages() {
+		niuSprites = Resources.LoadAll<Sprite>("sprites/niu");
+		multipleSprites = Resources.LoadAll<Sprite>("sprites/mutiple");
 	}
 }
 

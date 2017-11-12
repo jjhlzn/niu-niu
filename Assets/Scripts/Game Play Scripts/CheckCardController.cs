@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 public class CheckCardController : BaseStateController {
 	private float user0MoveCardSpeedWhenShowCard = 7f;
-	private float moveCardSpeedWhenShowNiu = 6f;
+	private float moveCardSpeedWhenShowCard = 6f;
 
 	[SerializeField] 
 	private GamePlayController gamePlayController;
@@ -75,19 +75,22 @@ public class CheckCardController : BaseStateController {
 		for (int i = 0; i < isMoveCardArray.Length; i++) {
 			if (isMoveCardArray [i]) {
 				Image[] cards = seats[i].player.cards;
-				Vector3[] targetPositions = seats [i].showCardPositions;
+				Vector3[] showcardPositions = seats [i].showCardPositions;
 				int[] sequences = gamePlayController.game.currentRound.cardSequenceArray [i];
+				Debug.Log ("sequences = " + sequences);
 
 				float step;
 				if (i == 0) {
 					step = user0MoveCardSpeedWhenShowCard * Time.deltaTime;
 				} else {
-					step = moveCardSpeedWhenShowNiu * Time.deltaTime;
+					step = moveCardSpeedWhenShowCard * Time.deltaTime;
 				}
 
 				bool moveCompleted = true;
 				for (int j = 0; j < 5; j++) {
-					Vector3 targetV = targetPositions [sequences [j]];
+					Debug.Log ("card " + j + " move to position " + sequences [j]);
+					Vector3 targetV = showcardPositions [sequences [j]];
+					//有牛的话，第4张牌和第6张牌要有点距离
 					if (gamePlayController.game.currentRound.HasNiu (i)  && sequences [j] >= 3) {
 						targetV = new Vector3 (targetV.x + 0.3f, targetV.y, targetV.z);
 					} 
@@ -102,9 +105,16 @@ public class CheckCardController : BaseStateController {
 				if (moveCompleted) {
 					gamePlayController.game.HideStateLabel ();
 					isMoveCardArray[i] = false;
-					Debug.Log ("seat " + i + " show card anim completed");
+
+					var game = gamePlayController.game;
+					seats [i].niuImage.sprite = game.getNiuSprite (game.currentRound.niuArray [i]);
 					seats [i].niuImage.gameObject.SetActive (true);
-					seats [i].mutipleImage.gameObject.SetActive (true);
+
+					if (game.currentRound.niuArray[i] > 6) {
+						seats [i].mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [i]);
+						seats [i].mutipleImage.gameObject.SetActive (true);
+					}
+					Debug.Log ("seat " + i + " show card anim completed");
 					StartCoroutine(SetPlayerShowCardCompleted(i));
 				} 
 			} 
@@ -166,9 +176,6 @@ public class CheckCardController : BaseStateController {
 	}
 
 	private void HandleUser0ShowCardNotify(int niu, int[] cardSequences, int mutiple) {
-		
-
-
 		Round round = gamePlayController.game.currentRound;
 		round.niuArray[0] = niu;
 		round.cardSequenceArray[0] = cardSequences;

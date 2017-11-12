@@ -59,8 +59,6 @@ public class BetController : BaseStateController {
 	
 	// Update is called once per frame
 	void Update () {
-
-
 		if (gamePlayController.state == GameState.Bet) {
 
 			if (stateTimeLeft > 0) {
@@ -68,7 +66,7 @@ public class BetController : BaseStateController {
 				stateTimeLeft -= Time.deltaTime;
 			}
 				
-			if (!hasBet) {
+			if (!hasBet && gamePlayController.game.currentRound.banker != gamePlayController.game.PlayingPlayers[0].userId) {
 				betPanel.SetActive (true);
 			} else {
 				betPanel.SetActive (false);

@@ -52,6 +52,8 @@ public class Game
 
 	public Seat[] seats;
 	public Deck deck;
+	public Sprite[] niuSprites;
+	public Sprite[] multipleSprites;
 
 	public int LastPlayerSeatIndex {
 		get {
@@ -132,6 +134,26 @@ public class Game
 
 	public void HideStateLabel() {
 		this.gameStateLabel.gameObject.SetActive (false);
+	}
+
+	public Sprite getNiuSprite(int niu) {
+		string spriteName = "niu" + niu;
+		for(int i = 0; i < niuSprites.Length; i++) {
+			if (niuSprites [i].name == spriteName) {
+				return niuSprites [i];
+			}
+		}
+		throw new UnityException ("找不到Sprite " + spriteName);
+	}
+
+	public Sprite getMultipleSprite(int multiple) {
+		string multipleName = "x" + multiple;
+		for(int i = 0; i < multipleSprites.Length; i++) {
+			if (multipleSprites [i].name == multipleName) {
+				return multipleSprites [i];
+			}
+		}
+		throw new UnityException ("找不到Sprite " + multipleName);
 	}
 
 	/*

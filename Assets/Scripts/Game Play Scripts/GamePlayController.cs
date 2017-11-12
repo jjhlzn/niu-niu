@@ -60,6 +60,8 @@ public class GamePlayController : MonoBehaviour {
 		game.state = GameState.BeforeStart;
 		game.bankerSignImage = setupCardGame.bankerSignImage;
 		game.gameStateLabel = setupCardGame.gameStateLabel;
+		game.niuSprites = setupCardGame.niuSprites;
+		game.multipleSprites = setupCardGame.multipleSprites;
 
 		foreach (Seat seat in game.seats) {
 			seat.UpdateUI (game);
