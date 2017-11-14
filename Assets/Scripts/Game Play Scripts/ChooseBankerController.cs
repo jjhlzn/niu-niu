@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ChooseBankerController : BaseStateController {
 	public static int ChooseTotalCount = 15;
 	private float BankerSignMoveTimeInterval = .03f;
-	private float moveBankerSignSpeed = 120f;
+	private float moveBankerSignSpeed = 140f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -63,16 +63,23 @@ public class ChooseBankerController : BaseStateController {
 
 	void Update() {
 
-		if (isChoosingBanker) {
-			
-			var game = gamePlayController.game;
-
+		var game = gamePlayController.game;
+		if (game.state == GameState.ChooseBanker && isChoosingBanker) {
 			if (game.currentRound.robBankerPlayers.Length >= 2) {
 				game.ShowStateLabel ("多人抢庄，现在随机抢庄");
 			} else {
 				game.ShowStateLabel ("无人抢庄，随机选择一个庄家");
 			}
+		}
 
+		ChooseBankerAnimation ();
+
+	}
+
+
+	private void ChooseBankerAnimation() {
+		var game = gamePlayController.game;
+		if (isChoosingBanker) {
 			timeLeft -= Time.deltaTime;
 			if (timeLeft < 0) {
 				List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
@@ -86,7 +93,7 @@ public class ChooseBankerController : BaseStateController {
 				}
 
 				if (chooseCount > ChooseTotalCount
-				    && seats [game.GetSeatIndex (userIds [chooseIndex])].player.userId == game.currentRound.banker) {
+					&& seats [game.GetSeatIndex (userIds [chooseIndex])].player.userId == game.currentRound.banker) {
 					Debug.Log ("choose banker compeleted");
 					foreach (Seat seat in seats) {
 						seat.robingSeatBorderImage.gameObject.SetActive (false);
@@ -120,8 +127,12 @@ public class ChooseBankerController : BaseStateController {
 					seat.isRobImage.gameObject.SetActive (false);
 				}
 				movingBankerSign = false;
-				gamePlayController.game.HideStateLabel ();
-				gamePlayController.state = GameState.Bet;
+
+				//动画执行玩了，看看状态还需要切换，因为动画可能以前落后游戏进度
+				if (game.state == GameState.ChooseBanker) {
+					game.HideStateLabel ();
+					game.state = GameState.Bet;
+				}
 			}
 		} 
 	}

@@ -55,15 +55,18 @@ public class CompareCardController : BaseStateController {
 	}
 		
 	void Update () {
-
 		if (gamePlayController.state == GameState.CompareCard ) {
 			gamePlayController.game.ShowStateLabel ("比牌中...");
 		}
 
-		if (gamePlayController.state == GameState.CompareCard && checkCardController.isAllPlayerShowCardAnimCompleted) {
+		CompareCardAnimation ();
+	}
+
+	private void CompareCardAnimation() {
+		if (checkCardController.isAllPlayerShowCardAnimCompleted) {
 
 			if (moveToBanker) {
-				
+
 				if (moveChipFromOtheToBankerArray.Length == 0) {
 					//moveToBanker结束
 					moveTimeLeft = MoveTime;
@@ -83,7 +86,7 @@ public class CompareCardController : BaseStateController {
 						HideChips ();
 					}
 				}
-				
+
 			} 
 
 			if (moveFromBanker) {
@@ -165,8 +168,11 @@ public class CompareCardController : BaseStateController {
 			moveScoreLabel = false;
 			allAnimCompleted = true;
 			gamePlayController.game.HideStateLabel ();
-			if (gamePlayController.game.HasNextRound ())
-				gamePlayController.state = GameState.WaitForNextRound;
+
+			if (gamePlayController.game.HasNextRound ()) {
+				if (gamePlayController.state == GameState.CompareCard)
+					gamePlayController.state = GameState.WaitForNextRound;
+			}
 			else
 				gamePlayController.state = GameState.GameOver;
 			Debug.Log ("Go to " + gamePlayController.state.value);

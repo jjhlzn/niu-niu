@@ -130,6 +130,7 @@ public class Seat
 
 		for (int i = 0; i < chipImages.Length; i++) {
 			chipImages [i].transform.position = originChipImagePositionForBet;
+			chipImages [i].gameObject.SetActive (false);
 		}
 	}
 

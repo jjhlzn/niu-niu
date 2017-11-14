@@ -13,45 +13,57 @@ public class SecondDealController : BaseStateController {
 	private BetController betController;
 
 	[SerializeField]
+	private FirstDealerController firstDealController;
+
+	[SerializeField]
 	private GameObject deckCardPosition;
 
 	private Deck deck;
 	private Seat[] seats;
 
 	private float timeLeft;
-	private bool dealing;
-	public bool canSecondDeal;
-
-	void Start () {
-		dealing = false;
-		timeLeft = waitTimeBeforeSecondDeal;
-	}
+	private bool isSecondDealing;
+	private bool isShowCardBeforeDeal;
+	public bool isSecondDealDone;
+	//public bool canSecondDeal;
 
 	public override void Reset() {
-		dealing = false;
-		canSecondDeal = false;
+		isSecondDealing = false;
+		//canSecondDeal = false;
+		isShowCardBeforeDeal = false;
+		isSecondDealDone = false;
 		timeLeft = waitTimeBeforeSecondDeal;
 	}
 
 	public void Init() {
 		seats = gamePlayController.game.seats;
 		deck = gamePlayController.game.deck;
+
+		isSecondDealing = false;
+		//canSecondDeal = false;
+		isShowCardBeforeDeal = false;
+		isSecondDealDone = false;
+		timeLeft = waitTimeBeforeSecondDeal;
 	}
 		
 	void Update () {
+		
+		SecondDealAnimation ();
+	}
 
-		if (gamePlayController.state.Equals (GameState.SecondDeal)) {
+	private void SecondDealAnimation() {
+		if (isSecondDealing && firstDealController.isFirstDealDone && betController.IsAllBetCompleted) {
 			timeLeft -= Time.deltaTime;
 
 			if (timeLeft > 0) {
 				return;
-			}
-			
-			if (!dealing) {
-				dealing = true;
+			} 
+
+			if (!isShowCardBeforeDeal) {
+				isShowCardBeforeDeal = true;
 				deck.ShowNotDealCardsForSecondDeal(gamePlayController.game.PlayingPlayers.Count);
 			}
-				
+
 			float waitTime = 0;
 			int playerCount = gamePlayController.game.PlayingPlayers.Count;
 			List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
@@ -62,12 +74,14 @@ public class SecondDealController : BaseStateController {
 				//每个成员之间加入一个延时
 				waitTime += FirstDealerController.dealWaitTimeBetweenPlayerForSecondDeal;
 			}
-				
+
 			//判断最后一张牌是否已经发好
-			if (Utils.isTwoPositionIsEqual(playingPlayers[playingPlayers.Count - 1].seat.cards[4].transform.position, playingPlayers[playingPlayers.Count - 1].seat.cardPositions[4])) {
-				StartCoroutine(GoToNextState());
+			if (Utils.isTwoPositionIsEqual (playingPlayers [playingPlayers.Count - 1].seat.cards [4].transform.position, playingPlayers [playingPlayers.Count - 1].seat.cardPositions [4])) {
+				StartCoroutine (GoToNextState ());
+				isSecondDealing = false;
+				isSecondDealDone = true;
 			}
-		} 
+		}
 	}
 
 	private void SecondDealCardsAnimation(Player player,  float waitTime) {
@@ -116,11 +130,15 @@ public class SecondDealController : BaseStateController {
 		cards [4] =  notify.cardsDict[Player.Me.userId];
 
 		SecondDeal ();
+		gamePlayController.state = GameState.SecondDeal;
+
+		/*
 		if (betController.IsAllBetCompleted) {
-			gamePlayController.state = GameState.SecondDeal;
+			
 		} else {
 			canSecondDeal = true;
-		}
+		}*/
+		isSecondDealing = true;
 	}
 
 

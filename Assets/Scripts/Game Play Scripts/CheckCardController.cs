@@ -13,6 +13,9 @@ public class CheckCardController : BaseStateController {
 	private GamePlayController gamePlayController;
 
 	[SerializeField]
+	private SecondDealController secondDealController;
+
+	[SerializeField]
 	private GameObject checkCardPanel;
 
 	private Deck deck;
@@ -73,51 +76,57 @@ public class CheckCardController : BaseStateController {
 			checkCardPanel.SetActive (false);
 		}
 
-		for (int i = 0; i < isMoveCardArray.Length; i++) {
-			if (isMoveCardArray [i]) {
-				Image[] cards = seats[i].player.cards;
-				Vector3[] showcardPositions = seats [i].showCardPositions;
-				int[] sequences = gamePlayController.game.currentRound.cardSequenceArray [i];
+		CheckCardAnimation ();
+	}
 
-				float step;
-				if (i == 0) {
-					step = user0MoveCardSpeedWhenShowCard * Time.deltaTime;
-				} else {
-					step = moveCardSpeedWhenShowCard * Time.deltaTime;
-				}
+	private void CheckCardAnimation() {
+		if (secondDealController.isSecondDealDone) {
+			for (int i = 0; i < isMoveCardArray.Length; i++) {
+				if (isMoveCardArray [i]) {
+					Image[] cards = seats [i].player.cards;
+					Vector3[] showcardPositions = seats [i].showCardPositions;
+					int[] sequences = gamePlayController.game.currentRound.cardSequenceArray [i];
 
-				bool moveCompleted = true;
-				for (int j = 0; j < 5; j++) {
-					//Debug.Log ("card " + j + " move to position " + sequences [j]);
-					Vector3 targetV = showcardPositions [sequences [j]];
-					//有牛的话，第4张牌和第6张牌要有点距离
-					if (gamePlayController.game.currentRound.HasNiu (i)  && sequences [j] >= 3) {
-						targetV = new Vector3 (targetV.x + 0.3f, targetV.y, targetV.z);
+					float step;
+					if (i == 0) {
+						step = user0MoveCardSpeedWhenShowCard * Time.deltaTime;
+					} else {
+						step = moveCardSpeedWhenShowCard * Time.deltaTime;
+					}
+
+					bool moveCompleted = true;
+					for (int j = 0; j < 5; j++) {
+						//Debug.Log ("card " + j + " move to position " + sequences [j]);
+						Vector3 targetV = showcardPositions [sequences [j]];
+						//有牛的话，第4张牌和第6张牌要有点距离
+						if (gamePlayController.game.currentRound.HasNiu (i) && sequences [j] >= 3) {
+							targetV = new Vector3 (targetV.x + 0.3f, targetV.y, targetV.z);
+						} 
+						cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, targetV, step);
+						cards [j].transform.SetSiblingIndex (i * 5 + sequences [j]);
+
+						if (!Utils.isTwoPositionIsEqual (cards [j].gameObject.transform.position, targetV)) {
+							moveCompleted = false;
+						}
+					}
+
+					if (moveCompleted) {
+						gamePlayController.game.HideStateLabel ();
+						isMoveCardArray [i] = false;
+
+						var game = gamePlayController.game;
+						seats [i].niuImage.sprite = game.getNiuSprite (game.currentRound.niuArray [i]);
+						seats [i].niuImage.gameObject.SetActive (true);
+
+						if (game.currentRound.niuArray [i] > 6) {
+							seats [i].mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [i]);
+							seats [i].mutipleImage.gameObject.SetActive (true);
+						}
+						Debug.Log ("seat " + i + " show card anim completed");
+						StartCoroutine (SetPlayerShowCardCompleted (i));
 					} 
-					cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, targetV, step);
-					cards [j].transform.SetSiblingIndex (i * 5 + sequences [j]);
-
-					if (!Utils.isTwoPositionIsEqual (cards [j].gameObject.transform.position, targetV)) {
-						moveCompleted = false;
-					}
-				}
-
-				if (moveCompleted) {
-					gamePlayController.game.HideStateLabel ();
-					isMoveCardArray[i] = false;
-
-					var game = gamePlayController.game;
-					seats [i].niuImage.sprite = game.getNiuSprite (game.currentRound.niuArray [i]);
-					seats [i].niuImage.gameObject.SetActive (true);
-
-					if (game.currentRound.niuArray[i] > 6) {
-						seats [i].mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [i]);
-						seats [i].mutipleImage.gameObject.SetActive (true);
-					}
-					Debug.Log ("seat " + i + " show card anim completed");
-					StartCoroutine(SetPlayerShowCardCompleted(i));
 				} 
-			} 
+			}
 		}
 	}
 

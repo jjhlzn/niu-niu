@@ -21,7 +21,8 @@ public class FirstDealerController : BaseStateController {
 	private Deck deck;
 	private Seat[] seats;
 
-	private bool isFirstStartDealUpdate;
+	private bool isFirstDealing;
+	public bool isFirstDealDone;
 
 
 	void Start () {
@@ -32,20 +33,26 @@ public class FirstDealerController : BaseStateController {
 	public void Init() {
 		seats = gamePlayController.game.seats;
 		deck = gamePlayController.game.deck;
-		isFirstStartDealUpdate = true;
-
+		isFirstDealing = false;
+		isFirstDealDone = false;
 	}
 
 	public override void Reset() {
-		isFirstStartDealUpdate = true;
-
+		isFirstDealing = false;
+		isFirstDealDone = false;
 	}
 		
 	void Update () {
 
 		if (gamePlayController.state.Equals (GameState.FirstDeal)) {
 			gamePlayController.game.HideStateLabel ();
-			
+		} 
+
+		FirstDealAnimation ();
+	}
+
+	private void FirstDealAnimation() {
+		if (isFirstDealing) {
 			float waitTime = 0;
 			List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
 			for (int i = 0; i < playingPlayers.Count; i++) {
@@ -64,9 +71,11 @@ public class FirstDealerController : BaseStateController {
 				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[2], gamePlayController.game.currentRound.myCards[2]));
 				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[3], gamePlayController.game.currentRound.myCards[3]));
 
+				isFirstDealing = false;
+				isFirstDealDone = true;
 				StartCoroutine (GoToNextState ());
 			}
-		} 
+		}
 	}
 
 	/**
@@ -85,16 +94,8 @@ public class FirstDealerController : BaseStateController {
 	}
 
 	IEnumerator GiveCardAnimation(Player player, Image card, Vector3 targetCard, float step, float waitTime) {
-		if (isFirstStartDealUpdate) {
-			/*
-			float totalWaitTime = dealWaitTimeBetweenPlayer * gamePlayController.game.PlayingPlayers.Count + waitTimeDeltaBetweenCard * gamePlayController.game.PlayerCount * 4;
-			Debug.Log ("wait time for give card, waitTime = " + waitTime + ", totalWaitTime = " + totalWaitTime);
-			if (waitTime > totalWaitTime)
-				isFirstStartDealUpdate = false; */
-			yield return new WaitForSeconds (waitTime);
-		} else {
-			yield return new WaitForSeconds (0);
-		}
+
+		yield return new WaitForSeconds (waitTime);
 
 		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
 		if (player.seat.seatIndex == 0) {
@@ -121,6 +122,7 @@ public class FirstDealerController : BaseStateController {
 
 	IEnumerator GoToNextState() {
 		yield return new WaitForSeconds (.3f);
+
 		if (gamePlayController.state == GameState.FirstDeal)
 			gamePlayController.state = GameState.RobBanker;
 	}
@@ -199,6 +201,7 @@ public class FirstDealerController : BaseStateController {
 
 		gamePlayController.state = GameState.FirstDeal;
 		gamePlayController.game.UpdateGameInfos ();
+		isFirstDealing = true;
 	}
 
 

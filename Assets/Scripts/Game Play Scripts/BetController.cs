@@ -60,49 +60,57 @@ public class BetController : BaseStateController {
 		if (gamePlayController.state == GameState.Bet) {
 
 			if (stateTimeLeft > 0) {
-				gamePlayController.game.ShowStateLabel ("请选择下注分数: " + Mathf.Round(stateTimeLeft));
+				gamePlayController.game.ShowStateLabel ("请选择下注分数: " + Mathf.Round (stateTimeLeft));
 				stateTimeLeft -= Time.deltaTime;
 			}
-				
-			if (!hasBet && gamePlayController.game.currentRound.banker != gamePlayController.game.PlayingPlayers[0].userId) {
-				gamePlayController.game.ShowBetButtons ();
-			} else {
-				gamePlayController.game.HideBetButtons ();
-			}
+		} 
 
-			for (int i = 0; i < Game.SeatCount; i++) {
-				
-				if (isMoveChipArray [i]) {
-					seats[i].chipImageForBet.gameObject.SetActive (true);
+		if (gamePlayController.state == GameState.Bet 
+			&& !hasBet 
+			&& gamePlayController.game.currentRound.banker != gamePlayController.game.PlayingPlayers [0].userId) {
 
-					Vector3 targetPosition = seats[i].chipPositionWhenBet;
-					float step = 0;
-					if (i == 0) {
-						step = user0ChipMoveSpeed * Time.deltaTime;
-					} else {
-						step = chipMoveSpeed * Time.deltaTime;
-					}
+			gamePlayController.game.ShowBetButtons ();
+		} else {
+			gamePlayController.game.HideBetButtons ();
+		}
 
-					seats[i].chipImageForBet.gameObject.transform.position = Vector3.MoveTowards (seats[i].chipImageForBet.gameObject.transform.position,
-						targetPosition, step);
 
-					if (Utils.isTwoPositionIsEqual (seats[i].chipImageForBet.gameObject.transform.position, targetPosition)) {
-						isMoveChipArray [i] = false;
-						seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
-						seats[i].chipCountLabel.gameObject.SetActive (true);
-						isBetCompletedArray [i] = true;
+		BetAnimation ();
+	}
 
-						if (IsAllBetCompleted && secondDealController.canSecondDeal) {
+	private void BetAnimation() {
+		for (int i = 0; i < Game.SeatCount; i++) {
+			if (isMoveChipArray [i]) {
+				seats[i].chipImageForBet.gameObject.SetActive (true);
+
+				Vector3 targetPosition = seats[i].chipPositionWhenBet;
+				float step = 0;
+				if (i == 0) {
+					step = user0ChipMoveSpeed * Time.deltaTime;
+				} else {
+					step = chipMoveSpeed * Time.deltaTime;
+				}
+
+				seats[i].chipImageForBet.gameObject.transform.position = Vector3.MoveTowards (seats[i].chipImageForBet.gameObject.transform.position,
+					targetPosition, step);
+
+				if (Utils.isTwoPositionIsEqual (seats[i].chipImageForBet.gameObject.transform.position, targetPosition)) {
+					isMoveChipArray [i] = false;
+					seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
+					seats[i].chipCountLabel.gameObject.SetActive (true);
+					isBetCompletedArray [i] = true;
+
+					if (gamePlayController.state == GameState.Bet) {
+						//if (IsAllBetCompleted && secondDealController.canSecondDeal) {
+						if (IsAllBetCompleted) {
 							Debug.Log ("In BetControoler: change to SecondSeal state");
 							gamePlayController.game.HideStateLabel ();
-							gamePlayController.state = GameState.SecondDeal;
+							//gamePlayController.state = GameState.SecondDeal;
 						}
 					}
 				}
 			}
-
 		}
-
 	}
 
 	private void HandleUser0BetNotify(int bet) {
