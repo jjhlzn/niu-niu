@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ChooseBankerController : BaseStateController {
 	public static int ChooseTotalCount = 15;
 	private float BankerSignMoveTimeInterval = .03f;
-	private float moveBankerSignSpeed = 10f;
+	private float moveBankerSignSpeed = 120f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -50,48 +50,64 @@ public class ChooseBankerController : BaseStateController {
 		movingBankerSign = false;
 	}
 
+	bool isPlayerRobBanker(string[] robBankerPlayers, string playerId) {
+		if (robBankerPlayers.Length == 0) {
+			return true;
+		}
+		for (int i = 0; i < robBankerPlayers.Length; i++) {
+			if (playerId == robBankerPlayers [i])
+				return true;
+		}
+		return false;
+	}
+
 	void Update() {
 
 		if (isChoosingBanker) {
 			
+			var game = gamePlayController.game;
+
+			if (game.currentRound.robBankerPlayers.Length >= 2) {
+				game.ShowStateLabel ("多人抢庄，现在随机抢庄");
+			} else {
+				game.ShowStateLabel ("无人抢庄，随机选择一个庄家");
+			}
+
 			timeLeft -= Time.deltaTime;
 			if (timeLeft < 0) {
 				List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
 				for (int i = 0; i < playingPlayers.Count; i++) {
 					Player player = playingPlayers [i];
-					if (player.userId == userIds [chooseIndex]) {
+					if (player.userId == userIds [chooseIndex] && isPlayerRobBanker(game.currentRound.robBankerPlayers, player.userId)) {
 						player.seat.robingSeatBorderImage.gameObject.SetActive (true);
 					} else {
 						player.seat.robingSeatBorderImage.gameObject.SetActive (false);
 					}
 				}
-					
 
 				if (chooseCount > ChooseTotalCount
-				    && seats [gamePlayController.game.GetSeatIndex (userIds [chooseIndex])].player.userId == gamePlayController.game.currentRound.banker) {
-
-					isChoosingBanker = false;
+				    && seats [game.GetSeatIndex (userIds [chooseIndex])].player.userId == game.currentRound.banker) {
+					Debug.Log ("choose banker compeleted");
 					foreach (Seat seat in seats) {
 						seat.robingSeatBorderImage.gameObject.SetActive (false);
 					}
-					Game game = gamePlayController.game;
-					game.ShowStateLabel (game.currentRound.banker + "成为庄家");
-					movingBankerSign = true;
-					bankerSign.gameObject.transform.position = new Vector3 (game.gameStateLabel.transform.position.x - game.gameStateLabel.preferredWidth / SetupCardGame.TransformConstant / 2,
-						game.gameStateLabel.transform.position.y, 0);
-					bankerSign.gameObject.SetActive (true);
+					isChoosingBanker = false;
+					chooseCompleted = true;
+
 				} else {
 					timeLeft = BankerSignMoveTimeInterval;
 					chooseIndex = ++chooseIndex % userIds.Length;
 					chooseCount++;
 				}
-			} else {
-				gamePlayController.game.ShowStateLabel ("多人抢庄，现在随机抢庄");
-			}
+			} 
+		}
+
+		if (chooseCompleted) {
+			Debug.Log ("show banker choose completed animation");
+			StartCoroutine (ChooseBankerCompletedAnimation ());
 		}
 
 		if (movingBankerSign) {
-			//int seatIndex = gamePlayController.game.GetSeatIndex (userIds[chooseIndex]);
 
 			int bankerSeatIndex = gamePlayController.game.GetSeatIndex (gamePlayController.game.currentRound.banker);
 			Vector3 targetPosition = seats[bankerSeatIndex].bankerSignPosition;
@@ -109,15 +125,31 @@ public class ChooseBankerController : BaseStateController {
 			}
 		} 
 	}
+
+	IEnumerator ChooseBankerCompletedAnimation() {
+		var game = gamePlayController.game;
+
+		game.ShowStateLabel (game.currentRound.banker + "成为庄家");
+
+		chooseCompleted = false;
+		//bankerSign.gameObject.transform.position = new Vector3 (game.gameStateLabel.transform.position.x - game.gameStateLabel.preferredWidth / SetupCardGame.TransformConstant / 2,
+		//	game.gameStateLabel.transform.position.y, 0);
+		bankerSign.gameObject.SetActive (true);
+
+		yield return new WaitForSeconds (.4f);
+
+		movingBankerSign = true;
+	}
 		
 	public void HandleResponse(GoToChooseBankerNotity resp) {
+		var game = gamePlayController.game;
 
 		gamePlayController.state = GameState.ChooseBanker;
-		gamePlayController.game.currentRound.banker = resp.banker;
+		game.currentRound.banker = resp.banker;
+		game.currentRound.robBankerPlayers = resp.robBankerPlayers;
 
 
-		userIds = new string[gamePlayController.game.PlayerCount];
-		Seat[] seats = gamePlayController.game.seats;
+		userIds = new string[game.PlayerCount];
 
 		int index = 0;
 		for (int i = 0; i < Game.SeatCount; i++) {
@@ -125,9 +157,13 @@ public class ChooseBankerController : BaseStateController {
 				userIds [index++] = seats[i].player.userId;
 			}
 		}
-		gamePlayController.game.HideStateLabel ();
+		game.HideStateLabel ();
 		chooseIndex = 0;
-		isChoosingBanker = true;
+
+		if (game.currentRound.robBankerPlayers.Length >= 2 || game.currentRound.robBankerPlayers.Length == 0)
+			isChoosingBanker = true;
+		else
+			chooseCompleted = true;
 	}
 		
 		

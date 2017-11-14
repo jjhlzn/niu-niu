@@ -10,6 +10,7 @@ public class Round
 	public int[] myBets;
 	public int myBet;
 
+	public string[] robBankerPlayers;
 	public string banker;
 	public int[] playerBets;
 	public Dictionary<string, string[]> playerCardsDict;

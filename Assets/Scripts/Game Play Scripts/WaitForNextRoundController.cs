@@ -40,7 +40,6 @@ public class WaitForNextRoundController : BaseStateController {
 				gamePlayerController.game.ShowStateLabel ("下一局游戏即将开始: " + Mathf.Round(stateTimeLeft));
 				stateTimeLeft -= Time.deltaTime;
 			}
-
 		}
 	}
 
@@ -58,13 +57,20 @@ public class WaitForNextRoundController : BaseStateController {
 		gameSocket.EmitJson (Messages.Ready, JsonConvert.SerializeObject(request), (string msg) => {
 			//界面的元素全部还原，各个Controller全部Reset
 			readyButton.gameObject.SetActive(false);
-			gamePlayerController.PrepareForNewRound();
-		}); 
+
+			gamePlayerController.game.UpdateGameInfos ();
+			gamePlayerController.game.seats[0].player.isReady = true;
+			gamePlayerController.game.seats[0].UpdateUI(gamePlayerController.game);
+
+		});  
 	}
 
 
 	public void HandleResponse(SomePlayerReadyNotify notify) {
 		int seatIndex = gamePlayerController.game.GetSeatIndex (notify.userId);
 		seats [seatIndex].readyImage.gameObject.SetActive (true);
+		gamePlayerController.game.seats[seatIndex].player.isReady = true;
+		gamePlayerController.game.seats[seatIndex].UpdateUI(gamePlayerController.game);
+
 	}
 }

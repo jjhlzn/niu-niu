@@ -77,7 +77,7 @@ public class RobBankerController : BaseStateController {
 
 		var robReq = new {
 			roomNo = gamePlayerController.game.roomNo,
-			isRob = isRob,
+			isRob = isRob ? 1 : 0,
 			userId = Player.Me.userId
 		};
 
@@ -88,6 +88,7 @@ public class RobBankerController : BaseStateController {
 		
 
 	public void HanldeResponse(SomePlayerRobBankerNotify notify) {
+
 		if (gamePlayerController.state == GameState.RobBanker) {
 			int seatIndex = gamePlayerController.game.GetSeatIndex (notify.userId);
 			if (seatIndex == -1) {

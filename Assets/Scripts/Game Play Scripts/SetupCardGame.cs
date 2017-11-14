@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SetupCardGame : BaseStateController {
-	private int MaxMoveChipCount = 8 * 5;
+	private int MaxMoveChipCount = 8 * 6;
 	public static float TransformConstant = 71.98f;
 	private int cardCount = 30; //生成多少张牌的图片，6 * 5 = 30
 
@@ -37,16 +37,36 @@ public class SetupCardGame : BaseStateController {
 	[SerializeField]
 	public Text gameStateLabel;
 
+	[SerializeField]
+	public Image bankerSign;
+
+	[SerializeField]
+	private Button betButton;
+	[SerializeField]
+	private Text betLabel;
+
 	public Seat[] seats;
 	public Deck deck;
 	public Sprite[] niuSprites;
 	public Sprite[] multipleSprites;
+	public Button[] betButtons;
+	public Text[] betLabels;
+	public Vector3[] betButtonPositionsFo3Button;
+	public Vector3[] betButtonPositionsFor4Button;
+	public Vector3[] betLabelPositionsFo3Button;
+	public Vector3[] betLabelPositionsFor4Button;
 
 	void Awake() {
 		CreateDeck ();
 		SeatSeatUIs ();
 		SetOtherSeatUIs ();
 		LoadNiuAndMultipleImages ();
+		CreateBetButtons ();
+		Create4BetsButtonPositions ();
+		Create3BetsButtonPositions ();
+
+		//把移动的庄家放在最上面一层
+		bankerSign.transform.SetAsLastSibling ();
 	}
 
 	void Start() {
@@ -206,7 +226,7 @@ public class SetupCardGame : BaseStateController {
 				if (index == 3) {
 					seat.targetScoreLabelPosition = new Vector3 (seat.originScoreLabelPosition.x, seat.originScoreLabelPosition.y + 0.8f, 0);
 				} else {
-					seat.targetScoreLabelPosition = new Vector3 (seat.originScoreLabelPosition.x, seat.originScoreLabelPosition.y + 1.0f, 0);
+					seat.targetScoreLabelPosition = new Vector3 (seat.originScoreLabelPosition.x, seat.originScoreLabelPosition.y + 1.1f, 0);
 				}
 				break;
 			}
@@ -429,23 +449,23 @@ public class SetupCardGame : BaseStateController {
 	 * */
 	private void SetChips() {
 		for (int i = 0; i < Game.SeatCount; i++) {
-			seats [i].chipImages = GetChips (i);
+			seats [i].chipImages = CreateChips (i);
 		}	
 	}
 
-	private Image[] GetChips(int index) {
+	private Image[] CreateChips(int index) {
 		Image[] images = new Image[MaxMoveChipCount];
 		int startSiblings = 100;
 
-		for (int i = 0; i < MaxMoveChipCount; i++) {
+		for (int i = 0; i < images.Length; i++) {
 			Image image = Instantiate (seats[index].chipImageForBet);
 			image.name = "user" + index + "chip" + i;
 			image.gameObject.transform.SetParent (userPanel.transform);
 			image.transform.SetSiblingIndex (startSiblings + i);
 
 			Vector3 localScale = new Vector3 ();
-			localScale.x = 0.3f;
-			localScale.y = 0.3f;
+			localScale.x = 0.25f;
+			localScale.y = 0.25f;
 			image.transform.localScale = localScale;
 
 			image.transform.position = seats[index].chipImageForBet.transform.position;
@@ -534,6 +554,54 @@ public class SetupCardGame : BaseStateController {
 	void LoadNiuAndMultipleImages() {
 		niuSprites = Resources.LoadAll<Sprite>("sprites/niu");
 		multipleSprites = Resources.LoadAll<Sprite>("sprites/mutiple");
+	}
+
+	void CreateBetButtons() {
+		betButtons = new Button[4];
+		betLabels = new Text[4];
+		for (int i = 0; i < 4; i++) {
+			betButtons[i] = Instantiate (betButton);
+			betButtons [i].gameObject.SetActive (false);
+			betButtons [i].transform.SetParent (userPanel.transform);
+			betButtons [i].name = "betButton" +i;
+			Vector3 localScale = new Vector3 (0.3f, 0.3f);
+			betButtons[i].gameObject.transform.localScale = localScale;
+
+
+			betLabels [i] = Instantiate (betLabel);
+			betLabels [i].gameObject.SetActive (false);
+			betLabels [i].transform.SetParent (userPanel.transform);
+			betLabels [i].name = "betLabel" + i;
+		    localScale = new Vector3 (1f, 1f);
+			betLabels[i].gameObject.transform.localScale = localScale;
+
+		}
+	}
+
+	void Create4BetsButtonPositions() {
+		betButtonPositionsFor4Button = new Vector3[4];
+		betLabelPositionsFor4Button = new Vector3[4];
+		int X = -132, Y = -105, YForLabel = -138;
+		for (int i = 0; i < betButtonPositionsFor4Button.Length; i++) {
+			
+			betButtonPositionsFor4Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);
+			betButtons [i].transform.position = betButtonPositionsFor4Button [i];
+			betLabelPositionsFor4Button [i] = new Vector3 (X / TransformConstant, YForLabel / TransformConstant, 0);
+			betLabels [i].transform.position = betLabelPositionsFor4Button [i];
+			X += 88;
+		}
+	}
+
+	void Create3BetsButtonPositions() {
+		betButtonPositionsFo3Button = new Vector3[3];
+		betLabelPositionsFo3Button = new Vector3[3];
+		int X = -84, Y = -105, YForLabel = -138;
+		for (int i = 0; i < betButtonPositionsFo3Button.Length; i++) {
+			
+			betButtonPositionsFo3Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);
+			betLabelPositionsFo3Button [i] = new Vector3 (X / TransformConstant, YForLabel / TransformConstant, 0);
+			X += 88;
+		}
 	}
 }
 

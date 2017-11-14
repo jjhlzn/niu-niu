@@ -60,11 +60,7 @@ public class BeforeGameStartController : BaseStateController {
 		if (gamePlayerController.state == GameState.BeforeStart) {
 			gamePlayerController.game.ShowStateLabel ("等待其他玩家加入...");
 		}
-
-		/*
-		if (gamePlayerController.state == GameState.WaitForNextRound) {
-			gamePlayerController.game.ShowStateLabel("下一局即将开始: " + )
-		} */
+			
 
 		if (isMoveSeat) {
 			
@@ -132,23 +128,9 @@ public class BeforeGameStartController : BaseStateController {
 	private void HandleUser0Ready() {
 		//界面的元素全部还原，各个Controller全部Reset
 		readyButton.gameObject.SetActive(false);
-		gamePlayerController.PrepareForNewRound();
+		//gamePlayerController.PrepareForNewRound();
 	}
-
-	public void ReadyClick() {
-		Socket gameSocket = gamePlayerController.gameSocket;
-		Debug.Log ("ready  click");
-	
-		//make start game request
-		var request = new {
-			roomNo = gamePlayerController.game.roomNo,
-			userId = Player.Me.userId
-		};
-
-		gameSocket.EmitJson (Messages.Ready, JsonConvert.SerializeObject(request), (string msg) => {
-			HandleUser0Ready();
-		}); 
-	}
+		
 		
 
 	public void SetSeatClick() {

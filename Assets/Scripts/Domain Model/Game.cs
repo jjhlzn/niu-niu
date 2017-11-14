@@ -55,6 +55,15 @@ public class Game
 	public Sprite[] niuSprites;
 	public Sprite[] multipleSprites;
 
+	public Button[] betButtons;
+	public Text[] betLabels;
+	public Vector3[] betButtonPositionsFor3Button;
+	public Vector3[] betLabelPositionsFor3Button;
+	public Vector3[] betButtonPositionsFor4Button;
+	public Vector3[] betLabelPositionsFor4Button;
+	public Text roomLabel;
+	public Text roundLabel;
+
 	public int LastPlayerSeatIndex {
 		get {
 			List<Player> players = PlayingPlayers;
@@ -114,7 +123,7 @@ public class Game
 	}
 
 	public void GoToNextRound() {
-		currentRoundNo++;
+		//currentRoundNo++;
 		bankerSignImage.transform.position = originBankerSignPosition;
 		bankerSignImage.gameObject.SetActive (false);
 		//设置CurrentRound的数据
@@ -156,12 +165,46 @@ public class Game
 		throw new UnityException ("找不到Sprite " + multipleName);
 	}
 
-	/*
-	public void UpdateGateStateLabel() {
-		if (state == GameState.RobBanker) {
-		} else if (state == GameState.ChooseBanker) {
-		} else if (state == Game.
-	} */
+
+	public void ShowBetButtons() {
+		int[] myBets = currentRound.myBets;
+		bool is4Button = myBets.Length == 4;
+		for (var i = 0; i < myBets.Length; i++) {
+			
+			if (is4Button) {
+				betLabels [i].transform.position = betLabelPositionsFor4Button [i];
+				betButtons [i].transform.position = betButtonPositionsFor4Button [i];
+			} else {
+				betLabels [i].transform.position = betLabelPositionsFor3Button [i];
+				betButtons [i].transform.position = betButtonPositionsFor3Button [i];
+			}
+			betLabels [i].text = "x" + myBets [i];
+			betLabels [i].gameObject.SetActive (true);
+			betButtons [i].gameObject.SetActive (true);
+
+		}
+		
+	}
+
+	public void HideBetButtons() {
+		for(int i = 0; i < betButtons.Length; i++) {
+			betButtons[i].gameObject.SetActive (false);
+			betLabels[i].gameObject.SetActive (false);
+		}
+	}
+
+	public void UpdateGameInfos() {
+		this.roomLabel.text =  "房号 : " + this.roomNo;
+		if (state == GameState.BeforeStart)
+			this.roundLabel.text = "局数 : 0/" + this.totalRoundCount;
+		else 
+			this.roundLabel.text = "局数 : " + this.currentRoundNo + "/" + this.totalRoundCount;
+
+		Debug.Log ("state = " + state.value);
+		Debug.Log ("this.currentRoundNo = " + this.currentRoundNo);
+		Debug.Log ("roundLabel.text = " + this.roundLabel.text);
+	}
+
 }
 
 

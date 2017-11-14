@@ -38,6 +38,10 @@ public class GamePlayController : MonoBehaviour {
 	[SerializeField]
 	private CompareCardController compareController;
 
+	[SerializeField]
+	private Text roomLabel;
+	[SerializeField]
+	private Text roundLabel;
 
 
 	public GameState state {
@@ -57,11 +61,20 @@ public class GamePlayController : MonoBehaviour {
 		Debug.Log ("GamePlayController Start");
 		SetGameData ();
 
+		game.roomLabel = roomLabel;
+		game.roundLabel = roundLabel;
 		game.state = GameState.BeforeStart;
 		game.bankerSignImage = setupCardGame.bankerSignImage;
 		game.gameStateLabel = setupCardGame.gameStateLabel;
 		game.niuSprites = setupCardGame.niuSprites;
 		game.multipleSprites = setupCardGame.multipleSprites;
+		game.betButtons = setupCardGame.betButtons;
+		game.betLabels = setupCardGame.betLabels;
+		game.betButtonPositionsFor3Button = setupCardGame.betButtonPositionsFo3Button;
+		game.betLabelPositionsFor3Button = setupCardGame.betLabelPositionsFo3Button;
+		game.betButtonPositionsFor4Button = setupCardGame.betButtonPositionsFor4Button;
+		game.betLabelPositionsFor4Button = setupCardGame.betLabelPositionsFor4Button;
+		betController.SetBetClick (game.betButtons);
 
 		foreach (Seat seat in game.seats) {
 			seat.UpdateUI (game);
@@ -75,6 +88,8 @@ public class GamePlayController : MonoBehaviour {
 		secondDealController.Init ();
 		checkCardController.Init ();
 		compareController.Init ();
+
+		game.UpdateGameInfos ();
 	}
 
 
@@ -91,6 +106,7 @@ public class GamePlayController : MonoBehaviour {
 		game.currentRoundNo = 1;
 		game.roomNo = GenerateRoomNo ();
 		state = GameState.BeforeStart;
+
 	}
 
 	/*
@@ -126,17 +142,29 @@ public class GamePlayController : MonoBehaviour {
 			Debug.Log("GoToFirstDeal: " + msg);
 			FirstDealResponse resp = JsonConvert.DeserializeObject<FirstDealResponse>(msg);
 			//Debug.Log(resp);
+			if (resp.status != 0) {
+				Debug.LogError("出错了");
+				return;
+			}
 			firstDealerController.HandleResponse(resp);
 		});
 
 		gameSocket.On (Messages.GoToCheckCard, (string msg) => {
 			GoToCheckCardNotify resp = JsonConvert.DeserializeObject<GoToCheckCardNotify>(msg);
+			if (resp.status != 0) {
+				Debug.LogError("出错了");
+				return;
+			}
 			checkCardController.HandleResponse(resp);
 		});
 
 		gameSocket.On (Messages.SomePlayerSitDown, (string msg) => {
 			Debug.Log("SomePlayerSitDown: " + msg);
 			SomePlayerSitDownNotify  resp = JsonConvert.DeserializeObject<SomePlayerSitDownNotify>(msg);
+			if (resp.status != 0) {
+				Debug.LogError("出错了");
+				return;
+			}
 			beforeGameStartController.HandleResponse(resp);
 		});
 
@@ -149,6 +177,10 @@ public class GamePlayController : MonoBehaviour {
 		gameSocket.On (Messages.StartGame, (string msg) => {
 			Debug.Log("StartGame: " + msg);
 			StartGameNotify resp = JsonConvert.DeserializeObject<StartGameNotify>(msg);
+			if (resp.status != 0) {
+				Debug.LogError("出错了");
+				return;
+			}
 			firstDealerController.HandleResponse(resp);
 
 		});
@@ -162,36 +194,60 @@ public class GamePlayController : MonoBehaviour {
 		gameSocket.On (Messages.GoToChooseBanker, (string msg) => {
 			Debug.Log("GoToChooseBanker: " + msg);
 			GoToChooseBankerNotity resp = JsonConvert.DeserializeObject<GoToChooseBankerNotity>(msg);
+			if (resp.status != 0) {
+				Debug.LogError("出错了");
+				return;
+			}
 			chooseBankerController.HandleResponse(resp);
 		});
 
 		gameSocket.On (Messages.SomePlayerBet, (string msg) => {
 			Debug.Log("SomePlayerBet: " + msg);
 			SomePlayerBetNotify notify = JsonConvert.DeserializeObject<SomePlayerBetNotify>(msg);
+			if (notify.status != 0) {
+				Debug.LogError("出错了");
+				return;
+			}
 			betController.HandleResponse(notify);
 		});
 
 		gameSocket.On (Messages.GoToSecondDeal, (string msg) => {
 			Debug.Log("GoToSecondDeal: " + msg);
 			GoToSecondDealNotify resp = JsonConvert.DeserializeObject<GoToSecondDealNotify>(msg);
+			if (resp.status != 0) {
+				Debug.LogError("出错了");
+				return;
+			}
 			secondDealController.HandleResponse(resp);
 		});
 
 		gameSocket.On (Messages.SomePlayerShowCard, (string msg) => {
 			Debug.Log("SomePlayerShowCard: " +msg);
 			SomePlayerShowCardNotify resp = JsonConvert.DeserializeObject<SomePlayerShowCardNotify>(msg);
+			if (resp.status != 0) {
+				Debug.LogError("出错了");
+				return;
+			}
 			checkCardController.HandleResponse(resp);
 		});
 
 		gameSocket.On (Messages.GoToCompareCard, (string msg) => {
 			Debug.Log("GoToCompareCard: " + msg);
 			GoToCompareCardNotify notify = JsonConvert.DeserializeObject<GoToCompareCardNotify>(msg);
+			if (notify.status != 0) {
+				Debug.LogError("出错了");
+				return;
+			}
 			compareController.HandleResponse(notify);
 		});
 
 		gameSocket.On (Messages.SomePlayerReady, (string msg) => {
 			Debug.Log("SomePlayerReady: " + msg);
 			SomePlayerReadyNotify notify = JsonConvert.DeserializeObject<SomePlayerReadyNotify>(msg);
+			if (notify.status != 0) {
+				Debug.LogError("出错了");
+				return;
+			}
 			beforeGameStartController.HandleResponse(notify);
 		});
 	}

@@ -13,11 +13,8 @@ public class BetController : BaseStateController {
 	[SerializeField]
 	private SecondDealController secondDealController;
 
-	[SerializeField]
-	private GameObject betPanel;
-
 	private float user0ChipMoveSpeed = 180f;
-	private float chipMoveSpeed = 150f;
+	private float chipMoveSpeed = 180f;
 
 	private Seat[] seats;
 
@@ -43,6 +40,7 @@ public class BetController : BaseStateController {
 	public void Init() {
 		seats = gamePlayController.game.seats;
 		stateTimeLeft = Constants.MaxStateTimeLeft - animationTime;
+		gamePlayController.game.HideBetButtons ();
 	}
 		
 	public void Awake() {
@@ -67,9 +65,9 @@ public class BetController : BaseStateController {
 			}
 				
 			if (!hasBet && gamePlayController.game.currentRound.banker != gamePlayController.game.PlayingPlayers[0].userId) {
-				betPanel.SetActive (true);
+				gamePlayController.game.ShowBetButtons ();
 			} else {
-				betPanel.SetActive (false);
+				gamePlayController.game.HideBetButtons ();
 			}
 
 			for (int i = 0; i < Game.SeatCount; i++) {
@@ -103,18 +101,20 @@ public class BetController : BaseStateController {
 				}
 			}
 
-		} else {
-			betPanel.SetActive (false);
 		}
-
 
 	}
 
 	private void HandleUser0BetNotify(int bet) {
-		betPanel.gameObject.SetActive (false);
 		hasBet = true;
-		gamePlayController.game.currentRound.playerBets[0] = 8;
+		gamePlayController.game.currentRound.playerBets[0] = bet;
 		isMoveChipArray[0] = true;
+	}
+
+	public void SetBetClick(Button[] buttons) {
+		for (int i = 0; i < buttons.Length; i++) {
+			buttons [i].onClick.AddListener (BetClick);
+		}
 	}
 
 	public void BetClick() {
@@ -123,16 +123,20 @@ public class BetController : BaseStateController {
 			Debug.LogError ("current state is not bet, the state is " + gamePlayController.state.value);
 			return;
 		}
+
+		string betName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
+		int index = int.Parse(betName.Substring (betName.Length - 1));
+		int mybet = gamePlayController.game.currentRound.myBets [index];
 			
 		Socket socket = gamePlayController.gameSocket; 
 		var req = new {
 			roomNo = gamePlayController.game.roomNo,
 			userId = Player.Me.userId,
-			bet = 8
+			bet = mybet
 		};
 
 		socket.EmitJson (Messages.Bet, JsonConvert.SerializeObject(req), (string msg) => {
-			HandleUser0BetNotify(8);
+			HandleUser0BetNotify(mybet);
 		}); 
 
 	}
@@ -147,8 +151,5 @@ public class BetController : BaseStateController {
 			game.currentRound.playerBets [index] = notify.bet;
 			isMoveChipArray [index] = true;
 		}
-		//if (game.currentRound.playerBets[index] == 0){
-
-		//}
 	}
 }

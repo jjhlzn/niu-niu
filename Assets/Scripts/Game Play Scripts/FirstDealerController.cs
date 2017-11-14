@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class FirstDealerController : BaseStateController {
-	public static float dealSpeed = 350f; //发牌速度
+	public static float dealSpeed = 320f; //发牌速度
 	public static float dealWaitTimeBetweenPlayer = 0.3f;
 	public static float dealWaitTimeBetweenPlayerForSecondDeal = 0.1f;
 	public static float waitTimeDeltaBetweenCard = 0.1f;
 	public static float turnUpTime = 0.5f;
-	public static float user0CardScale = 1.28f;
+	public static float user0CardScale = 1.3f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -23,6 +23,7 @@ public class FirstDealerController : BaseStateController {
 
 	private bool isFirstStartDealUpdate;
 
+
 	void Start () {
 		seats = gamePlayController.game.seats;
 		deck = gamePlayController.game.deck;
@@ -31,11 +32,13 @@ public class FirstDealerController : BaseStateController {
 	public void Init() {
 		seats = gamePlayController.game.seats;
 		deck = gamePlayController.game.deck;
-		isFirstStartDealUpdate = false;
+		isFirstStartDealUpdate = true;
+
 	}
 
 	public override void Reset() {
-		isFirstStartDealUpdate = false;
+		isFirstStartDealUpdate = true;
+
 	}
 		
 	void Update () {
@@ -44,7 +47,6 @@ public class FirstDealerController : BaseStateController {
 			gamePlayController.game.HideStateLabel ();
 			
 			float waitTime = 0;
-
 			List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
 			for (int i = 0; i < playingPlayers.Count; i++) {
 				Player player = playingPlayers [i];
@@ -83,10 +85,16 @@ public class FirstDealerController : BaseStateController {
 	}
 
 	IEnumerator GiveCardAnimation(Player player, Image card, Vector3 targetCard, float step, float waitTime) {
-		if (!isFirstStartDealUpdate)
+		if (isFirstStartDealUpdate) {
+			/*
+			float totalWaitTime = dealWaitTimeBetweenPlayer * gamePlayController.game.PlayingPlayers.Count + waitTimeDeltaBetweenCard * gamePlayController.game.PlayerCount * 4;
+			Debug.Log ("wait time for give card, waitTime = " + waitTime + ", totalWaitTime = " + totalWaitTime);
+			if (waitTime > totalWaitTime)
+				isFirstStartDealUpdate = false; */
 			yield return new WaitForSeconds (waitTime);
-		else
+		} else {
 			yield return new WaitForSeconds (0);
+		}
 
 		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
 		if (player.seat.seatIndex == 0) {
@@ -96,10 +104,7 @@ public class FirstDealerController : BaseStateController {
 			card.transform.localScale = localScale;
 		}
 
-
-		if (!isFirstStartDealUpdate && gamePlayController.game.LastPlayerSeatIndex == player.seat.seatIndex) {
-			isFirstStartDealUpdate = true;
-		}
+	
 	}
 
 
@@ -139,7 +144,9 @@ public class FirstDealerController : BaseStateController {
 	public void HandleResponse(FirstDealResponse notify) {
 		Dictionary<string, string[]> cardsDict = notify.cardsDict;
 		Dictionary<string, int[]> betsDict = notify.betsDict;
-
+		int roundNo = notify.roundNo;
+		gamePlayController.game.currentRoundNo = roundNo;
+		gamePlayController.PrepareForNewRound();
 		HandleResponse (cardsDict, betsDict);
 	}
 
@@ -152,12 +159,16 @@ public class FirstDealerController : BaseStateController {
 		
 
 	private void HandleResponse(Dictionary<string, string[]> cardsDict, Dictionary<string, int[]> betsDict) {
+
+		//更新位置UI
 		for (int i = 0; i < seats.Length; i++) {
 			if (seats [i].hasPlayer ()) {
 				seats [i].player.isReady = false;
 				seats [i].UpdateUI (gamePlayController.game);
+				seats [i].scoreLabel.transform.position = seats [i].originScoreLabelPosition;
 			}
 		}
+
 
 		string[] myCards;
 		if (cardsDict.ContainsKey (Player.Me.userId)) {
@@ -187,6 +198,7 @@ public class FirstDealerController : BaseStateController {
 		FirstDeal ();
 
 		gamePlayController.state = GameState.FirstDeal;
+		gamePlayController.game.UpdateGameInfos ();
 	}
 
 

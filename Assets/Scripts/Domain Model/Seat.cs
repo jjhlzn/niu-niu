@@ -60,27 +60,37 @@ public class Seat
 
 	public void UpdateUI(Game game) {
 		robingSeatBorderImage.gameObject.SetActive (false);
-		scoreLabel.gameObject.SetActive (false);
 
-		if (player != null) {  
+
+		//有人的情况
+		if (player != null) {
+			//这些不需要根据状态设置
+			seatNumberLabel.gameObject.SetActive (false);
+			emptySeatImage.gameObject.SetActive (false);
+			sitdownButton.gameObject.SetActive (false);
 			seatBorderImage.gameObject.SetActive (true);
 			playerImage.gameObject.SetActive (true);
 			playerNameLabel.text = player.userId;
-			Debug.Log ("seat " + seatNo + " userid = " + player.userId);
 			playerNameLabel.gameObject.SetActive (true);
+
+
 			playerScoreLabel.text = player.score + "";
 			playerScoreLabel.gameObject.SetActive (true);
-			seatNumberLabel.gameObject.SetActive (false);
-
-			emptySeatImage.gameObject.SetActive (false);
-			sitdownButton.gameObject.SetActive (false);
-
-			if (player.isPlaying && player.isReady)
+			//Debug.Log (player.userId + ": player.isPlaying = " + player.isPlaying + ", player.isReady = " + player.isReady);
+			if (player.isPlaying && player.isReady && (game.state == GameState.BeforeStart || game.state == GameState.WaitForNextRound)) {
 				readyImage.gameObject.SetActive (true);
-			else
+			} else {
 				readyImage.gameObject.SetActive (false);
+			}
+
+			if (player.isPlaying && player.isReady && game.state == GameState.WaitForNextRound) {
+				scoreLabel.gameObject.SetActive (true);
+			} else {
+				scoreLabel.gameObject.SetActive (false);
+			}
 
 		} else {
+			scoreLabel.gameObject.SetActive (false);
 			seatBorderImage.gameObject.SetActive (false);
 			playerImage.gameObject.SetActive (false);
 			playerNameLabel.gameObject.SetActive (false);
@@ -96,23 +106,19 @@ public class Seat
 				emptySeatImage.gameObject.SetActive (true);
 			}
 			readyImage.gameObject.SetActive (false);
-			//bankerSignPosition.gameObject.SetActive (false);
 		} 
 
 
 	}
 
 	public void Reset() {
-		
-
 		UpdateUI (game);
 
 		for (int i = 0; i < cards.Length; i++) {
 			cards [i] = null;
 		}
-
-		scoreLabel.gameObject.SetActive (false);
-		scoreLabel.transform.position = originScoreLabelPosition;
+			
+		//scoreLabel.transform.position = originScoreLabelPosition;
 
 		chipImageForBet.gameObject.SetActive (false);
 		chipImageForBet.transform.position = originChipImagePositionForBet;

@@ -6,7 +6,7 @@ using socket.io;
 using Newtonsoft.Json;
 
 public class CheckCardController : BaseStateController {
-	private float user0MoveCardSpeedWhenShowCard = 7f;
+	private float user0MoveCardSpeedWhenShowCard = 9f;
 	private float moveCardSpeedWhenShowCard = 6f;
 
 	[SerializeField] 
@@ -58,6 +58,7 @@ public class CheckCardController : BaseStateController {
 		}
 	}
 
+
 	void Update() {
 		if (gamePlayController.state == GameState.CheckCard) {
 			if (stateTimeLeft >= 0) {
@@ -77,7 +78,6 @@ public class CheckCardController : BaseStateController {
 				Image[] cards = seats[i].player.cards;
 				Vector3[] showcardPositions = seats [i].showCardPositions;
 				int[] sequences = gamePlayController.game.currentRound.cardSequenceArray [i];
-				Debug.Log ("sequences = " + sequences);
 
 				float step;
 				if (i == 0) {
@@ -88,7 +88,7 @@ public class CheckCardController : BaseStateController {
 
 				bool moveCompleted = true;
 				for (int j = 0; j < 5; j++) {
-					Debug.Log ("card " + j + " move to position " + sequences [j]);
+					//Debug.Log ("card " + j + " move to position " + sequences [j]);
 					Vector3 targetV = showcardPositions [sequences [j]];
 					//有牛的话，第4张牌和第6张牌要有点距离
 					if (gamePlayController.game.currentRound.HasNiu (i)  && sequences [j] >= 3) {
@@ -135,9 +135,7 @@ public class CheckCardController : BaseStateController {
 		anim.Play ("TurnBackNow2");
 		yield return new WaitForSeconds (.2f);
 
-		if (gamePlayController.game.currentRound.HasNiu(0)) {
-			isMoveCardArray [0] = true;
-		}
+		isMoveCardArray [0] = true;
 	}
 
 	IEnumerator TurnUserCardsUp(int seatIndex) {

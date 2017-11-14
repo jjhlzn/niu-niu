@@ -51,12 +51,14 @@ public class BaseGameResponse {
 
 public class FirstDealResponse : BaseGameResponse {
 	public string roomNo;
+	public int roundNo;
 	public Dictionary<string, string[]> cardsDict = new Dictionary<string, string[]>();
 	public Dictionary<string, int[]> betsDict = new Dictionary<string, int[]>();
 }
 
 public class GoToChooseBankerNotity : BaseGameResponse {
 	public string banker;
+	public string[] robBankerPlayers;
 }
 
 public class GoToSecondDealNotify : BaseGameResponse {
@@ -121,5 +123,6 @@ public class ShowCardAck : BaseGameResponse {
 public class GoToCompareCardNotify : BaseGameResponse {
 	public string roomNo;
 	public Dictionary<string, int> resultDict;   //输赢关系
+	public Dictionary<string, int> scoreDict;
 }
 

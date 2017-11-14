@@ -113,19 +113,10 @@ public class CompareCardController : BaseStateController {
 			if (showScoreLabel) {
 				showScoreLabel = false;
 				ShowScoreLabels ();
-				//moveTimeLeft = MoveTime;
 			}
 
 			if (moveScoreLabel) {
 				MoveScoreLabels ();
-
-				/*
-				if (moveTimeLeft < 0) {
-					moveScoreLabel = false;
-					allAnimCompleted = true;
-					gamePlayController.game.HideStateLabel ();
-				}
-				moveTimeLeft -= Time.deltaTime; */
 			}
 		} 
 	}
@@ -140,6 +131,8 @@ public class CompareCardController : BaseStateController {
 
 	private void ShowScoreLabel(int index) {
 		Text scoreLabel = seats [index].scoreLabel;
+		scoreLabel.text = gamePlayController.game.currentRound.resultDict [seats [index].player.userId] + "";
+		seats [index].playerScoreLabel.text = seats [index].player.score + "";
 		scoreLabel.gameObject.SetActive (true);
 		Animator anim = scoreLabel.GetComponent<Animator> ();
 		StartCoroutine(ShowScoreLabel(scoreLabel, anim));
@@ -153,6 +146,7 @@ public class CompareCardController : BaseStateController {
 	}
 
 	private void MoveScoreLabels () {
+		
 		Seat[] seats = gamePlayController.game.seats;
 		for (int i = 0; i < seats.Length; i++) {
 			if (seats [i].hasPlayer()) {
@@ -175,6 +169,7 @@ public class CompareCardController : BaseStateController {
 				gamePlayController.state = GameState.WaitForNextRound;
 			else
 				gamePlayController.state = GameState.GameOver;
+			Debug.Log ("Go to " + gamePlayController.state.value);
 		}
 	}
 
@@ -204,7 +199,7 @@ public class CompareCardController : BaseStateController {
 		  
 		int startIndex = to * 8;
 		for (int i = 0; i < 8; i++) {
-			Image image = seats [from].chipImages [i];
+			Image image = seats [from].chipImages [startIndex + i];
 			if (!image.gameObject.activeInHierarchy)
 				image.gameObject.SetActive (true);
 	
@@ -261,7 +256,12 @@ public class CompareCardController : BaseStateController {
 			}
 		}
 
-		gamePlayController.game.HideStateLabel();
+		var playingPlayers = game.PlayingPlayers;
+		for (int i = 0; i < playingPlayers.Count; i++) {
+			playingPlayers [i].score = notify.scoreDict [playingPlayers [i].userId];
+		}
+
+		game.HideStateLabel();
 		gamePlayController.state = GameState.CompareCard;
 	}
 
