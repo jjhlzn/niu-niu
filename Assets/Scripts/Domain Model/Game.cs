@@ -41,7 +41,8 @@ public class Game
 			return false;
 		}
 	}
-
+		
+	public bool isInited;
 	public GameState state;
 	public string roomNo;
 	public List<Round> rounds;
@@ -95,10 +96,21 @@ public class Game
 		return -1;
 	}
 
+	public int GetSeatIndexThroughSeatNo(string seatNo) {
+		for (int i = 0; i < seats.Length; i++) {
+			if (seats [i].seatNo == seatNo) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	public List<Player> PlayingPlayers {
 		get {
 			List<Player>  players = new List<Player>();
 			for (int i = 0; i < seats.Length; i++) {
+				//Debug.Log ("seat " + i + " hasPlyer ? " + seats[i].hasPlayer());
+
 				if (seats [i].hasPlayer () && seats[i].player.isPlaying) {
 					players.Add (seats [i].player);
 				}

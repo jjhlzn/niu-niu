@@ -10,7 +10,10 @@ public class Round
 	public int[] myBets;
 	public int myBet;
 
-	public string[] robBankerPlayers;
+	public Dictionary<string, bool> robBankerDict = new Dictionary<string, bool> ();
+	public string[] robBankerPlayers; //这个数组表示抢庄的用户
+
+
 	public string banker;
 	public int[] playerBets;
 	public Dictionary<string, string[]> playerCardsDict;
@@ -25,6 +28,9 @@ public class Round
 	{
 		myCards = new string[5];
 		playerBets = new int[Game.SeatCount];
+		for (int i = 0; i < playerBets.Length; i++) {
+			playerBets [i] = -1;
+		}
 		playerCardsDict = new Dictionary<string, string[]>();
 		niuArray = new int[Game.SeatCount];
 		cardSequenceArray = new int[Game.SeatCount] [];

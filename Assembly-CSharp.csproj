@@ -82,6 +82,7 @@
      <Compile Include="Assets\Scripts\Game Play Scripts\SetupCardGame.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\Utils.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\WaitForNextRoundController.cs" />
+     <Compile Include="Assets\Scripts\Message Handlers\MessageHandler.cs" />
      <Compile Include="Assets\Scripts\Server\Connect.cs" />
      <Compile Include="Assets\Scripts\Server\Messages\Messages.cs" />
      <Compile Include="Assets\UnityPackages\JsonNetSample\JsonNetSample.cs" />

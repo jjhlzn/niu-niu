@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections;
+using UnityEngine;
 
 [System.Serializable]
 public class GameState
@@ -30,33 +33,25 @@ public class GameState
 
 	public string value;
 
+	private static Dictionary<string, GameState> stateHash = new Dictionary<string, GameState> ();
+
+	static GameState() {
+		stateHash[BeforeStart.value] = BeforeStart;
+		stateHash[FirstDeal.value] = FirstDeal;
+		stateHash[RobBanker.value] = RobBanker;
+		stateHash[ChooseBanker.value] = ChooseBanker;
+		stateHash[Bet.value] = Bet;
+		stateHash[SecondDeal.value] = SecondDeal;
+		stateHash[CheckCard.value] = CheckCard;
+		stateHash[CompareCard.value] = CompareCard;
+		stateHash[WaitForNextRound.value] = WaitForNextRound;
+		stateHash[GameOver.value] = GameOver;
+	}
+
 	private GameState (string value)
 	{
 		this.value = value;
 	}
-		
-	/*
-	public GameState nextState() {
-		GameState next = null;
-		if (this.Equals (BeforeStart)) {
-			next = FirstDeal;
-		} else if (this.Equals (FirstDeal)) {
-			next = RobBanker;
-		} else if (this.Equals (RobBanker)) {
-			next = ChooseBanker;
-		} else if (this.Equals (ChooseBanker)) {
-			next = Bet;
-		} else if (this.Equals (Bet)) {
-			next = SecondDeal;
-		} else if (this.Equals (SecondDeal)) {
-			next = CheckCard;
-		} else if (this.Equals (CheckCard)) {
-			next = CompareCard;
-		} else if (this.Equals (CompareCard)) {
-			next = FirstDeal;
-		} 
-		return next;
-	} */
 
 	public override bool Equals(object obj)
 	{
@@ -68,6 +63,18 @@ public class GameState
 	{
 		return this.value.GetHashCode();
 	} 
+
+	public static GameState GetGameState(string name) {
+		if (!stateHash.ContainsKey (name)) {
+			throw new UnityException ("找不到状态：state = " + name);
+		}
+		return stateHash [name];
+	}
+
+	public override string ToString ()
+	{
+		return value;
+	}
 }
 
 

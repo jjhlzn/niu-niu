@@ -33,13 +33,42 @@ public class WaitForNextRoundController : BaseStateController {
 		stateTimeLeft = Constants.MaxStateTimeLeft;
 	}
 
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayerController;
+	}
+
 	// Update is called once per frame
-	void Update () {
+	public void Update() {
 		if (gamePlayerController.state == GameState.WaitForNextRound) {
 			if (stateTimeLeft < 0) {
 				gamePlayerController.game.ShowStateLabel ("下一局游戏即将开始: " + Mathf.Round(stateTimeLeft));
 				stateTimeLeft -= Time.deltaTime;
 			}
+		}
+	}
+
+	private bool isMeReady() {
+		var game = gamePlayerController.game;
+		var round = game.currentRound;
+		int seatIndex = game.GetSeatIndex (Player.Me.userId);
+		if (seatIndex != -1 && game.seats[seatIndex].player.isReady) {
+			return true;
+		}
+		return false;
+	}
+
+	public void SetUI() {
+		var game = gamePlayerController.game;
+
+		for (int i = 0; i < game.seats.Length; i++) {
+			game.seats [i].UpdateUI (game);
+		}
+			
+		if (game.state == GameState.WaitForNextRound && !isMeReady()) {
+			readyButton.gameObject.SetActive (true);
+		} else {
+			readyButton.gameObject.SetActive (false);
 		}
 	}
 

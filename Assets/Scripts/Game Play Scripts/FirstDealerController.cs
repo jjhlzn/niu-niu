@@ -42,7 +42,14 @@ public class FirstDealerController : BaseStateController {
 		isFirstDealDone = false;
 	}
 		
-	void Update () {
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayController;
+	}
+
+	// Update is called once per frame
+	public void Update ()  {
+		base.Update ();
 
 		if (gamePlayController.state.Equals (GameState.FirstDeal)) {
 			gamePlayController.game.HideStateLabel ();
@@ -76,6 +83,37 @@ public class FirstDealerController : BaseStateController {
 				StartCoroutine (GoToNextState ());
 			}
 		}
+	}
+
+	public void SetUI() {
+		Debug.Log ("FirstDealController.SetUI() called");
+		var game = gamePlayController.game;
+		FirstDeal ();
+		List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
+		Debug.Log ("playingPlayers.count = " + playingPlayers.Count);
+		for (int i = 0; i < playingPlayers.Count; i++) {
+
+			Player player = playingPlayers [i];
+			Debug.Log ("player.userId = " + player.userId);
+			Image[] cards = player.seat.cards;
+			Vector3[] targetCardPositions = player.seat.cardPositions;
+			for (int j = 0; j < 4; j++) {
+				Vector3 targetCard = targetCardPositions [j];
+				cards [j].transform.position = targetCard;
+				if (i == 0) {
+					Vector3 localScale = new Vector3 ();
+					localScale.x = user0CardScale;
+					localScale.y = user0CardScale;
+					cards [j].transform.localScale = localScale;
+					cards [j].sprite = deck.GetCardFaceImage (game.currentRound.myCards [j]);
+				}
+
+				cards [j].gameObject.SetActive (true);
+			}
+
+
+		}
+		isFirstDealDone = true;
 	}
 
 	/**

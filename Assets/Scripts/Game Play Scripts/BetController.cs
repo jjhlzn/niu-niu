@@ -55,8 +55,14 @@ public class BetController : BaseStateController {
 		stateTimeLeft = Constants.MaxStateTimeLeft - animationTime;
 	}
 	
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayController;
+	}
+
 	// Update is called once per frame
-	void Update () {
+	public void Update ()  {
+		base.Update ();
 		if (gamePlayController.state == GameState.Bet) {
 
 			if (stateTimeLeft > 0) {
@@ -77,6 +83,33 @@ public class BetController : BaseStateController {
 
 		BetAnimation ();
 	}
+
+
+
+
+	public void SetUI() {
+		var game = gamePlayController.game;
+		var round = game.currentRound;
+		for (int i = 0; i < round.playerBets.Length; i++) {
+			if (round.playerBets [i] != -1) {
+
+				if (i == 0 && seats[i].player.userId != round.banker) {
+					gamePlayController.game.HideBetButtons ();
+				} else {
+					gamePlayController.game.ShowBetButtons ();
+				}
+
+				seats[i].chipImageForBet.gameObject.transform.position = seats [i].chipPositionWhenBet;
+				seats [i].chipImageForBet.gameObject.SetActive (true);
+				seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
+				seats[i].chipCountLabel.gameObject.SetActive (true);
+				isBetCompletedArray [i] = true;
+			} 
+
+
+		}
+	}
+		
 
 	private void BetAnimation() {
 		for (int i = 0; i < Game.SeatCount; i++) {

@@ -46,13 +46,38 @@ public class SecondDealController : BaseStateController {
 		timeLeft = waitTimeBeforeSecondDeal;
 	}
 		
-	void Update () {
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayController;
+	}
+
+	// Update is called once per frame
+	public void Update ()  {
+		base.Update ();
 		
 		SecondDealAnimation ();
 	}
 
+	public void SetUI() {
+		SecondDeal ();
+		List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
+		for (int i = 0; i < playingPlayers.Count; i++) {
+			var player = playingPlayers [i];
+			player.cards[4].transform.position = player.seat.cardPositions[4];
+			if (player.seat.seatIndex == 0) {
+				Vector3 localScale = new Vector3 ();
+				localScale.x = FirstDealerController.user0CardScale;
+				localScale.y = FirstDealerController.user0CardScale;
+				player.cards[4].transform.localScale = localScale;
+			}
+			player.cards [4].gameObject.SetActive (true);
+		}
+		isSecondDealDone = true;
+	}
+
 	private void SecondDealAnimation() {
 		if (isSecondDealing && firstDealController.isFirstDealDone && betController.IsAllBetCompleted) {
+			
 			timeLeft -= Time.deltaTime;
 
 			if (timeLeft > 0) {

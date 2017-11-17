@@ -126,3 +126,27 @@ public class GoToCompareCardNotify : BaseGameResponse {
 	public Dictionary<string, int> scoreDict;
 }
 
+public class ShowCardResult {
+	public int niu;
+	public string[] cards;
+	public int[] cardSequences;
+	public int multiple;
+}
+
+public class JoinRoomResponse : BaseGameResponse {
+	public string roomNo;
+	public string state;
+	public string banker;
+	public int totalRoundCount;
+	public int currentRoundNo;
+
+	public Dictionary<string, string[]> playerCards = new Dictionary<string, string[]>();
+	public Dictionary<string, int[]> playerBets = new Dictionary<string, int[]>();
+	public Dictionary<string, string> scores = new Dictionary<string, string>();
+
+	public Dictionary<string, string> sitdownPlayers = new Dictionary<string, string>();
+	public Dictionary<string, bool> robBankerPlayers = new Dictionary<string, bool>();
+	public Dictionary<string, int> betPlayers = new Dictionary<string, int>();
+	public Dictionary<string, ShowCardResult> showcardPlayers = new Dictionary<string, ShowCardResult> ();
+	public Dictionary<string, bool> readyPlayers = new Dictionary<string,bool> ();
+}

@@ -54,9 +54,20 @@ public class BeforeGameStartController : BaseStateController {
 	public override void Reset() {
 
 	}
+
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayerController;
+	}
 	
 	// Update is called once per frame
-	void Update () {
+	public void Update ()  {
+		base.Update ();
+
+		if (!gamePlayerController.isInited) {
+			return;
+		}
+
 		if (gamePlayerController.state == GameState.BeforeStart) {
 			gamePlayerController.game.ShowStateLabel ("等待其他玩家加入...");
 		}
@@ -99,6 +110,34 @@ public class BeforeGameStartController : BaseStateController {
 			}
 		} 
 	}
+
+
+	public void SetUI() {
+		var game = gamePlayerController.game;
+
+		for (int i = 0; i < game.seats.Length; i++) {
+			game.seats [i].UpdateUI (game);
+		}
+			
+		if (gamePlayerController.game.PlayerCount < 2) {
+			startButton.interactable = false;
+		} else {
+			startButton.interactable = true;
+		} 
+
+		if (game.state == GameState.BeforeStart) {
+			startButton.gameObject.SetActive (true);
+		} else {
+			startButton.gameObject.SetActive (false);
+		}
+
+		if (game.state == GameState.WaitForNextRound) {
+			readyButton.gameObject.SetActive (true);
+		} else {
+			readyButton.gameObject.SetActive (false);
+		}
+	}
+
 
 	public void StartClick() {
 		Debug.Log ("start game click");
@@ -154,6 +193,14 @@ public class BeforeGameStartController : BaseStateController {
 		};
 			
 		socket.EmitJson (Messages.SitDown, JsonConvert.SerializeObject (seatReq), (msg) => {
+			Debug.Log("msg: " + msg);
+			BaseGameResponse resp = JsonConvert.DeserializeObject<BaseGameResponse[]>(msg)[0];
+
+			if (resp.status != 0) {
+				Debug.LogError("status = " + resp.status + ", message = " + resp.errorMessage);
+				return;
+			}
+
 			isSeat = true;
 
 			standUpButton.gameObject.SetActive(true);
@@ -228,6 +275,14 @@ public class BeforeGameStartController : BaseStateController {
 		};
 
 		socket.EmitJson (Messages.StandUp, JsonConvert.SerializeObject (standUpReq), (msg) => {
+			
+			BaseGameResponse resp = JsonConvert.DeserializeObject<BaseGameResponse[]>(msg)[0];
+
+			if (resp.status != 0) {
+				Debug.LogError("status = " + resp.status + ", message = " + resp.errorMessage);
+				return;
+			}
+
 			isSeat = false;
 
 			Debug.Log("standup from seat: " + Player.Me.seat );

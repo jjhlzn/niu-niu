@@ -61,9 +61,10 @@ public class Seat
 	public void UpdateUI(Game game) {
 		robingSeatBorderImage.gameObject.SetActive (false);
 
-
+		//Debug.Log ("Seat.UpdateUI called, seatNo = " + seatNo);
 		//有人的情况
 		if (player != null) {
+			//Debug.Log ("player userid = " + player.userId);
 			//这些不需要根据状态设置
 			seatNumberLabel.gameObject.SetActive (false);
 			emptySeatImage.gameObject.SetActive (false);
@@ -77,7 +78,8 @@ public class Seat
 			playerScoreLabel.text = player.score + "";
 			playerScoreLabel.gameObject.SetActive (true);
 			//Debug.Log (player.userId + ": player.isPlaying = " + player.isPlaying + ", player.isReady = " + player.isReady);
-			if (player.isPlaying && player.isReady && (game.state == GameState.BeforeStart || game.state == GameState.WaitForNextRound)) {
+			if (player.isPlaying && player.isReady 
+						&& (game.state == GameState.BeforeStart || game.state == GameState.WaitForNextRound)) {
 				readyImage.gameObject.SetActive (true);
 			} else {
 				readyImage.gameObject.SetActive (false);
@@ -90,6 +92,7 @@ public class Seat
 			}
 
 		} else {
+			//Debug.Log ("player is null");
 			scoreLabel.gameObject.SetActive (false);
 			seatBorderImage.gameObject.SetActive (false);
 			playerImage.gameObject.SetActive (false);

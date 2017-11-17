@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CompareCardController : BaseStateController {
-	private float chipMoveSpeed = 14f;
+	private float chipMoveSpeed = 20f;
 	private float scoreLabelMoveSpeed = 5f;
 	private float MoveTime = 2f;
 
@@ -54,7 +54,15 @@ public class CompareCardController : BaseStateController {
 		}
 	}
 		
-	void Update () {
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayController;
+	}
+
+	// Update is called once per frame
+	public void Update ()  {
+		base.Update ();
+
 		if (gamePlayController.state == GameState.CompareCard ) {
 			gamePlayController.game.ShowStateLabel ("比牌中...");
 		}

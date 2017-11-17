@@ -6,7 +6,7 @@ using socket.io;
 using Newtonsoft.Json;
 
 public class CheckCardController : BaseStateController {
-	private float user0MoveCardSpeedWhenShowCard = 9f;
+	private float user0MoveCardSpeedWhenShowCard = 11f;
 	private float moveCardSpeedWhenShowCard = 6f;
 
 	[SerializeField] 
@@ -62,7 +62,14 @@ public class CheckCardController : BaseStateController {
 	}
 
 
-	void Update() {
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayController;
+	}
+
+	// Update is called once per frame
+	public void Update ()  {
+		base.Update ();
 		if (gamePlayController.state == GameState.CheckCard) {
 			if (stateTimeLeft >= 0) {
 				gamePlayController.game.ShowStateLabel ("查看手牌: " + Mathf.Round(stateTimeLeft));
@@ -77,6 +84,54 @@ public class CheckCardController : BaseStateController {
 		}
 
 		CheckCardAnimation ();
+	}
+
+	public bool isMeShowCard() {
+		var game = gamePlayController.game;
+		var round = game.currentRound;
+		int seatIndex = game.GetSeatIndex (Player.Me.userId);
+		if (seatIndex != -1 && round.cardSequenceArray[seatIndex] != null) {
+			return true;
+		}
+		return false;
+	}
+
+	public void SetUI() {
+		if (isMeShowCard ()) {
+			hasShowCard = true;
+		}
+		
+		var game = gamePlayController.game;
+		var round = game.currentRound;
+		//foreach
+		var players = game.PlayingPlayers;
+		for (int i = 0; i < players.Count; i++) {
+			var player = players [i];
+			int seatIndex = player.seat.seatIndex;
+			if (round.cardSequenceArray [seatIndex] != null) {
+				playerShowCardCompleted [seatIndex] = true;
+				Vector3[] showcardPositions = player.seat.showCardPositions;
+				int[] sequences = round.cardSequenceArray [seatIndex];
+				for(int j = 0;  j < 5; j++) {
+					player.cards[j].sprite = deck.GetCardFaceImage(round.playerCardsDict [player.userId][j]); 
+					Vector3 targetV = showcardPositions [sequences[j]];
+					//有牛的话，第4张牌和第6张牌要有点距离
+					if (round.HasNiu (seatIndex) && sequences [j] >= 3) {
+						targetV = new Vector3 (targetV.x + 0.3f, targetV.y, targetV.z);
+					} 
+					player.cards[j].gameObject.transform.position = targetV;
+					player.cards[j].transform.SetSiblingIndex (seatIndex * 5 + sequences [j]);
+				}
+
+				player.seat.niuImage.sprite = game.getNiuSprite (game.currentRound.niuArray [seatIndex]);
+				player.seat.niuImage.gameObject.SetActive (true);
+				if (game.currentRound.niuArray [seatIndex] > 6) {
+					player.seat.mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [seatIndex]);
+					player.seat.mutipleImage.gameObject.SetActive (true);
+				}
+
+			}
+		}
 	}
 
 	private void CheckCardAnimation() {

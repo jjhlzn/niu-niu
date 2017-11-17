@@ -61,7 +61,14 @@ public class ChooseBankerController : BaseStateController {
 		return false;
 	}
 
-	void Update() {
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayController;
+	}
+
+	// Update is called once per frame
+	public void Update ()  {
+		base.Update ();
 
 		var game = gamePlayController.game;
 		if (game.state == GameState.ChooseBanker && isChoosingBanker) {
@@ -74,6 +81,13 @@ public class ChooseBankerController : BaseStateController {
 
 		ChooseBankerAnimation ();
 
+	}
+
+	public void SetUI() {
+		var game = gamePlayController.game;
+		int seatIndex = game.GetSeatIndex (game.currentRound.banker);
+		bankerSign.gameObject.transform.position = seats [seatIndex].bankerSignPosition;
+		bankerSign.gameObject.SetActive (true);
 	}
 
 

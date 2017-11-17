@@ -36,8 +36,14 @@ public class RobBankerController : BaseStateController {
 		stateTimeLeft = Constants.MaxStateTimeLeft;
 	}
 		
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayerController;
+	}
+
 	// Update is called once per frame
-	void Update () {
+	public void Update ()  {
+		base.Update ();
 		if (gamePlayerController.state == GameState.RobBanker) {
 			if (stateTimeLeft >= 0) {
 				gamePlayerController.game.ShowStateLabel ("抢庄: " + Mathf.Round (stateTimeLeft));
@@ -49,6 +55,35 @@ public class RobBankerController : BaseStateController {
 			robRankerPanel.gameObject.SetActive (true);
 		} else {
 			robRankerPanel.gameObject.SetActive (false);
+		}
+	}
+
+	private bool IsMeRobed() {
+		var game = gamePlayerController.game;
+		foreach (KeyValuePair<string, bool> pair in game.currentRound.robBankerDict) {
+			if (pair.Key == Player.Me.userId)
+				return true;
+		}
+		return false;
+	}
+
+	public void SetUI() {
+		var game = gamePlayerController.game;
+
+		if (IsMeRobed()) {
+			hasRobBanker = true;
+			robRankerPanel.gameObject.SetActive (false);
+		} else {
+			robRankerPanel.gameObject.SetActive (false);
+		}
+
+		foreach (KeyValuePair<string, bool> pair in game.currentRound.robBankerDict) {
+			int seatIndex = game.GetSeatIndex (pair.Key);
+			if (seatIndex == 0) {
+				HandleSeat0RobBanker (pair.Value);
+			} else {
+				HandleOtherSeatRobBanker (seatIndex, pair.Value);
+			}
 		}
 	}
 
@@ -70,6 +105,15 @@ public class RobBankerController : BaseStateController {
 		}
 	}
 
+	private void HandleOtherSeatRobBanker(int seatIndex, bool isRob) {
+		seats[seatIndex].isRobImage.gameObject.SetActive(true);
+		if (isRob) {
+			seats[seatIndex].isRobImage.sprite = robSprite;
+		} else {
+			seats[seatIndex].isRobImage.sprite = notRobSprite;
+		}
+	}
+
 	private void SendRobBankerRequest(bool isRob) {
 		if (gamePlayerController.state != GameState.RobBanker) {
 			return;
@@ -87,7 +131,7 @@ public class RobBankerController : BaseStateController {
 	}
 		
 
-	public void HanldeResponse(SomePlayerRobBankerNotify notify) {
+	public void HandleResponse(SomePlayerRobBankerNotify notify) {
 
 		if (gamePlayerController.state == GameState.RobBanker) {
 			int seatIndex = gamePlayerController.game.GetSeatIndex (notify.userId);
@@ -98,12 +142,7 @@ public class RobBankerController : BaseStateController {
 			if (seatIndex == 0) {
 				HandleSeat0RobBanker (notify.isRob);
 			} else {
-				seats[seatIndex].isRobImage.gameObject.SetActive(true);
-				if (notify.isRob) {
-					seats[seatIndex].isRobImage.sprite = robSprite;
-				} else {
-					seats[seatIndex].isRobImage.sprite = notRobSprite;
-				}
+				HandleOtherSeatRobBanker (seatIndex, notify.isRob);
 			}
 		}
 	}

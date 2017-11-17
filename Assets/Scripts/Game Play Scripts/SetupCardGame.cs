@@ -69,6 +69,12 @@ public class SetupCardGame : BaseStateController {
 		bankerSign.transform.SetAsLastSibling ();
 	}
 
+	public override GamePlayController GetGamePlayController ()
+	{
+		return null;
+	}
+
+
 	void Start() {
 	}
 

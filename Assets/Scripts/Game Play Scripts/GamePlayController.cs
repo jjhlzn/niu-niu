@@ -39,6 +39,8 @@ public class GamePlayController : MonoBehaviour {
 	private CompareCardController compareController;
 
 	[SerializeField]
+	private GameObject messagePanel;
+	[SerializeField]
 	private Text roomLabel;
 	[SerializeField]
 	private Text roundLabel;
@@ -53,6 +55,8 @@ public class GamePlayController : MonoBehaviour {
 		}
 	}
 
+	public bool isInited; //是否初始化好
+	public bool isConnected; //是否已经连接到网络
 	public Socket gameSocket;
 	public Game game;
 
@@ -90,6 +94,14 @@ public class GamePlayController : MonoBehaviour {
 		compareController.Init ();
 
 		game.UpdateGameInfos ();
+	}
+
+	void Update() {
+		if (!isConnected) {
+			messagePanel.SetActive (true);
+		} else {
+			messagePanel.SetActive (false);
+		}
 	}
 
 
@@ -136,124 +148,213 @@ public class GamePlayController : MonoBehaviour {
 
 	public void SetGameSocket(Socket socket) {
 		gameSocket = socket;
-
-		gameSocket.On (Messages.GoToFirstDeal, (string msg) => {
-			//检查消息的类型，根据消息的类型，将消息转为为相应的类型。
-			Debug.Log("GoToFirstDeal: " + msg);
-			FirstDealResponse resp = JsonConvert.DeserializeObject<FirstDealResponse>(msg);
-			//Debug.Log(resp);
-			if (resp.status != 0) {
-				Debug.LogError("出错了");
-				return;
-			}
-			firstDealerController.HandleResponse(resp);
-		});
-
-		gameSocket.On (Messages.GoToCheckCard, (string msg) => {
-			GoToCheckCardNotify resp = JsonConvert.DeserializeObject<GoToCheckCardNotify>(msg);
-			if (resp.status != 0) {
-				Debug.LogError("出错了");
-				return;
-			}
-			checkCardController.HandleResponse(resp);
-		});
-
-		gameSocket.On (Messages.SomePlayerSitDown, (string msg) => {
-			Debug.Log("SomePlayerSitDown: " + msg);
-			SomePlayerSitDownNotify  resp = JsonConvert.DeserializeObject<SomePlayerSitDownNotify>(msg);
-			if (resp.status != 0) {
-				Debug.LogError("出错了");
-				return;
-			}
-			beforeGameStartController.HandleResponse(resp);
-		});
-
-		gameSocket.On (Messages.SomePlayerStandUp, (string msg) => {
-			Debug.Log("SomePlayerStandUp: " + msg);
-			SomePlayerStandUpNotify resp = JsonConvert.DeserializeObject<SomePlayerStandUpNotify>(msg);
-			beforeGameStartController.HandleResponse(resp);
-		});
-
-		gameSocket.On (Messages.StartGame, (string msg) => {
-			Debug.Log("StartGame: " + msg);
-			StartGameNotify resp = JsonConvert.DeserializeObject<StartGameNotify>(msg);
-			if (resp.status != 0) {
-				Debug.LogError("出错了");
-				return;
-			}
-			firstDealerController.HandleResponse(resp);
-
-		});
-
-		gameSocket.On (Messages.SomePlayerRobBanker, (string msg) => {
-			Debug.Log("SomePlayerRobBanker: " + msg);
-			SomePlayerRobBankerNotify notify = JsonConvert.DeserializeObject<SomePlayerRobBankerNotify>(msg);
-			robBankerController.HanldeResponse(notify);
-		});
-
-		gameSocket.On (Messages.GoToChooseBanker, (string msg) => {
-			Debug.Log("GoToChooseBanker: " + msg);
-			GoToChooseBankerNotity resp = JsonConvert.DeserializeObject<GoToChooseBankerNotity>(msg);
-			if (resp.status != 0) {
-				Debug.LogError("出错了");
-				return;
-			}
-			chooseBankerController.HandleResponse(resp);
-		});
-
-		gameSocket.On (Messages.SomePlayerBet, (string msg) => {
-			Debug.Log("SomePlayerBet: " + msg);
-			SomePlayerBetNotify notify = JsonConvert.DeserializeObject<SomePlayerBetNotify>(msg);
-			if (notify.status != 0) {
-				Debug.LogError("出错了");
-				return;
-			}
-			betController.HandleResponse(notify);
-		});
-
-		gameSocket.On (Messages.GoToSecondDeal, (string msg) => {
-			Debug.Log("GoToSecondDeal: " + msg);
-			GoToSecondDealNotify resp = JsonConvert.DeserializeObject<GoToSecondDealNotify>(msg);
-			if (resp.status != 0) {
-				Debug.LogError("出错了");
-				return;
-			}
-			secondDealController.HandleResponse(resp);
-		});
-
-		gameSocket.On (Messages.SomePlayerShowCard, (string msg) => {
-			Debug.Log("SomePlayerShowCard: " +msg);
-			SomePlayerShowCardNotify resp = JsonConvert.DeserializeObject<SomePlayerShowCardNotify>(msg);
-			if (resp.status != 0) {
-				Debug.LogError("出错了");
-				return;
-			}
-			checkCardController.HandleResponse(resp);
-		});
-
-		gameSocket.On (Messages.GoToCompareCard, (string msg) => {
-			Debug.Log("GoToCompareCard: " + msg);
-			GoToCompareCardNotify notify = JsonConvert.DeserializeObject<GoToCompareCardNotify>(msg);
-			if (notify.status != 0) {
-				Debug.LogError("出错了");
-				return;
-			}
-			compareController.HandleResponse(notify);
-		});
-
-		gameSocket.On (Messages.SomePlayerReady, (string msg) => {
-			Debug.Log("SomePlayerReady: " + msg);
-			SomePlayerReadyNotify notify = JsonConvert.DeserializeObject<SomePlayerReadyNotify>(msg);
-			if (notify.status != 0) {
-				Debug.LogError("出错了");
-				return;
-			}
-			beforeGameStartController.HandleResponse(notify);
-		});
+		gameSocket.On (Messages.GoToFirstDeal, new MessageHandler<FirstDealResponse, FirstDealerController> (firstDealerController, game).Handle);
+		gameSocket.On (Messages.GoToCheckCard, new MessageHandler<GoToCheckCardNotify, CheckCardController> (checkCardController, game).Handle);
+		gameSocket.On (Messages.SomePlayerSitDown, new MessageHandler<SomePlayerSitDownNotify, BeforeGameStartController> (beforeGameStartController, game).Handle);
+		gameSocket.On (Messages.SomePlayerStandUp, new MessageHandler<SomePlayerStandUpNotify, BeforeGameStartController> (beforeGameStartController, game).Handle);
+		gameSocket.On (Messages.StartGame, new MessageHandler<StartGameNotify, BeforeGameStartController> (beforeGameStartController, game).Handle);
+		gameSocket.On (Messages.SomePlayerRobBanker, new MessageHandler<SomePlayerRobBankerNotify, RobBankerController> (robBankerController, game).Handle);
+		gameSocket.On (Messages.GoToChooseBanker, new MessageHandler<GoToChooseBankerNotity, ChooseBankerController> (chooseBankerController, game).Handle);
+		gameSocket.On (Messages.SomePlayerBet,  new MessageHandler<SomePlayerBetNotify, BetController> (betController, game).Handle);
+		gameSocket.On (Messages.GoToSecondDeal, new MessageHandler<GoToSecondDealNotify, SecondDealController> (secondDealController, game).Handle);
+		gameSocket.On (Messages.SomePlayerShowCard, new MessageHandler<SomePlayerShowCardNotify, CheckCardController> (checkCardController, game).Handle);
+		gameSocket.On (Messages.GoToCompareCard, new MessageHandler<GoToCompareCardNotify, CompareCardController> (compareController, game).Handle);
+		gameSocket.On (Messages.SomePlayerReady, new MessageHandler<SomePlayerReadyNotify, WaitForNextRoundController>(waitForNextRoundController, game).Handle);
 	}
 
 	public string GenerateRoomNo() {
 		return "123456";
 	}
 
+
+	public void HandleResponse(JoinRoomResponse resp) {
+		//根据resp设置Game的状态，设置Game的状态。
+		if (resp.status != 0) {
+			Debug.LogError ("status = " + resp.status + ", message = " + resp.errorMessage);
+			throw new UnityException (resp.errorMessage);
+		}
+
+		GameState state = GameState.GetGameState (resp.state);
+		game.totalRoundCount = resp.totalRoundCount;
+		game.currentRoundNo = resp.currentRoundNo;
+		game.state = state;
+		if (state == GameState.BeforeStart) {
+			//加载坐在座位的玩家信息
+			SetSitdownPlayers (resp, game);
+			beforeGameStartController.SetUI ();
+
+		} else if (state == GameState.RobBanker) {
+			//加载坐在座位的玩家信息
+			//加载我的牌的信息
+			//加载抢庄的玩家信息
+			SetSitdownPlayers (resp, game);
+			SetPlayingPlayers (resp, game);
+			SetMyCard (resp, game);
+			SetRobBankerPlayers (resp, game);
+			SetMyBets (resp, game);
+			beforeGameStartController.SetUI ();
+			firstDealerController.SetUI ();
+			robBankerController.SetUI ();
+
+
+		} else if (state == GameState.Bet) {
+			//加载坐在座位的玩家信息
+			//加载下注的玩家信息
+			SetSitdownPlayers (resp, game);
+			SetPlayingPlayers (resp, game);
+			SetMyCard (resp, game);
+			SetBanker (resp, game);
+			SetMyBets (resp, game);
+			SetBetPlayers (resp, game);
+
+			beforeGameStartController.SetUI ();
+			firstDealerController.SetUI ();
+			robBankerController.SetUI ();
+			chooseBankerController.SetUI ();
+			betController.SetUI ();
+
+		} else if (state == GameState.CheckCard) {
+			//加载坐在座位的玩家信息
+			//加载亮牌的玩家信息，以及他的牌的信息
+			SetSitdownPlayers (resp, game);
+			SetPlayingPlayers (resp, game);
+			SetMyCard (resp, game);
+			SetBanker (resp, game);
+			SetMyBets (resp, game);
+			SetBetPlayers (resp, game);
+			SetShowcardPlayers (resp, game);
+
+			SetBetPlayers (resp, game);
+			beforeGameStartController.SetUI ();
+			firstDealerController.SetUI ();
+			robBankerController.SetUI ();
+			chooseBankerController.SetUI ();
+			betController.SetUI ();
+			secondDealController.SetUI ();
+			checkCardController.SetUI ();
+
+		} else if (state == GameState.WaitForNextRound) {
+			//加载坐在座位的玩家信息
+			//加载已经准备好的玩家信息
+			SetSitdownPlayers (resp, game);
+			SetPlayingPlayers (resp, game);
+			SetReadyPlayers (resp, game);
+			beforeGameStartController.SetUI ();
+			waitForNextRoundController.SetUI();
+
+
+		} else if (state == GameState.GameOver) {
+		} else {
+			throw new UnityException ("客户端无法处理该状态，state = " + state);
+		}
+		isInited = true;
+		game.isInited = isInited;
+
+	}
+
+	private void SetSitdownPlayers(JoinRoomResponse resp, Game game) {
+		Dictionary<string, string> playerDict = resp.sitdownPlayers;
+		foreach (KeyValuePair<string, string> pair in playerDict) 
+		{
+			string userId = pair.Key;
+			string seatNo = pair.Value;
+			int seatIndex = game.GetSeatIndexThroughSeatNo (seatNo);
+			Seat seat = game.seats [seatIndex];
+			Player player = new Player ();
+			player.userId = userId;
+			seat.player = player;
+			player.seat = seat;
+			//player.isPlaying = true;
+		}
+
+	}
+
+	private void SetPlayingPlayers(JoinRoomResponse resp, Game game) {
+		if (game.state != GameState.BeforeStart && game.state != GameState.WaitForNextRound) {
+			Dictionary<string, string[]> cardsDict = resp.playerCards;
+			foreach (KeyValuePair<string, string[]> pair in cardsDict) {
+				string userId = pair.Key;
+				int seatIndex = game.GetSeatIndex (userId);
+				game.seats [seatIndex].player.isPlaying = true;
+			}
+		} else {
+			for(int i = 0; i < Game.SeatCount; i++) {
+				if (game.seats [i].player != null)
+					game.seats [i].player.isPlaying = true;
+			}
+		}
+	}
+
+	private void SetMyCard(JoinRoomResponse resp, Game game) {
+		
+		Dictionary<string, string[]> cardsDict = resp.playerCards;
+		foreach (KeyValuePair<string, string[]> pair in cardsDict) {
+			string userId = pair.Key;
+			string[] cards = pair.Value;
+			if (userId == Player.Me.userId) {
+				for(int i = 0; i < cards.Length; i++)
+					game.currentRound.myCards[i] = cards[i];
+				break;
+			}
+		}
+	}
+
+	private void SetRobBankerPlayers(JoinRoomResponse resp, Game game) {
+		game.currentRound.robBankerDict = resp.robBankerPlayers;
+	}
+
+	private void SetBanker(JoinRoomResponse resp, Game game) {
+		game.currentRound.banker = resp.banker;
+	}
+
+	private void SetMyBets(JoinRoomResponse resp, Game game) {
+		Dictionary<string, int[]> playerBetsDict = resp.playerBets;
+		foreach (KeyValuePair<string, int[]> pair in playerBetsDict) {
+			string userId = pair.Key;
+			int[] bets = pair.Value;
+			if (userId == Player.Me.userId)
+				game.currentRound.myBets = bets;
+		}
+	}
+
+	private void SetBetPlayers(JoinRoomResponse resp, Game game) {
+		Dictionary<string, int> betPlayerDict = resp.betPlayers;
+		foreach (KeyValuePair<string, int> pair in betPlayerDict) {
+			string userId = pair.Key;
+			int bet = pair.Value;
+			game.currentRound.playerBets [game.GetSeatIndex (userId)] = bet;
+		}
+	}
+
+	private void SetShowcardPlayers(JoinRoomResponse resp, Game game) {
+		Dictionary<string, string[]> cardsDict = resp.playerCards;
+		Dictionary<string, ShowCardResult> showcardPlayersDict = resp.showcardPlayers;
+		foreach (KeyValuePair<string, ShowCardResult> pair in showcardPlayersDict) {
+			string userId = pair.Key;
+			ShowCardResult showcardResult = pair.Value;
+
+			int index = game.GetSeatIndex (userId);
+			game.currentRound.cardSequenceArray [index] = showcardResult.cardSequences;
+			game.currentRound.niuArray [index] = showcardResult.niu;
+			game.currentRound.multipleArray [index] = showcardResult.multiple;
+
+			foreach (KeyValuePair<string, string[]> kv in cardsDict) {
+				string uid = kv.Key;
+				string[] cards = kv.Value;
+				if (userId == uid) {
+					game.currentRound.playerCardsDict[uid] = cards;
+					break;
+				}
+			}
+		}
+	}
+
+	private void SetReadyPlayers(JoinRoomResponse resp, Game game) {
+		Dictionary<string, bool> readyPlayerDict = resp.readyPlayers;
+		foreach (KeyValuePair<string, bool> pair in readyPlayerDict) {
+			string userId = pair.Key;
+			int index = game.GetSeatIndex (userId);
+			game.seats [index].player.isReady = true;
+		}
+	}
 }
