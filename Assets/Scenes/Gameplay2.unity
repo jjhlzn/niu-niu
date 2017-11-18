@@ -7095,6 +7095,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gamePlayController: {fileID: 1193017314}
+  beforeGameStartController: {fileID: 1945840095}
   deckCardPosition: {fileID: 1911677885}
   isFirstDealDone: 0
 --- !u!4 &1464680084
@@ -8748,6 +8749,7 @@ MonoBehaviour:
   startButton: {fileID: 1501751038}
   readyButton: {fileID: 131127926}
   card: {fileID: 1911677887}
+  isMoveSeat: 0
 --- !u!4 &1945840096
 Transform:
   m_ObjectHideFlags: 0
