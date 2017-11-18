@@ -71,7 +71,8 @@ public class BetController : BaseStateController {
 			}
 		} 
 
-		if (gamePlayController.state == GameState.Bet 
+		if ( Player.Me.isPlaying
+			&& gamePlayController.state == GameState.Bet 
 			&& !hasBet 
 			&& gamePlayController.game.currentRound.banker != gamePlayController.game.PlayingPlayers [0].userId) {
 
@@ -93,14 +94,15 @@ public class BetController : BaseStateController {
 		for (int i = 0; i < round.playerBets.Length; i++) {
 			if (round.playerBets [i] != -1) {
 
+				/*
 				if (i == 0 && seats[i].player.userId != round.banker) {
 					gamePlayController.game.HideBetButtons ();
 				} else {
 					gamePlayController.game.ShowBetButtons ();
-				}
+				}*/
 
 				seats[i].chipImageForBet.gameObject.transform.position = seats [i].chipPositionWhenBet;
-				seats [i].chipImageForBet.gameObject.SetActive (true);
+				seats[i].chipImageForBet.gameObject.SetActive (true);
 				seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
 				seats[i].chipCountLabel.gameObject.SetActive (true);
 				isBetCompletedArray [i] = true;

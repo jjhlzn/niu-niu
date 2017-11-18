@@ -51,7 +51,7 @@ public class RobBankerController : BaseStateController {
 			}
 		}
 			
-		if (gamePlayerController.state == GameState.RobBanker && !hasRobBanker) {
+		if (gamePlayerController.state == GameState.RobBanker && Player.Me.isPlaying && !hasRobBanker) {
 			robRankerPanel.gameObject.SetActive (true);
 		} else {
 			robRankerPanel.gameObject.SetActive (false);
@@ -72,10 +72,8 @@ public class RobBankerController : BaseStateController {
 
 		if (IsMeRobed()) {
 			hasRobBanker = true;
-			robRankerPanel.gameObject.SetActive (false);
-		} else {
-			robRankerPanel.gameObject.SetActive (false);
-		}
+			//robRankerPanel.gameObject.SetActive (false);
+		} 
 
 		foreach (KeyValuePair<string, bool> pair in game.currentRound.robBankerDict) {
 			int seatIndex = game.GetSeatIndex (pair.Key);

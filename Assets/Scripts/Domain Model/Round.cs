@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class Round
 {
-	public string[] myCards;
+	//public string[] myCards;
 	public int[] myBets;
 	public int myBet;
 
@@ -26,7 +26,7 @@ public class Round
 
 	public Round ()
 	{
-		myCards = new string[5];
+		//myCards = new string[5];
 		playerBets = new int[Game.SeatCount];
 		for (int i = 0; i < playerBets.Length; i++) {
 			playerBets [i] = -1;

@@ -24,3 +24,7 @@
 /Users/jinjunhang/niu niu/Temp/bin/Debug/Unity.CecilTools.dll
 /Users/jinjunhang/niu niu/Temp/bin/Debug/Unity.Cecil.Pdb.dll
 /Users/jinjunhang/niu niu/Temp/bin/Debug/Unity.Cecil.Mdb.dll
+/Users/jinjunhang/niu niu/Temp/bin/Debug/Assembly-CSharp.dll.mdb
+/Users/jinjunhang/niu niu/Temp/bin/Debug/Assembly-CSharp.dll
+/Users/jinjunhang/niu niu/obj/Debug/Assembly-CSharp.dll
+/Users/jinjunhang/niu niu/obj/Debug/Assembly-CSharp.dll.mdb

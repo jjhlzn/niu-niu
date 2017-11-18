@@ -26,7 +26,7 @@ public class BeforeGameStartController : BaseStateController {
 
 	private Seat[] seats;
 
-	private bool isMoveSeat;
+	public bool isMoveSeat;
 	private int[] fromPositions;
 	private int[] toPositions;
 
@@ -52,7 +52,7 @@ public class BeforeGameStartController : BaseStateController {
 	 * 游戏在一局之后，在下一局开始之前，需要重新设置界面或者变量
 	 * */
 	public override void Reset() {
-
+		isMoveSeat = false;
 	}
 
 	public override GamePlayController GetGamePlayController ()
@@ -70,6 +70,8 @@ public class BeforeGameStartController : BaseStateController {
 
 		if (gamePlayerController.state == GameState.BeforeStart) {
 			gamePlayerController.game.ShowStateLabel ("等待其他玩家加入...");
+		} else {
+			standUpButton.gameObject.SetActive (false);
 		}
 			
 
@@ -97,23 +99,61 @@ public class BeforeGameStartController : BaseStateController {
 
 			if (isMoveCompleted) {
 				isMoveSeat = false;
+
 				for (int i = 0; i < Game.SeatCount; i++) {
 					seats[i].playerPanel.transform.position = positions [i];
 				}
 
 				//循转之后，我总是坐在第一个位置
-				Player.Me.seat = seats[0];
-				seats [0].player = Player.Me;
+				//Player.Me.seat = seats[0];
+				//seats [0].player = Player.Me;
+
 				foreach (Seat seat in seats) {
 					seat.UpdateUI (gamePlayerController.game);
 				}
+
+
 			}
 		} 
 	}
 
 
+	public int getMoveSeatIndex() {
+		var game = gamePlayerController.game;
+		int seatIndex = -1;
+		if (Player.Me.isPlaying && Player.Me.seat.seatIndex != 0) { 
+			seatIndex = Player.Me.seat.seatIndex;
+		} else if (game.state != GameState.BeforeStart && !seats [0].hasPlayer ()) {
+			for (int i = 0; i < Game.SeatCount; i++) {
+				if (seats [i].hasPlayer () && seats[i].player.isPlaying) {
+					seatIndex = i;
+					break;
+				}
+			}
+		}
+		Debug.Log ("move to seat 0 index: " + seatIndex);
+		return seatIndex;
+	}
+
+	public bool IsNeedMoveSeat() {
+		return getMoveSeatIndex () != -1;
+	}
+
+
 	public void SetUI() {
 		var game = gamePlayerController.game;
+
+		//需要循转座位
+		if ( IsNeedMoveSeat() ) {
+			//first has player seat index
+			int seatIndex = getMoveSeatIndex();
+			MoveSeats (seatIndex);
+			isMoveSeat = false;
+			for (int i = 0; i < Game.SeatCount; i++) {
+				if (seats[i].hasPlayer())
+					seats [i].player.seat = seats [i];
+			}
+		}
 
 		for (int i = 0; i < game.seats.Length; i++) {
 			game.seats [i].UpdateUI (game);
@@ -127,6 +167,10 @@ public class BeforeGameStartController : BaseStateController {
 
 		if (game.state == GameState.BeforeStart) {
 			startButton.gameObject.SetActive (true);
+			if (Player.Me.isPlaying)
+				standUpButton.gameObject.SetActive (true);
+			else
+				standUpButton.gameObject.SetActive (false);
 		} else {
 			startButton.gameObject.SetActive (false);
 		}
@@ -178,12 +222,13 @@ public class BeforeGameStartController : BaseStateController {
 		}
 	}
 
+
 	public void SitDown() {
+		var game = gamePlayerController.game;
 		string seatName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
 
 		Debug.Log ("seat: " + seatName);
 		int seatIndex = int.Parse(seatName[seatName.Length - 1] + "");
-
 
 		Socket socket = gamePlayerController.gameSocket;
 		var seatReq = new {
@@ -218,18 +263,22 @@ public class BeforeGameStartController : BaseStateController {
 				seat.UpdateUI(gamePlayerController.game);
 			}
 
-			MoveSeats(seatIndex);
+			if (game.state == GameState.BeforeStart) {
+				MoveSeats(seatIndex);
 
-			if (gamePlayerController.game.PlayerCount < 2) {
-				startButton.interactable = false;
+				if (gamePlayerController.game.PlayerCount >= 2 && game.state == GameState.BeforeStart) {
+					startButton.interactable = true;
+				} else {
+					startButton.interactable = false;
+				} 
 			} else {
-				startButton.interactable = true;
-			} 
+				Player.Me.isPlaying = false;
+			}
 		});
 	}
 
 	//移动玩家
-	private void MoveSeats(int seatIndex) {
+	public void MoveSeats(int seatIndex) {
 		//如果坐在第一个位置，就不需要移动
 		if (seatIndex == 0)
 			return;
@@ -251,13 +300,17 @@ public class BeforeGameStartController : BaseStateController {
 		for (int i = 0; i < Game.SeatCount; i++) {
 			players [i] = seats [i].player;
 			seatNos [i] = seats [i].seatNo;
+
 		}
 
 		for (int i = 0; i < Game.SeatCount; i++) {
-			seats [i].player = players [destIndexes[i]];
 			seats [i].seatNo = seatNos [destIndexes[i]];
+			seats [i].player = players [destIndexes[i]];
+			if (players [destIndexes [i]] != null ) {
+				players [destIndexes [i]].seat = seats [i];
+			} 
 		}
-
+			
 		this.fromPositions = destIndexes;
 		this.toPositions = originIndexes;
 
@@ -302,6 +355,8 @@ public class BeforeGameStartController : BaseStateController {
 		foreach (Seat seat in seats) {
 			if (seat.seatNo == seatNo && seat.player == null) {
 				Player player = new Player ();
+				if (notify.userId == Player.Me.userId)
+					player = Player.Me;
 				player.userId = notify.userId;
 				player.seat = seat;
 				seat.player = player;

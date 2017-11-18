@@ -13,6 +13,8 @@ public class FirstDealerController : BaseStateController {
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
+	[SerializeField]
+	private BeforeGameStartController beforeGameStartController;
 
 	[SerializeField]
 	private GameObject deckCardPosition; //发牌位置
@@ -58,12 +60,18 @@ public class FirstDealerController : BaseStateController {
 		FirstDealAnimation ();
 	}
 
+
+
 	private void FirstDealAnimation() {
-		if (isFirstDealing) {
+		var game = gamePlayController.game;
+		var round = game.currentRound;
+		if (isFirstDealing && !beforeGameStartController.isMoveSeat) {
 			float waitTime = 0;
 			List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
+
 			for (int i = 0; i < playingPlayers.Count; i++) {
 				Player player = playingPlayers [i];
+				Debug.Log ("player: " + player.userId + " sit on seats: " + player.seat.seatIndex);
 				FirstGiveCardsAnimation (player, waitTime);
 
 				//每个成员之间加入一个延时
@@ -72,11 +80,15 @@ public class FirstDealerController : BaseStateController {
 
 			int playerCount = gamePlayController.game.PlayerCount;
 			//判断最后一张牌是否已经发好
-			if (Utils.isTwoPositionIsEqual(playingPlayers[playingPlayers.Count - 1].seat.cards[3].transform.position, playingPlayers[playingPlayers.Count - 1].seat.cardPositions[3])) {
-				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[0], gamePlayController.game.currentRound.myCards[0]));
-				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[1], gamePlayController.game.currentRound.myCards[1]));
-				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[2], gamePlayController.game.currentRound.myCards[2]));
-				StartCoroutine (TurnCardUp (playingPlayers[0].seat.cards[3], gamePlayController.game.currentRound.myCards[3]));
+			if (Utils.isTwoPositionIsEqual(playingPlayers[playingPlayers.Count - 1].seat.cards[3].transform.position, 
+				playingPlayers[playingPlayers.Count - 1].seat.cardPositions[3])) {
+				Debug.Log ("Player.Me.isPlaying = " + Player.Me.isPlaying);
+				if (Player.Me.isPlaying) {
+					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [0], round.playerCardsDict[Player.Me.userId] [0]));
+					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [1], round.playerCardsDict[Player.Me.userId] [1]));
+					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [2], round.playerCardsDict[Player.Me.userId] [2]));
+					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [3], round.playerCardsDict[Player.Me.userId] [3]));
+				}
 
 				isFirstDealing = false;
 				isFirstDealDone = true;
@@ -105,7 +117,8 @@ public class FirstDealerController : BaseStateController {
 					localScale.x = user0CardScale;
 					localScale.y = user0CardScale;
 					cards [j].transform.localScale = localScale;
-					cards [j].sprite = deck.GetCardFaceImage (game.currentRound.myCards [j]);
+					if (game.currentRound.playerCardsDict.ContainsKey(player.userId))
+						cards [j].sprite = deck.GetCardFaceImage (game.currentRound.playerCardsDict[player.userId][j]);
 				}
 
 				cards [j].gameObject.SetActive (true);
@@ -142,19 +155,20 @@ public class FirstDealerController : BaseStateController {
 			localScale.y = user0CardScale;
 			card.transform.localScale = localScale;
 		}
-
-	
 	}
 
 
 
 	IEnumerator TurnCardUp(Image card, string cardValue) {
-		Animator anim = card.GetComponent<Animator> ();
-		anim.Play ("TurnUp");
-		yield return new WaitForSeconds (turnUpTime);
-		card.sprite = deck.GetCardFaceImage(cardValue);
+		if (!string.IsNullOrEmpty (cardValue)) {
+			Animator anim = card.GetComponent<Animator> ();
+			anim.Play ("TurnUp");
+			yield return new WaitForSeconds (turnUpTime);
+			card.sprite = deck.GetCardFaceImage (cardValue);
 
-		anim.Play ("TurnBackNow2");
+			anim.Play ("TurnBackNow2");
+		}
+	    yield return new WaitForSeconds (turnUpTime);
 	}
 
 
@@ -199,6 +213,7 @@ public class FirstDealerController : BaseStateController {
 		
 
 	private void HandleResponse(Dictionary<string, string[]> cardsDict, Dictionary<string, int[]> betsDict) {
+		var game = gamePlayController.game;
 
 		//更新位置UI
 		for (int i = 0; i < seats.Length; i++) {
@@ -209,26 +224,31 @@ public class FirstDealerController : BaseStateController {
 			}
 		}
 
+		foreach (string uid in cardsDict.Keys) {
+			seats [game.GetSeatIndex (uid)].player.isPlaying = true;
+		}
 
-		string[] myCards;
-		if (cardsDict.ContainsKey (Player.Me.userId)) {
-			myCards = cardsDict [Player.Me.userId];
+		string[] cards;
+		string userId = seats [0].player.userId;
+		Debug.Log ("userId = " + userId);
+		if (cardsDict.ContainsKey (userId)) {
+			cards = cardsDict [userId];
 		} else {
-			throw new UnityException ("找不到UserId = " + Player.Me.userId + "的牌");
+			throw new UnityException ("找不到UserId = " + userId + "的牌");
 		}
 
-		int[] myBets;
-		if (betsDict.ContainsKey (Player.Me.userId)) {
-			myBets = betsDict [Player.Me.userId];
+		int[] bets;
+		if (betsDict.ContainsKey (userId)) {
+			bets = betsDict [userId];
 		} else {
-			throw new UnityException ("找不到UserId = " + Player.Me.userId + "的可下注的筹码量");
+			throw new UnityException ("找不到UserId = " + userId + "的可下注的筹码量");
+		}
+		gamePlayController.game.currentRound.playerCardsDict [userId] = new string[5];
+		for (int i = 0; i < cards.Length; i++) {
+			gamePlayController.game.currentRound.playerCardsDict[userId][i] = cards[i];
 		}
 
-		for (int i = 0; i < myCards.Length; i++) {
-			gamePlayController.game.currentRound.myCards[i] = myCards[i];
-		}
-
-		gamePlayController.game.currentRound.myBets = myBets;
+		gamePlayController.game.currentRound.myBets = bets;
 
 		gamePlayController.game.StartGame ();
 
@@ -239,6 +259,9 @@ public class FirstDealerController : BaseStateController {
 
 		gamePlayController.state = GameState.FirstDeal;
 		gamePlayController.game.UpdateGameInfos ();
+		if (beforeGameStartController.IsNeedMoveSeat()) {
+			beforeGameStartController.MoveSeats (beforeGameStartController.getMoveSeatIndex ());
+		}
 		isFirstDealing = true;
 	}
 

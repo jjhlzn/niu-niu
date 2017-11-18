@@ -119,6 +119,18 @@ public class Game
 		}
 	}
 
+	public List<Player> SittedPlayers {
+		get {
+			List<Player>  players = new List<Player>();
+			for (int i = 0; i < seats.Length; i++) {
+				if (seats [i].hasPlayer () ) {
+					players.Add (seats [i].player);
+				}
+			}
+			return players;
+		}
+	}
+
 	public void StartGame() {
 		for (int i = 0; i < seats.Length; i++) {
 			if (seats [i].hasPlayer ()) {
@@ -180,6 +192,8 @@ public class Game
 
 	public void ShowBetButtons() {
 		int[] myBets = currentRound.myBets;
+		if (myBets == null)
+			return;
 		bool is4Button = myBets.Length == 4;
 		for (var i = 0; i < myBets.Length; i++) {
 			

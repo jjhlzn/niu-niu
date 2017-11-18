@@ -150,10 +150,15 @@ public class SecondDealController : BaseStateController {
 	}
 		
 	public void HandleResponse(GoToSecondDealNotify notify) {
-		gamePlayController.game.HideStateLabel ();
-		string[] cards = gamePlayController.game.currentRound.myCards;
-		cards [4] =  notify.cardsDict[Player.Me.userId];
+		var game = gamePlayController.game;
+		var round = game.currentRound;
+		game.HideStateLabel ();
 
+		if (round.playerCardsDict.ContainsKey (seats [0].player.userId)) {
+			string[] cards = round.playerCardsDict [seats [0].player.userId];
+			cards [4] = notify.cardsDict [seats [0].player.userId];
+		}
+			
 		SecondDeal ();
 		gamePlayController.state = GameState.SecondDeal;
 

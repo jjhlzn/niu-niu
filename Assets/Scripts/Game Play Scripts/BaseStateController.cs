@@ -14,8 +14,4 @@ public abstract class BaseStateController : MonoBehaviour {
 		}
 	}
 
-	public void SetUI() {
-	}
-
-
 }

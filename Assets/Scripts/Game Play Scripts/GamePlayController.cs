@@ -181,6 +181,7 @@ public class GamePlayController : MonoBehaviour {
 		if (state == GameState.BeforeStart) {
 			//加载坐在座位的玩家信息
 			SetSitdownPlayers (resp, game);
+			SetPlayingPlayers (resp, game);
 			beforeGameStartController.SetUI ();
 
 		} else if (state == GameState.RobBanker) {
@@ -189,8 +190,8 @@ public class GamePlayController : MonoBehaviour {
 			//加载抢庄的玩家信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
-			SetMyCard (resp, game);
 			SetRobBankerPlayers (resp, game);
+			SetMyCards (resp, game);
 			SetMyBets (resp, game);
 			beforeGameStartController.SetUI ();
 			firstDealerController.SetUI ();
@@ -202,11 +203,10 @@ public class GamePlayController : MonoBehaviour {
 			//加载下注的玩家信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
-			SetMyCard (resp, game);
 			SetBanker (resp, game);
 			SetMyBets (resp, game);
 			SetBetPlayers (resp, game);
-
+			SetMyCards (resp, game);
 			beforeGameStartController.SetUI ();
 			firstDealerController.SetUI ();
 			robBankerController.SetUI ();
@@ -218,8 +218,8 @@ public class GamePlayController : MonoBehaviour {
 			//加载亮牌的玩家信息，以及他的牌的信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
-			SetMyCard (resp, game);
 			SetBanker (resp, game);
+			SetMyCards (resp, game);
 			SetMyBets (resp, game);
 			SetBetPlayers (resp, game);
 			SetShowcardPlayers (resp, game);
@@ -261,6 +261,9 @@ public class GamePlayController : MonoBehaviour {
 			int seatIndex = game.GetSeatIndexThroughSeatNo (seatNo);
 			Seat seat = game.seats [seatIndex];
 			Player player = new Player ();
+			if (userId == Player.Me.userId) {
+				player = Player.Me;
+			}
 			player.userId = userId;
 			seat.player = player;
 			player.seat = seat;
@@ -285,19 +288,17 @@ public class GamePlayController : MonoBehaviour {
 		}
 	}
 
-	private void SetMyCard(JoinRoomResponse resp, Game game) {
-		
-		Dictionary<string, string[]> cardsDict = resp.playerCards;
-		foreach (KeyValuePair<string, string[]> pair in cardsDict) {
-			string userId = pair.Key;
-			string[] cards = pair.Value;
-			if (userId == Player.Me.userId) {
-				for(int i = 0; i < cards.Length; i++)
-					game.currentRound.myCards[i] = cards[i];
-				break;
+
+	private void SetMyCards(JoinRoomResponse resp, Game game) {
+		var cards = resp.playerCards;
+		if (cards.ContainsKey (Player.Me.userId)) {
+			game.currentRound.playerCardsDict [Player.Me.userId] = new string[5];
+			for (int i = 0; i < cards[Player.Me.userId].Length; i++) {
+				game.currentRound.playerCardsDict[Player.Me.userId][i] = cards[Player.Me.userId][i];
 			}
 		}
 	}
+
 
 	private void SetRobBankerPlayers(JoinRoomResponse resp, Game game) {
 		game.currentRound.robBankerDict = resp.robBankerPlayers;

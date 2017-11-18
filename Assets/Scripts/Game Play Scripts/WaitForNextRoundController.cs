@@ -20,10 +20,12 @@ public class WaitForNextRoundController : BaseStateController {
 	private Seat[] seats;
 
 	private float stateTimeLeft; //这状态停留的时间
+	private bool hasReady;
 
 	public void Init() {
 		seats = gamePlayerController.game.seats;
 		stateTimeLeft = Constants.MaxStateTimeLeft;
+		hasReady = false;
 	}
 
 	/**
@@ -31,6 +33,7 @@ public class WaitForNextRoundController : BaseStateController {
 	 * */
 	public override void Reset() {
 		stateTimeLeft = Constants.MaxStateTimeLeft;
+		hasReady = false;
 	}
 
 	public override GamePlayController GetGamePlayController ()
@@ -46,29 +49,32 @@ public class WaitForNextRoundController : BaseStateController {
 				stateTimeLeft -= Time.deltaTime;
 			}
 		}
+
+		var game = gamePlayerController.game;
+		if (game.state == GameState.WaitForNextRound && Player.Me.isPlaying && !hasReady) {
+			readyButton.gameObject.SetActive (true);
+		} else {
+			readyButton.gameObject.SetActive (false);
+		}
+
 	}
 
-	private bool isMeReady() {
+	private void CheckMeReady() {
 		var game = gamePlayerController.game;
 		var round = game.currentRound;
 		int seatIndex = game.GetSeatIndex (Player.Me.userId);
 		if (seatIndex != -1 && game.seats[seatIndex].player.isReady) {
-			return true;
+			hasReady = true;
 		}
-		return false;
+		hasReady = false;
 	}
 
 	public void SetUI() {
 		var game = gamePlayerController.game;
+		CheckMeReady ();
 
 		for (int i = 0; i < game.seats.Length; i++) {
 			game.seats [i].UpdateUI (game);
-		}
-			
-		if (game.state == GameState.WaitForNextRound && !isMeReady()) {
-			readyButton.gameObject.SetActive (true);
-		} else {
-			readyButton.gameObject.SetActive (false);
 		}
 	}
 
@@ -85,6 +91,7 @@ public class WaitForNextRoundController : BaseStateController {
 
 		gameSocket.EmitJson (Messages.Ready, JsonConvert.SerializeObject(request), (string msg) => {
 			//界面的元素全部还原，各个Controller全部Reset
+			hasReady = true;
 			readyButton.gameObject.SetActive(false);
 
 			gamePlayerController.game.UpdateGameInfos ();
