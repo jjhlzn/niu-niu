@@ -190,11 +190,11 @@ public class GamePlayController : MonoBehaviour {
 			//加载抢庄的玩家信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
+			beforeGameStartController.SetUI ();
+			firstDealerController.SetUI ();
 			SetRobBankerPlayers (resp, game);
 			SetMyCards (resp, game);
 			SetMyBets (resp, game);
-			beforeGameStartController.SetUI ();
-			firstDealerController.SetUI ();
 			robBankerController.SetUI ();
 
 
@@ -203,12 +203,12 @@ public class GamePlayController : MonoBehaviour {
 			//加载下注的玩家信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
+			beforeGameStartController.SetUI ();
+			firstDealerController.SetUI ();
 			SetBanker (resp, game);
 			SetMyBets (resp, game);
 			SetBetPlayers (resp, game);
 			SetMyCards (resp, game);
-			beforeGameStartController.SetUI ();
-			firstDealerController.SetUI ();
 			robBankerController.SetUI ();
 			chooseBankerController.SetUI ();
 			betController.SetUI ();
@@ -218,15 +218,17 @@ public class GamePlayController : MonoBehaviour {
 			//加载亮牌的玩家信息，以及他的牌的信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
+			beforeGameStartController.SetUI ();
+			firstDealerController.SetUI ();
+
 			SetBanker (resp, game);
 			SetMyCards (resp, game);
 			SetMyBets (resp, game);
 			SetBetPlayers (resp, game);
 			SetShowcardPlayers (resp, game);
-
 			SetBetPlayers (resp, game);
-			beforeGameStartController.SetUI ();
-			firstDealerController.SetUI ();
+
+
 			robBankerController.SetUI ();
 			chooseBankerController.SetUI ();
 			betController.SetUI ();
@@ -238,8 +240,9 @@ public class GamePlayController : MonoBehaviour {
 			//加载已经准备好的玩家信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
-			SetReadyPlayers (resp, game);
 			beforeGameStartController.SetUI ();
+
+			SetReadyPlayers (resp, game);
 			waitForNextRoundController.SetUI();
 
 

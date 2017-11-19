@@ -29,7 +29,8 @@ public class BetController : BaseStateController {
 			bool result = true;
 			var seats = gamePlayController.game.seats;
 			for (var i = 0; i < seats.Length; i++) {
-				if (seats [i].hasPlayer () && seats[i].player.userId != gamePlayController.game.currentRound.banker) {
+				var player = seats [i].player;
+				if (seats [i].hasPlayer () && player.isPlaying && player.userId != gamePlayController.game.currentRound.banker) {
 					result = result && isBetCompletedArray [i];
 				}
 			}
@@ -93,13 +94,6 @@ public class BetController : BaseStateController {
 		var round = game.currentRound;
 		for (int i = 0; i < round.playerBets.Length; i++) {
 			if (round.playerBets [i] != -1) {
-
-				/*
-				if (i == 0 && seats[i].player.userId != round.banker) {
-					gamePlayController.game.HideBetButtons ();
-				} else {
-					gamePlayController.game.ShowBetButtons ();
-				}*/
 
 				seats[i].chipImageForBet.gameObject.transform.position = seats [i].chipPositionWhenBet;
 				seats[i].chipImageForBet.gameObject.SetActive (true);

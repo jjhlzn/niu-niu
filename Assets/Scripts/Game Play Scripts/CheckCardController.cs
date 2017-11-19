@@ -51,7 +51,7 @@ public class CheckCardController : BaseStateController {
 
 			int index = 0;
 			foreach (Seat seat in seats) {
-				if (seat.hasPlayer () && !playerShowCardCompleted [index]) {
+				if (seat.hasPlayer () && seat.player.isPlaying && !playerShowCardCompleted [index]) {
 					result = false;
 					break;
 				}

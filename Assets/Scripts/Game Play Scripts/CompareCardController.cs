@@ -15,6 +15,9 @@ public class CompareCardController : BaseStateController {
 	private CheckCardController checkCardController;
 
 	[SerializeField]
+	private WaitForNextRoundController waitForNextRoundController;
+
+	[SerializeField]
 	private Button readyButton;
 
 	private Seat[] seats;
@@ -134,7 +137,7 @@ public class CompareCardController : BaseStateController {
 
 	private void ShowScoreLabels() {
 		for (int i = 0; i < seats.Length; i++) {
-			if (seats [i].hasPlayer()) {
+			if (seats [i].hasPlayer() && seats[i].player.isPlaying) {
 				ShowScoreLabel (i);
 			}
 		}
@@ -178,8 +181,10 @@ public class CompareCardController : BaseStateController {
 			gamePlayController.game.HideStateLabel ();
 
 			if (gamePlayController.game.HasNextRound ()) {
-				if (gamePlayController.state == GameState.CompareCard)
+				if (gamePlayController.state == GameState.CompareCard) {
 					gamePlayController.state = GameState.WaitForNextRound;
+					waitForNextRoundController.Reset ();
+				}
 			}
 			else
 				gamePlayController.state = GameState.GameOver;

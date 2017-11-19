@@ -772,6 +772,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gamePlayController: {fileID: 1193017314}
   checkCardController: {fileID: 1474786699}
+  waitForNextRoundController: {fileID: 1232574140}
   readyButton: {fileID: 131127926}
   moveChipFromOtheToBankerArray: 
   moveChipFromBankerToOtherArray: 
@@ -5939,6 +5940,7 @@ MonoBehaviour:
   gamePlayerController: {fileID: 1193017314}
   setUpGameController: {fileID: 1193017316}
   readyButton: {fileID: 131127926}
+  hasReady: 0
 --- !u!4 &1232574141
 Transform:
   m_ObjectHideFlags: 0

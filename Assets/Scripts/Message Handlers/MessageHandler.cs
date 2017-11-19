@@ -29,10 +29,6 @@ public class MessageHandler<T, U> where T : BaseGameResponse
 			return;
 		}
 
-		while (!game.isInited) {
-		}
-		//controller.HandleResponse(resp);
-
 
 		MethodInfo method = null;
 		MethodInfo[] methods = controller.GetType ().GetMethods ();

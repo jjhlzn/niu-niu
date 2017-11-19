@@ -20,7 +20,7 @@ public class WaitForNextRoundController : BaseStateController {
 	private Seat[] seats;
 
 	private float stateTimeLeft; //这状态停留的时间
-	private bool hasReady;
+	public bool hasReady;
 
 	public void Init() {
 		seats = gamePlayerController.game.seats;
