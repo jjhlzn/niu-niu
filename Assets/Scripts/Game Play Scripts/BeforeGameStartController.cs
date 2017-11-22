@@ -32,7 +32,7 @@ public class BeforeGameStartController : BaseStateController {
 
 	private Vector3[] positions;
 
-	private bool isSeat;
+	//private bool isSeat;
 
 	// Use this for initialization
 	void Start () {
@@ -45,7 +45,7 @@ public class BeforeGameStartController : BaseStateController {
 		SetSeatClick ();
 
 		isMoveSeat = false;
-		isSeat = false;
+		//isSeat = false;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class BeforeGameStartController : BaseStateController {
 	}
 	
 	// Update is called once per frame
-	public void Update ()  {
+	public new void Update ()  {
 		base.Update ();
 
 		if (!gamePlayerController.isInited) {
@@ -246,7 +246,7 @@ public class BeforeGameStartController : BaseStateController {
 				return;
 			}
 
-			isSeat = true;
+			//isSeat = true;
 
 			standUpButton.gameObject.SetActive(true);
 			if (gamePlayerController.game.PlayerCount < 2) {
@@ -336,7 +336,7 @@ public class BeforeGameStartController : BaseStateController {
 				return;
 			}
 
-			isSeat = false;
+			//isSeat = false;
 
 			Debug.Log("standup from seat: " + Player.Me.seat );
 

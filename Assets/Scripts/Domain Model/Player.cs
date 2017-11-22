@@ -1,11 +1,21 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-
+using Newtonsoft.Json;
 
 public class Player
 {
 	public static Player Me = new Player("jinjunhang");
+
+	public string headimgurl = "";
+	public string province = "";
+	public string city = "";
+	public string unionid = "";
+	public string openid = "";
+	public string nickname = "";
+	public int sex;
+
+	public Sprite userHeadImage;
 
 	private string _userId;
 	public string userId {
@@ -32,6 +42,7 @@ public class Player
 	{
 		score = 0;
 	}
+		
 
 	public Player(string userId) {
 		score = 0;

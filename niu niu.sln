@@ -5,6 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "niu niu", "Assembly-CSharp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "niu niu", "Assembly-CSharp-firstpass.csproj", "{725E6DD4-3321-B349-2FB0-FBA2A78A456A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "niu niu", "Assembly-CSharp-Editor.csproj", "{C83B73E0-9235-45B5-289B-3837B99BBAF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "niu niu", "Assembly-CSharp-Editor-firstpass.csproj", "{F7B3869F-FB69-9D07-366E-699EBA016E9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +23,14 @@ Global
 		{725E6DD4-3321-B349-2FB0-FBA2A78A456A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{725E6DD4-3321-B349-2FB0-FBA2A78A456A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{725E6DD4-3321-B349-2FB0-FBA2A78A456A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C83B73E0-9235-45B5-289B-3837B99BBAF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C83B73E0-9235-45B5-289B-3837B99BBAF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C83B73E0-9235-45B5-289B-3837B99BBAF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C83B73E0-9235-45B5-289B-3837B99BBAF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7B3869F-FB69-9D07-366E-699EBA016E9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7B3869F-FB69-9D07-366E-699EBA016E9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7B3869F-FB69-9D07-366E-699EBA016E9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7B3869F-FB69-9D07-366E-699EBA016E9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

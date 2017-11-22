@@ -63,7 +63,7 @@ public class CompareCardController : BaseStateController {
 	}
 
 	// Update is called once per frame
-	public void Update ()  {
+	public new void Update ()  {
 		base.Update ();
 
 		if (gamePlayController.state == GameState.CompareCard ) {
@@ -214,7 +214,7 @@ public class CompareCardController : BaseStateController {
 	
 		Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
 
-		bool moveCompleted = true;
+		//bool moveCompleted = true;
 		  
 		int startIndex = to * 8;
 		for (int i = 0; i < 8; i++) {
@@ -227,7 +227,7 @@ public class CompareCardController : BaseStateController {
 			waitTime += 0.1f;
 
 			if (!Utils.isTwoPositionIsEqual(image.transform.position, targetPosition)) {
-				moveCompleted = false;
+				//moveCompleted = false;
 			} 
 		}
 	}

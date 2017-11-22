@@ -51,6 +51,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Plugins\ShareSDK\Android\AndroidImpl.cs" />
+     <Compile Include="Assets\Plugins\ShareSDK\ContentType.cs" />
+     <Compile Include="Assets\Plugins\ShareSDK\iOS\iOSImpl.cs" />
+     <Compile Include="Assets\Plugins\ShareSDK\MiniJSON.cs" />
+     <Compile Include="Assets\Plugins\ShareSDK\PlatformType.cs" />
+     <Compile Include="Assets\Plugins\ShareSDK\ResponseState.cs" />
+     <Compile Include="Assets\Plugins\ShareSDK\ShareContent.cs" />
+     <Compile Include="Assets\Plugins\ShareSDK\ShareSDK.cs" />
+     <Compile Include="Assets\Plugins\ShareSDK\ShareSDKConfig.cs" />
+     <Compile Include="Assets\Plugins\ShareSDK\ShareSDKDevInfo.cs" />
+     <Compile Include="Assets\Plugins\ShareSDK\ShareSDKImpl.cs" />
      <Compile Include="Assets\Plugins\socket.io\Decoder.cs" />
      <Compile Include="Assets\Plugins\socket.io\Encoder.cs" />
      <Compile Include="Assets\Plugins\socket.io\Packet.cs" />
@@ -384,8 +395,20 @@
      <Compile Include="Assets\Plugins\UniRx\Scripts\UnityEngineBridge\YieldInstructionCache.cs" />
      <Compile Include="Assets\Plugins\UniRx\Scripts\UnityWinRTBridge\Thread.cs" />
      <Compile Include="Assets\Plugins\UniRx\Scripts\UnityWinRTBridge\ThreadPoolScheduler_UnityWinRT.cs" />
+     <None Include="Assets\Plugins\Android\ShareSDK\res\values\ssdk_oks_strings.xml" />
      <None Include="Assets\PlayingCards\ReadMe.txt" />
+     <None Include="Assets\Plugins\Android\ShareSDK\AndroidManifest.xml" />
+     <None Include="Assets\Plugins\Android\ShareSDK\res\drawable\ssdk_oks_classic_progressbar.xml" />
+     <None Include="Assets\Plugins\Android\ShareSDK\res\drawable\ssdk_oks_classic_platform_cell_back.xml" />
+     <None Include="Assets\Plugins\Android\ShareSDK\res\values\ssdk_oks_color_drawables.xml" />
+     <None Include="Assets\Plugins\Android\ShareSDK\res\values-en\ssdk_strings.xml" />
+     <None Include="Assets\Plugins\Android\ShareSDK\res\drawable\ssdk_weibo_retry_btn_selector.xml" />
+     <None Include="Assets\Plugins\Android\ShareSDK\res\values\ssdk_instapaper_strings.xml" />
      <None Include="Assets\Plugins\UniRx\ReadMe.txt" />
+     <None Include="Assets\Plugins\Android\ShareSDK\res\values\ssdk_strings.xml" />
+     <None Include="Assets\Plugins\Android\ShareSDK\res\drawable\ssdk_weibo_retry_btn_default.xml" />
+     <None Include="Assets\Plugins\Android\ShareSDK\res\drawable\ssdk_weibo_retry_btn_press.xml" />
+     <None Include="Assets\Plugins\Android\ShareSDK\res\values-en\ssdk_oks_strings.xml" />
  <Reference Include="UnityEngine.UIAutomation">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UIAutomation/UnityEngine.UIAutomation.dll</HintPath>
  </Reference>

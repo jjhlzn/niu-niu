@@ -68,7 +68,7 @@ public class CheckCardController : BaseStateController {
 	}
 
 	// Update is called once per frame
-	public void Update ()  {
+	public new void Update ()  {
 		base.Update ();
 		if (gamePlayController.state == GameState.CheckCard) {
 			if (stateTimeLeft >= 0) {

@@ -42,7 +42,7 @@ public class WaitForNextRoundController : BaseStateController {
 	}
 
 	// Update is called once per frame
-	public void Update() {
+	public new void Update() {
 		if (gamePlayerController.state == GameState.WaitForNextRound) {
 			if (stateTimeLeft < 0) {
 				gamePlayerController.game.ShowStateLabel ("下一局游戏即将开始: " + Mathf.Round(stateTimeLeft));
@@ -61,7 +61,7 @@ public class WaitForNextRoundController : BaseStateController {
 
 	private void CheckMeReady() {
 		var game = gamePlayerController.game;
-		var round = game.currentRound;
+		//var round = game.currentRound;
 		int seatIndex = game.GetSeatIndex (Player.Me.userId);
 		if (seatIndex != -1 && game.seats[seatIndex].player.isReady) {
 			hasReady = true;

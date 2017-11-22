@@ -13,7 +13,7 @@ public class ChooseBankerController : BaseStateController {
 
 	[SerializeField]
 	private Image bankerSign;
-	private Vector3 bankerSignOriginPosition;
+	//private Vector3 bankerSignOriginPosition;
 
 	private Seat[] seats;
 
@@ -28,7 +28,7 @@ public class ChooseBankerController : BaseStateController {
 	private bool isShowStateLabel;
 
 	void Awake() {
-		bankerSignOriginPosition = bankerSign.gameObject.transform.position;
+		//bankerSignOriginPosition = bankerSign.gameObject.transform.position;
 	}
 
 	void Start() {
@@ -67,7 +67,7 @@ public class ChooseBankerController : BaseStateController {
 	}
 
 	// Update is called once per frame
-	public void Update ()  {
+	public new void Update ()  {
 		base.Update ();
 
 		var game = gamePlayController.game;

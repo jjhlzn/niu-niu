@@ -7,7 +7,7 @@ using UnityEngine.UI;
 [System.Serializable]
 public class Deck
 {
-	private int DeckCount = 30;
+	//private int DeckCount = 30;
 	
 	public Deck (){
 	}

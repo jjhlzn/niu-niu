@@ -6,6 +6,10 @@ using UnityEngine.UI;
 using socket.io;
 using Newtonsoft.Json;
 
+using cn.sharesdk.unity3d;
+
+
+
 
 public class GamePlayController : MonoBehaviour {
 	[SerializeField]
@@ -59,6 +63,30 @@ public class GamePlayController : MonoBehaviour {
 	public bool isConnected; //是否已经连接到网络
 	public Socket gameSocket;
 	public Game game;
+
+	[SerializeField]
+	private ShareSDK ssdk;
+
+
+	public void ShareClick() {
+		
+		ShareContent content = new ShareContent();
+		content.SetText("this is a test string.");
+		content.SetImageUrl("https://f1.webshare.mob.com/code/demo/img/1.jpg");
+		content.SetTitle("test title");
+		content.SetTitleUrl("http://www.mob.com");
+		content.SetSite("Mob-ShareSDK");
+		content.SetSiteUrl("http://www.mob.com");
+		content.SetUrl("http://www.mob.com");
+		content.SetComment("test description");
+		content.SetMusicUrl("http://mp3.mwap8.com/destdir/Music/2009/20090601/ZuiXuanMinZuFeng20090601119.mp3");
+		content.SetShareType(ContentType.Webpage);
+
+	
+
+		ssdk.ShareContent(PlatformType.WeChat, content);  // .ShowPlatformList(null, content, 100, 100);
+	
+	}
 
 	// Use this for initialization
 	void Start () {
