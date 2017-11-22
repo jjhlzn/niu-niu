@@ -9,7 +9,7 @@ public class FirstDealerController : BaseStateController {
 	public static float dealWaitTimeBetweenPlayerForSecondDeal = 0.1f;
 	public static float waitTimeDeltaBetweenCard = 0.1f;
 	public static float turnUpTime = 0.5f;
-	public static float user0CardScale = 1.3f;
+	public static float user0CardScale = 1.32f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;

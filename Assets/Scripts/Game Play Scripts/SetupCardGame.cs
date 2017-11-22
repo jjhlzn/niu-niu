@@ -533,7 +533,8 @@ public class SetupCardGame : BaseStateController {
 	void CreateDeck() {
 		deck = new Deck ();
 		List<Image> cards = new List<Image> ();
-		deck.cardFaceSprites = Resources.LoadAll<Sprite>("sprites/mobile");
+		//deck.cardFaceSprites = Resources.LoadAll<Sprite>("sprites/mobile");
+		deck.cardFaceSprites = Resources.LoadAll<Sprite>("sprites/cards1");
 
 		for (int i = 0; i < cardCount; i++) {
 			Image temp = Instantiate (card);
@@ -570,7 +571,7 @@ public class SetupCardGame : BaseStateController {
 			betButtons [i].gameObject.SetActive (false);
 			betButtons [i].transform.SetParent (userPanel.transform);
 			betButtons [i].name = "betButton" +i;
-			Vector3 localScale = new Vector3 (0.3f, 0.3f);
+			Vector3 localScale = new Vector3 (1f, 1f);
 			betButtons[i].gameObject.transform.localScale = localScale;
 
 
@@ -587,7 +588,7 @@ public class SetupCardGame : BaseStateController {
 	void Create4BetsButtonPositions() {
 		betButtonPositionsFor4Button = new Vector3[4];
 		betLabelPositionsFor4Button = new Vector3[4];
-		int X = -132, Y = -105, YForLabel = -138;
+		int X = -132, Y = -125, YForLabel = -158;
 		for (int i = 0; i < betButtonPositionsFor4Button.Length; i++) {
 			
 			betButtonPositionsFor4Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);
@@ -601,7 +602,7 @@ public class SetupCardGame : BaseStateController {
 	void Create3BetsButtonPositions() {
 		betButtonPositionsFo3Button = new Vector3[3];
 		betLabelPositionsFo3Button = new Vector3[3];
-		int X = -84, Y = -105, YForLabel = -138;
+		int X = -84, Y = -125, YForLabel = -158;
 		for (int i = 0; i < betButtonPositionsFo3Button.Length; i++) {
 			
 			betButtonPositionsFo3Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);
