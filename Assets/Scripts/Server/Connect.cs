@@ -38,7 +38,7 @@ public class Connect : MonoBehaviour {
 			return;
 		Debug.Log ("connecting to server ...");
 		isConnecting = true;
-		var serverUrl = "http://192.168.31.175:3000";
+		var serverUrl = "http://localhost:3000";
 		gameSocket = Socket.Connect(serverUrl);
 
 		gameSocket.On(SystemEvents.connect, () => {

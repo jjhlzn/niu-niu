@@ -7,6 +7,7 @@ public class SetupCardGame : BaseStateController {
 	private int MaxMoveChipCount = 8 * 6;
 	public static float TransformConstant = 71.98f;
 	private int cardCount = 30; //生成多少张牌的图片，6 * 5 = 30
+	public static float ChipScale = 0.6f;
 
 	[SerializeField]
 	private CheckCardController checkCardController;
@@ -36,6 +37,8 @@ public class SetupCardGame : BaseStateController {
 	public Image bankerSignImage;
 	[SerializeField]
 	public Text gameStateLabel;
+	[SerializeField]
+	public Image gameStateLabelBackground;
 
 	[SerializeField]
 	public Image bankerSign;
@@ -44,6 +47,12 @@ public class SetupCardGame : BaseStateController {
 	private Button betButton;
 	[SerializeField]
 	private Text betLabel;
+
+	[SerializeField]
+	private Button menuButton;
+	[SerializeField]
+	private GameObject menuPanel;
+
 
 	public Seat[] seats;
 	public Deck deck;
@@ -67,6 +76,8 @@ public class SetupCardGame : BaseStateController {
 
 		//把移动的庄家放在最上面一层
 		bankerSign.transform.SetAsLastSibling ();
+
+		SetMenu ();
 	}
 
 	public override GamePlayController GetGamePlayController ()
@@ -79,6 +90,20 @@ public class SetupCardGame : BaseStateController {
 	}
 
 	public override void Reset() {
+	}
+
+	private void SetMenu() {
+		menuPanel.gameObject.SetActive (false);
+	}
+
+	public void MenuClick() {
+		menuButton.gameObject.SetActive (false);
+		menuPanel.gameObject.SetActive (true);
+	}
+
+	public void CloseMenuClick() {
+		menuButton.gameObject.SetActive (true);
+		menuPanel.gameObject.SetActive (false);
 	}
 		
 	private void SetOtherSeatUIs() {
@@ -112,6 +137,14 @@ public class SetupCardGame : BaseStateController {
 		for (int i = 0; i < chipCountObjs.Length; i++) {
 			seats [i].chipCountLabel = chipCountObjs [i].GetComponent<Text> ();
 			seats [i].chipCountLabel.gameObject.SetActive (false);
+		}
+
+		//展示文本的背景图片
+		GameObject[] chipLabelBackgroundObjs = GameObject.FindGameObjectsWithTag ("chipLabelBackground");
+		chipLabelBackgroundObjs = SortUserSeatUIObjects (chipLabelBackgroundObjs);
+		for (int i = 0; i < chipLabelBackgroundObjs.Length; i++) {
+			seats [i].chipLabelBackground = chipLabelBackgroundObjs [i].GetComponent<Image> ();
+			seats [i].chipLabelBackground.gameObject.SetActive (false);
 		}
 
 		SetChips ();
@@ -205,6 +238,7 @@ public class SetupCardGame : BaseStateController {
 				break;
 			case "Chip Image":
 				image.transform.SetParent (userPanel.transform);
+				image.transform.localScale = new Vector3 (ChipScale, ChipScale);
 				image.gameObject.SetActive (false);
 				seat.chipImageForBet = image;
 				seat.originChipImagePositionForBet = image.transform.position;
@@ -276,28 +310,28 @@ public class SetupCardGame : BaseStateController {
 		int stepX = 25;
 		switch (index) {
 		case 0:
-			initialX = -240;
+			initialX = -230;
 			initialY = -260;
-			stepX = 110;
+			stepX = 112;
 			break;
 		case 1:
-			initialX = -448;
-			initialY = -65;
+			initialX = -408;
+			initialY = -55;
 			break;
 		case 2:
-			initialX = -340;
-			initialY = 121;
+			initialX = -290;
+			initialY = 110;
 			break;
 		case 3:
-			initialX = -20;
-			initialY = 170;
+			initialX = -50;
+			initialY = 176;
 			break;
 		case 4:
-			initialX = 220;
+			initialX = 210;
 			initialY = 95;
 			break;
 		case 5:
-			initialX = 320;
+			initialX = 330;
 			initialY = -70;
 			break;
 		}
@@ -327,23 +361,23 @@ public class SetupCardGame : BaseStateController {
 			stepX = 40;
 			break;
 		case 1:
-			initialX = -448;
-			initialY = -65;
+			initialX = -408;
+			initialY = -55;
 			break;
 		case 2:
-			initialX = -340;
-			initialY = 121;
+			initialX = -290;
+			initialY = 110;
 			break;
 		case 3:
-			initialX = -20;
-			initialY = 170;
+			initialX = -50;
+			initialY = 176;
 			break;
 		case 4:
-			initialX = 220;
+			initialX = 210;
 			initialY = 95;
 			break;
 		case 5:
-			initialX = 320;
+			initialX = 330;
 			initialY = -70;
 			break;
 		}
@@ -469,9 +503,7 @@ public class SetupCardGame : BaseStateController {
 			image.gameObject.transform.SetParent (userPanel.transform);
 			image.transform.SetSiblingIndex (startSiblings + i);
 
-			Vector3 localScale = new Vector3 ();
-			localScale.x = 0.25f;
-			localScale.y = 0.25f;
+			Vector3 localScale =  new Vector3 (ChipScale, ChipScale);
 			image.transform.localScale = localScale;
 
 			image.transform.position = seats[index].chipImageForBet.transform.position;

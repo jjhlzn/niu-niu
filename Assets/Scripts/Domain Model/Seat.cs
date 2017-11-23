@@ -37,6 +37,7 @@ public class Seat
 	public Vector3 originChipImagePositionForBet;
 	public Vector3 chipPositionWhenBet; //下注的时候，筹码移动到的目的位置
 	public Text chipCountLabel;
+	public Image chipLabelBackground;
 	public Image niuImage; //显示牛几的图片
 	public Image mutipleImage; //显示牛的倍数的图片
 
@@ -127,6 +128,7 @@ public class Seat
 		chipImageForBet.transform.position = originChipImagePositionForBet;
 
 		chipCountLabel.gameObject.SetActive (false);
+		chipLabelBackground.gameObject.SetActive (false);
 
 		niuImage.gameObject.SetActive (false);
 		mutipleImage.gameObject.SetActive (false);

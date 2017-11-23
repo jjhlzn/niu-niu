@@ -71,7 +71,7 @@ public class BeforeGameStartController : BaseStateController {
 		if (gamePlayerController.state == GameState.BeforeStart) {
 			gamePlayerController.game.ShowStateLabel ("等待其他玩家加入...");
 		} else {
-			standUpButton.gameObject.SetActive (false);
+			standUpButton.interactable = false;
 		}
 			
 
@@ -168,11 +168,12 @@ public class BeforeGameStartController : BaseStateController {
 		if (game.state == GameState.BeforeStart) {
 			startButton.gameObject.SetActive (true);
 			if (Player.Me.isPlaying)
-				standUpButton.gameObject.SetActive (true);
+				standUpButton.interactable = true;
 			else
-				standUpButton.gameObject.SetActive (false);
+				standUpButton.interactable = false;
 		} else {
 			startButton.gameObject.SetActive (false);
+			standUpButton.interactable = false;
 		}
 
 		if (game.state == GameState.WaitForNextRound) {
@@ -203,7 +204,7 @@ public class BeforeGameStartController : BaseStateController {
 			}
 
 			startButton.gameObject.SetActive(false);
-			standUpButton.gameObject.SetActive(false);
+			standUpButton.interactable = false;
 		}); 
 	}
 
@@ -248,7 +249,7 @@ public class BeforeGameStartController : BaseStateController {
 
 			//isSeat = true;
 
-			standUpButton.gameObject.SetActive(true);
+			standUpButton.interactable = true;
 			if (gamePlayerController.game.PlayerCount < 2) {
 				startButton.interactable = false;
 			} else {

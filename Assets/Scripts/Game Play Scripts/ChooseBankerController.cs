@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ChooseBankerController : BaseStateController {
 	public static int ChooseTotalCount = 15;
 	private float BankerSignMoveTimeInterval = .03f;
-	private float moveBankerSignSpeed = 140f;
+	private float moveBankerSignSpeed = 8f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -157,8 +157,8 @@ public class ChooseBankerController : BaseStateController {
 		game.ShowStateLabel (game.currentRound.banker + "成为庄家");
 
 		chooseCompleted = false;
-		//bankerSign.gameObject.transform.position = new Vector3 (game.gameStateLabel.transform.position.x - game.gameStateLabel.preferredWidth / SetupCardGame.TransformConstant / 2,
-		//	game.gameStateLabel.transform.position.y, 0);
+		bankerSign.gameObject.transform.position = new Vector3 (game.gameStateLabel.transform.position.x - game.gameStateLabel.preferredWidth / SetupCardGame.TransformConstant / 2,
+			game.gameStateLabel.transform.position.y / SetupCardGame.TransformConstant, 0);
 		bankerSign.gameObject.SetActive (true);
 
 		yield return new WaitForSeconds (.4f);

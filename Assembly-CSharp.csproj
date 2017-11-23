@@ -86,6 +86,7 @@
      <Compile Include="Assets\Scripts\Login Scripts\LoginController.cs" />
      <Compile Include="Assets\Scripts\Main Page Scripts\MainPageController.cs" />
      <Compile Include="Assets\Scripts\Message Handlers\MessageHandler.cs" />
+     <Compile Include="Assets\Scripts\MusicController.cs" />
      <Compile Include="Assets\Scripts\Server\Connect.cs" />
      <Compile Include="Assets\Scripts\Server\Messages\Messages.cs" />
      <Compile Include="Assets\ShareSDKiOSAutoPackage\ManagePlatforms.cs" />

@@ -98,6 +98,7 @@ public class GamePlayController : MonoBehaviour {
 		game.state = GameState.BeforeStart;
 		game.bankerSignImage = setupCardGame.bankerSignImage;
 		game.gameStateLabel = setupCardGame.gameStateLabel;
+		game.gameStateLabelBackground = setupCardGame.gameStateLabelBackground;
 		game.niuSprites = setupCardGame.niuSprites;
 		game.multipleSprites = setupCardGame.multipleSprites;
 		game.betButtons = setupCardGame.betButtons;

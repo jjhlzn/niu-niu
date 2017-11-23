@@ -19,6 +19,7 @@ public class Game
 	}
 
 	public Text gameStateLabel;
+	public Image gameStateLabelBackground;
 	
 	public static int SeatCount = 6;
 	
@@ -163,10 +164,12 @@ public class Game
 	public void ShowStateLabel(string msg) {
 		this.gameStateLabel.text = msg;
 		this.gameStateLabel.gameObject.SetActive (true);
+		this.gameStateLabelBackground.gameObject.SetActive (true);
 	}
 
 	public void HideStateLabel() {
 		this.gameStateLabel.gameObject.SetActive (false);
+		this.gameStateLabelBackground.gameObject.SetActive (false);
 	}
 
 	public Sprite getNiuSprite(int niu) {

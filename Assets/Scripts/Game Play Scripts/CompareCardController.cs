@@ -24,12 +24,13 @@ public class CompareCardController : BaseStateController {
 
 	public int[] moveChipFromOtheToBankerArray;
 	public int[] moveChipFromBankerToOtherArray;
-	public bool moveToBanker;
-	public bool moveFromBanker;
-	public bool showScoreLabel;
-	public bool moveScoreLabel;
-	public bool allAnimCompleted;
-	private float moveTimeLeft; 
+	private bool moveToBanker;
+	private bool moveFromBanker;
+	private bool showScoreLabel;
+	private bool moveScoreLabel;
+	private bool allAnimCompleted;
+	private bool[] hasPlayedTransmitCoin = new bool[Game.SeatCount];
+	private float moveTimeLeft;
 
 	public void Init() {
 		seats = gamePlayController.game.seats;
@@ -43,6 +44,9 @@ public class CompareCardController : BaseStateController {
 		showScoreLabel = false;
 		moveScoreLabel = false;
 		allAnimCompleted = false;
+		for (int i = 0; i < Game.SeatCount; i++) {
+			hasPlayedTransmitCoin [i] = false;
+		}
 	}
 		
 	void Awake () {
@@ -86,7 +90,12 @@ public class CompareCardController : BaseStateController {
 					HideChips ();
 				} else {
 					for (int i = 0; i < moveChipFromOtheToBankerArray.Length; i++) {
-						MoveChipsFromSeat (moveChipFromOtheToBankerArray [i]);
+						int seatIndex = moveChipFromOtheToBankerArray [i];
+						MoveChipsFromSeat (seatIndex);
+						if (!hasPlayedTransmitCoin[seatIndex]) {
+							hasPlayedTransmitCoin [seatIndex] = true;
+							MusicController.instance.Play (AudioItem.TransmitCoin, seats [seatIndex].player.sex);
+						}
 					}
 					moveTimeLeft -= Time.deltaTime;
 					if (moveTimeLeft <= 0) {
@@ -110,7 +119,12 @@ public class CompareCardController : BaseStateController {
 				} else {
 
 					for (int i = 0; i < moveChipFromBankerToOtherArray.Length; i++) {
-						MoveChipsToSeat (moveChipFromBankerToOtherArray [i]);
+						int seatIndex = moveChipFromBankerToOtherArray [i];
+						MoveChipsToSeat (seatIndex);
+						if (!hasPlayedTransmitCoin[seatIndex]) {
+							hasPlayedTransmitCoin [seatIndex] = true;
+							MusicController.instance.Play (AudioItem.TransmitCoin, seats [seatIndex].player.sex);
+						}
 					}
 					moveTimeLeft -= Time.deltaTime;
 					if (moveTimeLeft <= 0) {

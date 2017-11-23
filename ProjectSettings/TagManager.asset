@@ -32,6 +32,7 @@ TagManager:
   - showCardPosition4
   - showCardPosition5
   - ReadyImage
+  - chipLabelBackground
   layers:
   - Default
   - TransparentFX

@@ -94,7 +94,7 @@ public class BetController : BaseStateController {
 		var round = game.currentRound;
 		for (int i = 0; i < round.playerBets.Length; i++) {
 			if (round.playerBets [i] != -1) {
-
+				seats [i].chipLabelBackground.gameObject.SetActive (true);
 				seats[i].chipImageForBet.gameObject.transform.position = seats [i].chipPositionWhenBet;
 				seats[i].chipImageForBet.gameObject.SetActive (true);
 				seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
@@ -127,6 +127,7 @@ public class BetController : BaseStateController {
 					isMoveChipArray [i] = false;
 					seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
 					seats[i].chipCountLabel.gameObject.SetActive (true);
+					seats [i].chipLabelBackground.gameObject.SetActive (true);
 					isBetCompletedArray [i] = true;
 
 					if (gamePlayController.state == GameState.Bet) {
@@ -143,6 +144,7 @@ public class BetController : BaseStateController {
 	}
 
 	private void HandleUser0BetNotify(int bet) {
+		
 		hasBet = true;
 		gamePlayController.game.currentRound.playerBets[0] = bet;
 		isMoveChipArray[0] = true;
@@ -174,6 +176,7 @@ public class BetController : BaseStateController {
 
 		socket.EmitJson (Messages.Bet, JsonConvert.SerializeObject(req), (string msg) => {
 			HandleUser0BetNotify(mybet);
+			MusicController.instance.Play (AudioItem.Bet, seats [0].player.sex);
 		}); 
 
 	}
@@ -182,11 +185,16 @@ public class BetController : BaseStateController {
 		Game game = gamePlayController.game;
 		int index = game.GetSeatIndex (notify.userId);
 
+		if (notify.userId == Player.Me.userId) {
+			return;
+		}
+
 		if (index == 0) {
 			HandleUser0BetNotify (notify.bet);
 		} else {
 			game.currentRound.playerBets [index] = notify.bet;
 			isMoveChipArray [index] = true;
+			MusicController.instance.Play (AudioItem.Bet, seats [index].player.sex);
 		}
 	}
 }

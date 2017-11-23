@@ -23,6 +23,7 @@ public class CheckCardController : BaseStateController {
 
 	private bool[] playerShowCardCompleted;
 	private bool[] isMoveCardArray;
+	private bool[] hasPlayedNiu = new bool[Game.SeatCount];
 	private bool hasShowCard = false;
 	private float stateTimeLeft; //这状态停留的时间
 
@@ -36,6 +37,9 @@ public class CheckCardController : BaseStateController {
 		isMoveCardArray = new bool[Game.SeatCount];
 		playerShowCardCompleted = new bool[Game.SeatCount];
 		stateTimeLeft = Constants.MaxStateTimeLeft;
+		for (int i = 0; i < Game.SeatCount; i++) {
+			hasPlayedNiu [i] = false;
+		}
 	}
 
 	public void Init() {
@@ -135,6 +139,7 @@ public class CheckCardController : BaseStateController {
 	}
 
 	private void CheckCardAnimation() {
+		var round = gamePlayController.game.currentRound;
 		if (secondDealController.isSecondDealDone) {
 			for (int i = 0; i < isMoveCardArray.Length; i++) {
 				if (isMoveCardArray [i]) {
@@ -162,10 +167,15 @@ public class CheckCardController : BaseStateController {
 
 						if (!Utils.isTwoPositionIsEqual (cards [j].gameObject.transform.position, targetV)) {
 							moveCompleted = false;
-						}
+						} 
 					}
 
 					if (moveCompleted) {
+						if (!hasPlayedNiu [i]) {
+							hasPlayedNiu [i] = true;
+							MusicController.instance.Play ("niu" + round.niuArray [i], seats [i].player.sex);
+						}
+
 						gamePlayController.game.HideStateLabel ();
 						isMoveCardArray [i] = false;
 

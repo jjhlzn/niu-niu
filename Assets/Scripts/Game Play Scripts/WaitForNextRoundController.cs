@@ -97,7 +97,7 @@ public class WaitForNextRoundController : BaseStateController {
 			gamePlayerController.game.UpdateGameInfos ();
 			gamePlayerController.game.seats[0].player.isReady = true;
 			gamePlayerController.game.seats[0].UpdateUI(gamePlayerController.game);
-
+			MusicController.instance.Play (AudioItem.Ready, seats [0].player.sex);
 		});  
 	}
 
@@ -105,8 +105,12 @@ public class WaitForNextRoundController : BaseStateController {
 	public void HandleResponse(SomePlayerReadyNotify notify) {
 		int seatIndex = gamePlayerController.game.GetSeatIndex (notify.userId);
 		seats [seatIndex].readyImage.gameObject.SetActive (true);
+		if (seats [seatIndex].player.userId == Player.Me.userId) {
+			return;
+		}
+
 		gamePlayerController.game.seats[seatIndex].player.isReady = true;
 		gamePlayerController.game.seats[seatIndex].UpdateUI(gamePlayerController.game);
-
+		MusicController.instance.Play (AudioItem.Ready, seats [seatIndex].player.sex);
 	}
 }

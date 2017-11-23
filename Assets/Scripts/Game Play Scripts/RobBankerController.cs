@@ -98,8 +98,10 @@ public class RobBankerController : BaseStateController {
 		seats[0].isRobImage.gameObject.SetActive(true);
 		if (isRob) {
 			seats[0].isRobImage.sprite = robSprite;
+			MusicController.instance.Play(AudioItem.Rob, seats[0].player.sex);
 		} else {
 			seats[0].isRobImage.sprite = notRobSprite;
+			MusicController.instance.Play(AudioItem.NotRob, seats[0].player.sex);
 		}
 	}
 
@@ -107,9 +109,12 @@ public class RobBankerController : BaseStateController {
 		seats[seatIndex].isRobImage.gameObject.SetActive(true);
 		if (isRob) {
 			seats[seatIndex].isRobImage.sprite = robSprite;
+			MusicController.instance.Play(AudioItem.Rob, seats[seatIndex].player.sex);
 		} else {
 			seats[seatIndex].isRobImage.sprite = notRobSprite;
+			MusicController.instance.Play(AudioItem.NotRob, seats[seatIndex].player.sex);
 		}
+
 	}
 
 	private void SendRobBankerRequest(bool isRob) {
@@ -138,7 +143,8 @@ public class RobBankerController : BaseStateController {
 			}
 
 			if (seatIndex == 0) {
-				HandleSeat0RobBanker (notify.isRob);
+				//HandleSeat0RobBanker (notify.isRob);
+				return;
 			} else {
 				HandleOtherSeatRobBanker (seatIndex, notify.isRob);
 			}
