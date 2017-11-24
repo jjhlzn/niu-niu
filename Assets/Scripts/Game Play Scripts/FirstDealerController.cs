@@ -71,7 +71,7 @@ public class FirstDealerController : BaseStateController {
 
 			for (int i = 0; i < playingPlayers.Count; i++) {
 				Player player = playingPlayers [i];
-				Debug.Log ("player: " + player.userId + " sit on seats: " + player.seat.seatIndex);
+				//Debug.Log ("player: " + player.userId + " sit on seats: " + player.seat.seatIndex);
 				FirstGiveCardsAnimation (player, waitTime);
 
 				//每个成员之间加入一个延时
@@ -82,7 +82,7 @@ public class FirstDealerController : BaseStateController {
 			//判断最后一张牌是否已经发好
 			if (Utils.isTwoPositionIsEqual(playingPlayers[playingPlayers.Count - 1].seat.cards[3].transform.position, 
 				playingPlayers[playingPlayers.Count - 1].seat.cardPositions[3])) {
-				Debug.Log ("Player.Me.isPlaying = " + Player.Me.isPlaying);
+				//Debug.Log ("Player.Me.isPlaying = " + Player.Me.isPlaying);
 				if (Player.Me.isPlaying) {
 					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [0], round.playerCardsDict[Player.Me.userId] [0]));
 					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [1], round.playerCardsDict[Player.Me.userId] [1]));
@@ -102,7 +102,7 @@ public class FirstDealerController : BaseStateController {
 		var game = gamePlayController.game;
 		FirstDeal ();
 		List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
-		Debug.Log ("playingPlayers.count = " + playingPlayers.Count);
+		//Debug.Log ("playingPlayers.count = " + playingPlayers.Count);
 		for (int i = 0; i < playingPlayers.Count; i++) {
 
 			Player player = playingPlayers [i];

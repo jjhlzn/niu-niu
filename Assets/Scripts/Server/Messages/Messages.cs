@@ -16,6 +16,7 @@ public class Messages
 
 	public static string JoinRoom = "JoinRoom";
 	public static string LeaveRoom = "LeaveRoom";
+	public static string DismissRoom = "DismissRoom";
 	public static string SitDown = "SitDown";
 	public static string SomePlayerSitDown = "SomePlayerSitDown";
 	public static string SomePlayerStandUp = "SomePlayerStandUp"; 
@@ -39,6 +40,7 @@ public class StartGameRequest {
 public class BaseGameResponse {
 	public int status;
 	public string errorMessage;
+	public string roomNo;
 
 	public bool IsSuccess() {
 		return status == 0;
@@ -50,7 +52,6 @@ public class BaseGameResponse {
 }
 
 public class FirstDealResponse : BaseGameResponse {
-	public string roomNo;
 	public int roundNo;
 	public Dictionary<string, string[]> cardsDict = new Dictionary<string, string[]>();
 	public Dictionary<string, int[]> betsDict = new Dictionary<string, int[]>();
@@ -62,7 +63,6 @@ public class GoToChooseBankerNotity : BaseGameResponse {
 }
 
 public class GoToSecondDealNotify : BaseGameResponse {
-	public string roomNo;
 	public Dictionary<string, string> cardsDict;
 }
 
@@ -71,41 +71,34 @@ public class GoToCheckCardNotify : BaseGameResponse {
 }
 
 public class SomePlayerSitDownNotify : BaseGameResponse {
-	public string roomNo;
 	public string seat;
 	public string userId;
 }
 
 public class SomePlayerStandUpNotify : BaseGameResponse {
-	public string roomNo;
 	public string userId;
 }
 
 public class StartGameNotify : BaseGameResponse {
-	public string roomNo;
 	public Dictionary<string, string[]> cardsDict = new Dictionary<string, string[]>();
 	public Dictionary<string, int[]> betsDict = new Dictionary<string, int[]>();
 }
 
 public class SomePlayerReadyNotify : BaseGameResponse {
-	public string roomNo;
 	public string userId;
 }
 
 public class SomePlayerRobBankerNotify : BaseGameResponse {
-	public string roomNo;
 	public string userId;
 	public bool isRob;
 }
 
 public class SomePlayerBetNotify : BaseGameResponse {
-	public string roomNo;
 	public string userId;
 	public int bet;
 }
 
 public class SomePlayerShowCardNotify : BaseGameResponse {
-	public string roomNo;
 	public string userId;
 	public string[] cards;
 	public int[] cardSequences;
@@ -121,7 +114,6 @@ public class ShowCardAck : BaseGameResponse {
 }
 
 public class GoToCompareCardNotify : BaseGameResponse {
-	public string roomNo;
 	public Dictionary<string, int> resultDict;   //输赢关系
 	public Dictionary<string, int> scoreDict;
 }
@@ -134,7 +126,6 @@ public class ShowCardResult {
 }
 
 public class JoinRoomResponse : BaseGameResponse {
-	public string roomNo;
 	public string state;
 	public string banker;
 	public int totalRoundCount;
@@ -149,4 +140,30 @@ public class JoinRoomResponse : BaseGameResponse {
 	public Dictionary<string, int> betPlayers = new Dictionary<string, int>();
 	public Dictionary<string, ShowCardResult> showcardPlayers = new Dictionary<string, ShowCardResult> ();
 	public Dictionary<string, bool> readyPlayers = new Dictionary<string,bool> ();
+}
+
+public class CheckUserInGameResponse : BaseGameResponse {
+	public bool isInGame;
+	public string serverUrl;
+}
+
+public class CreateRoomResponse : BaseGameResponse {
+	public string serverUrl;
+}
+
+public class DismissRoomResponse : BaseGameResponse {
+}
+
+public class LeaveRoomResponse : BaseGameResponse {
+}
+	
+public class GameOverResponse : BaseGameResponse {
+	public bool isPlayed;
+	public Dictionary<string, int> scores = new Dictionary<string, int>(); 
+	public string gameOverTime;
+	public List<string> bigWinners = new List<string>();
+	public List<string> bigLosers = new List<string>();
+
+	public bool gameOverAfterRound;
+	public Dictionary<string, int> resultDict;   //本局的输赢关系
 }

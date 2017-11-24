@@ -43,6 +43,9 @@ public class GamePlayController : MonoBehaviour {
 	private CompareCardController compareController;
 
 	[SerializeField]
+	private GameOverController gameOverController;
+
+	[SerializeField]
 	private GameObject messagePanel;
 	[SerializeField]
 	private Text roomLabel;
@@ -69,7 +72,7 @@ public class GamePlayController : MonoBehaviour {
 
 
 	public void ShareClick() {
-		
+		/*
 		ShareContent content = new ShareContent();
 		content.SetText("this is a test string.");
 		content.SetImageUrl("https://f1.webshare.mob.com/code/demo/img/1.jpg");
@@ -82,16 +85,23 @@ public class GamePlayController : MonoBehaviour {
 		content.SetMusicUrl("http://mp3.mwap8.com/destdir/Music/2009/20090601/ZuiXuanMinZuFeng20090601119.mp3");
 		content.SetShareType(ContentType.Webpage);
 
-	
-
 		ssdk.ShareContent(PlatformType.WeChat, content);  // .ShowPlatformList(null, content, 100, 100);
-	
+		*/
+
 	}
+
+
 
 	// Use this for initialization
 	void Start () {
 		Debug.Log ("GamePlayController Start");
-		SetGameData ();
+		game = new Game ();
+
+		game.seats = setupCardGame.seats;
+		for (int i = 0; i < game.seats.Length; i++) {
+			game.seats [i].game = game;
+		}
+		game.deck = setupCardGame.deck;
 
 		game.roomLabel = roomLabel;
 		game.roundLabel = roundLabel;
@@ -135,28 +145,10 @@ public class GamePlayController : MonoBehaviour {
 
 
 
-	private void SetGameData() {
-		game = new Game ();
-		game.seats = setupCardGame.seats;
-		for (int i = 0; i < game.seats.Length; i++) {
-			game.seats [i].game = game;
-		}
-		game.deck = setupCardGame.deck;
 
-		game.totalRoundCount = 10;
-		game.currentRoundNo = 1;
-		game.roomNo = GenerateRoomNo ();
-		state = GameState.BeforeStart;
+		
 
-	}
-
-	/*
-	public void goToNextState() {
-		state = state.nextState ();
-	}*/
-
-	public void Reset() {
-	}
+	public void Reset() { }
 
 	public void PrepareForNewRound() {
 		game.deck.Reset ();
@@ -189,12 +181,8 @@ public class GamePlayController : MonoBehaviour {
 		gameSocket.On (Messages.SomePlayerShowCard, new MessageHandler<SomePlayerShowCardNotify, CheckCardController> (checkCardController, game).Handle);
 		gameSocket.On (Messages.GoToCompareCard, new MessageHandler<GoToCompareCardNotify, CompareCardController> (compareController, game).Handle);
 		gameSocket.On (Messages.SomePlayerReady, new MessageHandler<SomePlayerReadyNotify, WaitForNextRoundController>(waitForNextRoundController, game).Handle);
+		gameSocket.On (Messages.GoToGameOver, new MessageHandler<GameOverResponse, GameOverController> (gameOverController, game).Handle);
 	}
-
-	public string GenerateRoomNo() {
-		return "123456";
-	}
-
 
 	public void HandleResponse(JoinRoomResponse resp) {
 		//根据resp设置Game的状态，设置Game的状态。
@@ -202,7 +190,7 @@ public class GamePlayController : MonoBehaviour {
 			Debug.LogError ("status = " + resp.status + ", message = " + resp.errorMessage);
 			throw new UnityException (resp.errorMessage);
 		}
-
+		game.roomNo = resp.roomNo;
 		GameState state = GameState.GetGameState (resp.state);
 		game.totalRoundCount = resp.totalRoundCount;
 		game.currentRoundNo = resp.currentRoundNo;
@@ -282,6 +270,7 @@ public class GamePlayController : MonoBehaviour {
 		isInited = true;
 		game.isInited = isInited;
 
+		game.UpdateGameInfos ();
 	}
 
 	private void SetSitdownPlayers(JoinRoomResponse resp, Game game) {

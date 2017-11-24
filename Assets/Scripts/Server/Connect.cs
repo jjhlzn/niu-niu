@@ -10,13 +10,16 @@ public class Connect : MonoBehaviour {
 	[SerializeField]
 	private GamePlayController gamePlayController;
 
-	private Socket gameSocket;
+	public Socket gameSocket;
 
 	private bool isConnecting = false;
-	private float timeLeft = retryTimeInterval; 
+	private float timeLeft = retryTimeInterval;
+	private string roomNo = "";
+	private string serverUrl = "";
 
 	void Start() {
-		connect ();
+		SetServerUrlAndRoomNo ();
+		connect (serverUrl, roomNo);
 	}
 
 	void Update () {
@@ -27,22 +30,52 @@ public class Connect : MonoBehaviour {
 		if (!gamePlayController.isConnected && timeLeft < 0 ) {
 			timeLeft = retryTimeInterval;
 			Debug.Log ("retry connect");
-			connect ();
+			connect (serverUrl, roomNo);
 		}
 
 		//Debug.Log ("isConnected = " + gamePlayController.isConnected + ", timeLeft = " + timeLeft);
 	}
 
-	void connect() {
+	private void SetServerUrlAndRoomNo() {
+		Dictionary<string, string> parameters = Scenes.getSceneParameters ();
+	    serverUrl = "http://localhost:3000";
+	    roomNo = "123456";
+		if (parameters != null) {
+			serverUrl = parameters ["serverUrl"];
+			roomNo = parameters ["roomNo"];
+		}
+		Debug.Log ("serverUrl = " + serverUrl);
+	}
+
+	public void connect(string serverUrl, string roomNo) {
 		if (isConnecting)
 			return;
 		Debug.Log ("connecting to server ...");
 		isConnecting = true;
-		var serverUrl = "http://localhost:3000";
-		gameSocket = Socket.Connect(serverUrl);
+		//var serverUrl = "http://localhost:3000";
 
+		gameSocket = SocketManager.Instance.GetSocket (serverUrl);
+
+		if (gameSocket == null) {
+			Debug.Log ("SocketManager.Instance.GetSocket return null");
+			gameSocket = Socket.Connect (serverUrl);
+		} else {
+			gameSocket.enabled = true;
+			gameSocket.EmitJson ("", "");
+			Debug.Log ("socket.isConnected = " + gameSocket.IsConnected);
+			Debug.Log ("SocketManager.Instance.GetSocket return not null");
+			if (gameSocket.IsConnected) {
+				gamePlayController.isConnected = true;
+				gamePlayController.SetGameSocket(gameSocket);
+				JoinRoom();
+				gamePlayController.isConnected = true;
+			}
+		}
+			
 		gameSocket.On(SystemEvents.connect, () => {
 			Debug.Log("连接成功");
+			if (gamePlayController == null)
+				return;
 			gamePlayController.isConnected = true;
 			gamePlayController.SetGameSocket(gameSocket);
 			JoinRoom();
@@ -63,9 +96,13 @@ public class Connect : MonoBehaviour {
 		isConnecting = false;
 	}
 
+	public void disconnect() {
+		//Socket.Destroy (gameSocket);
+	}
+
 	void JoinRoom() {
 		var joinReq = new {
-			roomNo = gamePlayController.GenerateRoomNo(),
+			roomNo = roomNo,
 			userId = Player.Me.userId
 		};
 
@@ -81,5 +118,6 @@ public class Connect : MonoBehaviour {
 			gamePlayController.HandleResponse(resp);
 			timeLeft = retryTimeInterval;
 		});
+		Debug.Log ("after emitJson");
 	}
 }

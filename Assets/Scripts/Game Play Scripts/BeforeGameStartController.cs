@@ -20,6 +20,10 @@ public class BeforeGameStartController : BaseStateController {
 	private Button startButton;
 	[SerializeField]
 	private Button readyButton;
+	[SerializeField]
+	private Button dismissRoomBtn;
+	[SerializeField]
+	private Button leaveRoomBtn;
 
 	[SerializeField]
 	private Image card;
@@ -104,15 +108,9 @@ public class BeforeGameStartController : BaseStateController {
 					seats[i].playerPanel.transform.position = positions [i];
 				}
 
-				//循转之后，我总是坐在第一个位置
-				//Player.Me.seat = seats[0];
-				//seats [0].player = Player.Me;
-
 				foreach (Seat seat in seats) {
 					seat.UpdateUI (gamePlayerController.game);
 				}
-
-
 			}
 		} 
 	}
@@ -131,7 +129,6 @@ public class BeforeGameStartController : BaseStateController {
 				}
 			}
 		}
-		Debug.Log ("move to seat 0 index: " + seatIndex);
 		return seatIndex;
 	}
 
@@ -188,9 +185,6 @@ public class BeforeGameStartController : BaseStateController {
 		Debug.Log ("start game click");
 
 		Socket gameSocket = gamePlayerController.gameSocket;
-		if (gameSocket == null || !gameSocket.IsConnected) {
-			return;
-		}
 
 		//make start game request
 		var request = new {
@@ -210,25 +204,20 @@ public class BeforeGameStartController : BaseStateController {
 
 
 	private void HandleUser0Ready() {
-		//界面的元素全部还原，各个Controller全部Reset
 		readyButton.gameObject.SetActive(false);
-		//gamePlayerController.PrepareForNewRound();
 	}
 		
-		
-
 	public void SetSeatClick() {
 		foreach (Seat seat in seats) {
 			seat.sitdownButton.onClick.AddListener( SitDown );
 		}
 	}
 
-
 	public void SitDown() {
 		var game = gamePlayerController.game;
 		string seatName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
 
-		Debug.Log ("seat: " + seatName);
+		//Debug.Log ("seat: " + seatName);
 		int seatIndex = int.Parse(seatName[seatName.Length - 1] + "");
 
 		Socket socket = gamePlayerController.gameSocket;
@@ -248,6 +237,7 @@ public class BeforeGameStartController : BaseStateController {
 			}
 
 			//isSeat = true;
+			leaveRoomBtn.interactable = false;
 
 			standUpButton.interactable = true;
 			if (gamePlayerController.game.PlayerCount < 2) {
@@ -258,7 +248,7 @@ public class BeforeGameStartController : BaseStateController {
 
 			seats[seatIndex].player = Player.Me;
 			Player.Me.seat = seats[seatIndex];
-			Debug.Log("Player.Me.userId = " + Player.Me.userId);
+			//Debug.Log("Player.Me.userId = " + Player.Me.userId);
 
 			foreach(Seat seat in seats) {
 				seat.UpdateUI(gamePlayerController.game);
@@ -337,6 +327,9 @@ public class BeforeGameStartController : BaseStateController {
 				return;
 			}
 
+			if (Player.Me.userId != gamePlayerController.game.creater) {
+				leaveRoomBtn.interactable = true;
+			}
 			//isSeat = false;
 
 			Debug.Log("standup from seat: " + Player.Me.seat );
@@ -399,7 +392,7 @@ public class BeforeGameStartController : BaseStateController {
 		} else {
 			seats [seatIndex].readyImage.gameObject.SetActive (true);
 		}
-
-
 	}
+
+
 }

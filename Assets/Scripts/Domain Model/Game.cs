@@ -51,6 +51,7 @@ public class Game
 	public Round currentRound;
 	public int totalRoundCount;
 	public int currentRoundNo;
+	public string creater;
 
 	public Seat[] seats;
 	public Deck deck;
@@ -231,7 +232,7 @@ public class Game
 
 		Debug.Log ("state = " + state.value);
 		Debug.Log ("this.currentRoundNo = " + this.currentRoundNo);
-		Debug.Log ("roundLabel.text = " + this.roundLabel.text);
+		Debug.Log ("this.totalRoundCount = " + this.totalRoundCount);
 	}
 
 }

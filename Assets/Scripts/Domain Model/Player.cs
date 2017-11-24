@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 public class Player
 {
-	public static Player Me = new Player("jinjunhang");
+	public static Player Me = new Player("7654321");
 
 	public string headimgurl = "";
 	public string province = "";
@@ -23,7 +23,7 @@ public class Player
 			return _userId;
 		}
 		set {
-			Debug.Log ("Player userid change to [" + value + "]");
+			//Debug.Log ("Player userid change to [" + value + "]");
 			_userId = value;
 		}
 	}

@@ -53,6 +53,11 @@ public class SetupCardGame : BaseStateController {
 	[SerializeField]
 	private GameObject menuPanel;
 
+	[SerializeField]
+	private GameObject scorePanel;
+	[SerializeField]
+	private GameObject eachScorePanel;
+
 
 	public Seat[] seats;
 	public Deck deck;
@@ -65,6 +70,9 @@ public class SetupCardGame : BaseStateController {
 	public Vector3[] betLabelPositionsFo3Button;
 	public Vector3[] betLabelPositionsFor4Button;
 
+	[SerializeField]
+	private GameOverPanel gameOverPanel;
+
 	void Awake() {
 		CreateDeck ();
 		SeatSeatUIs ();
@@ -74,10 +82,18 @@ public class SetupCardGame : BaseStateController {
 		Create4BetsButtonPositions ();
 		Create3BetsButtonPositions ();
 
-		//把移动的庄家放在最上面一层
-		bankerSign.transform.SetAsLastSibling ();
+
 
 		SetMenu ();
+		SetGameOverPanel ();
+		//把移动的庄家放在最上面一层
+		bankerSign.transform.SetParent(userPanel.transform);
+		bankerSign.transform.SetAsLastSibling ();
+	}
+
+	private void SetGameOverPanel() {
+		//gameOverPanel = new GameOverPanel ();
+		gameOverPanel.Setup (scorePanel, eachScorePanel, userPanel);
 	}
 
 	public override GamePlayController GetGamePlayController ()
@@ -377,7 +393,7 @@ public class SetupCardGame : BaseStateController {
 			initialY = 95;
 			break;
 		case 5:
-			initialX = 330;
+			initialX = 300;
 			initialY = -70;
 			break;
 		}

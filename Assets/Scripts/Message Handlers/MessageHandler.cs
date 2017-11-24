@@ -34,14 +34,6 @@ public class MessageHandler<T, U> where T : BaseGameResponse
 		MethodInfo[] methods = controller.GetType ().GetMethods ();
 		for (int i = 0; i < methods.Length; i++) {
 			MethodInfo m = methods [i];
-			/*
-			if (m.Name == "HandleResponse") {
-				Debug.Log ( m.Name);
-				Debug.Log ( m.GetParameters ().Length);
-				if (m.GetParameters ().Length > 0)
-					Debug.Log (m.GetParameters () [0].ParameterType.Name);
-				Debug.Log ("------------------------------------------");
-			}*/
 			if (m.Name == "HandleResponse" &&
 			    m.GetParameters ().Length == 1 &&
 				m.GetParameters () [0].ParameterType.Name == typeof(T).Name) {

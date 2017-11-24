@@ -38,6 +38,7 @@ public class MusicController : MonoBehaviour {
 		AudioSource bgAudioSource = gameObject.AddComponent<AudioSource>();
 		bgAudioSource.clip = Resources.Load("sounds/GameSound") as AudioClip;
 		bgAudioSource.volume = 0.3f;
+		bgAudioSource.loop = true;
 		bgAudioSource.Play (); 
 	}
 

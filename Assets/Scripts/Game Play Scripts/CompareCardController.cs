@@ -18,6 +18,9 @@ public class CompareCardController : BaseStateController {
 	private WaitForNextRoundController waitForNextRoundController;
 
 	[SerializeField]
+	private GameOverController gameOverController;
+
+	[SerializeField]
 	private Button readyButton;
 
 	private Seat[] seats;
@@ -28,7 +31,7 @@ public class CompareCardController : BaseStateController {
 	private bool moveFromBanker;
 	private bool showScoreLabel;
 	private bool moveScoreLabel;
-	private bool allAnimCompleted;
+	public bool allAnimCompleted;
 	private bool[] hasPlayedTransmitCoin = new bool[Game.SeatCount];
 	private float moveTimeLeft;
 
@@ -78,6 +81,7 @@ public class CompareCardController : BaseStateController {
 	}
 
 	private void CompareCardAnimation() {
+		//Debug.Log ("isAllPlayerShowCardAnimCompleted: " +  checkCardController.isAllPlayerShowCardAnimCompleted);
 		if (checkCardController.isAllPlayerShowCardAnimCompleted) {
 
 			if (moveToBanker) {
@@ -159,8 +163,10 @@ public class CompareCardController : BaseStateController {
 
 	private void ShowScoreLabel(int index) {
 		Text scoreLabel = seats [index].scoreLabel;
+		//Debug.Log ("userId: " + seats [index].player.userId);
 		scoreLabel.text = gamePlayController.game.currentRound.resultDict [seats [index].player.userId] + "";
-		seats [index].playerScoreLabel.text = seats [index].player.score + "";
+		int score = seats [index].player.score;
+		seats [index].playerScoreLabel.text = score > 0 ? "+" + score : score + "";
 		scoreLabel.gameObject.SetActive (true);
 		Animator anim = scoreLabel.GetComponent<Animator> ();
 		StartCoroutine(ShowScoreLabel(scoreLabel, anim));
@@ -199,10 +205,15 @@ public class CompareCardController : BaseStateController {
 					gamePlayController.state = GameState.WaitForNextRound;
 					waitForNextRoundController.Reset ();
 				}
-			}
-			else
+			} else {
 				gamePlayController.state = GameState.GameOver;
+				if (gameOverController.isGetGameOverNotify) {
+					gameOverController.HandleGameOverResponse();
+				}
+			}
 			Debug.Log ("Go to " + gamePlayController.state.value);
+
+
 		}
 	}
 
@@ -245,8 +256,7 @@ public class CompareCardController : BaseStateController {
 			} 
 		}
 	}
-
-
+		
 	IEnumerator moveChip(Image image, Vector3 to, float waitTime, float step) {
 		yield return new WaitForSeconds (waitTime);
 		//Debug.Log ("waitTime = " + waitTime);
@@ -255,12 +265,19 @@ public class CompareCardController : BaseStateController {
 
 	public void HandleResponse(GoToCompareCardNotify notify) {
 		Game game = gamePlayController.game;
-		game.currentRound.resultDict = notify.resultDict;
 
-		moveToBanker = true;
 
+		Dictionary<string, int> scoreDict =	notify.scoreDict;
+		Dictionary<string, int> resultDict = notify.resultDict;
+
+		HandleCurrentRoundOver (resultDict, scoreDict); 
+	}
+
+	public void HandleCurrentRoundOver(Dictionary<string, int>  resultDict, Dictionary<string, int> scoreDict) {
+		var game = gamePlayController.game;
 		int count = 0;
-		foreach(var item in notify.resultDict) {
+		game.currentRound.resultDict = resultDict;
+		foreach(var item in resultDict) {
 			if (item.Value < 0 && item.Key != game.currentRound.banker) {
 				count++;
 			}
@@ -268,14 +285,14 @@ public class CompareCardController : BaseStateController {
 
 		moveChipFromOtheToBankerArray = new int[count];
 		int index = 0;
-		foreach(var item in notify.resultDict) {
+		foreach(var item in resultDict) {
 			if (item.Value < 0 && item.Key != game.currentRound.banker) {
 				moveChipFromOtheToBankerArray[index++] =  game.GetSeatIndex(item.Key);
 			}
 		}
-			
+
 		count = 0;
-		foreach(var item in notify.resultDict) {
+		foreach(var item in resultDict) {
 			if (item.Value > 0 && item.Key != game.currentRound.banker) {
 				count++;
 			}
@@ -283,7 +300,7 @@ public class CompareCardController : BaseStateController {
 
 		moveChipFromBankerToOtherArray = new int[count];
 		index = 0;
-		foreach(var item in notify.resultDict) {
+		foreach(var item in resultDict) {
 			if (item.Value > 0 && item.Key != game.currentRound.banker) {
 				moveChipFromBankerToOtherArray[index++] = game.GetSeatIndex(item.Key);
 			}
@@ -291,11 +308,12 @@ public class CompareCardController : BaseStateController {
 
 		var playingPlayers = game.PlayingPlayers;
 		for (int i = 0; i < playingPlayers.Count; i++) {
-			playingPlayers [i].score = notify.scoreDict [playingPlayers [i].userId];
+			playingPlayers [i].score = scoreDict [playingPlayers [i].userId];
 		}
 
 		game.HideStateLabel();
 		gamePlayController.state = GameState.CompareCard;
+		moveToBanker = true;
 	}
 
 }
