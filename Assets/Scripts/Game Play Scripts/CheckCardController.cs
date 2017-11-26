@@ -24,7 +24,7 @@ public class CheckCardController : BaseStateController {
 	private bool[] playerShowCardCompleted;
 	private bool[] isMoveCardArray;
 	private bool[] hasPlayedNiu = new bool[Game.SeatCount];
-	private bool hasShowCard = false;
+	//private bool hasShowCard = false;
 	private float stateTimeLeft; //这状态停留的时间
 
 	public void Awake() {
@@ -33,7 +33,7 @@ public class CheckCardController : BaseStateController {
 	}
 
 	public override void Reset() {
-		hasShowCard = false;
+	    // hasShowCard = false;
 		isMoveCardArray = new bool[Game.SeatCount];
 		playerShowCardCompleted = new bool[Game.SeatCount];
 		stateTimeLeft = Constants.MaxStateTimeLeft;
@@ -75,18 +75,18 @@ public class CheckCardController : BaseStateController {
 	public new void Update ()  {
 		base.Update ();
 		if (gamePlayController.state == GameState.CheckCard) {
+			
 			if (stateTimeLeft >= 0) {
 				gamePlayController.game.ShowStateLabel ("查看手牌: " + Mathf.Round(stateTimeLeft));
 				stateTimeLeft -= Time.deltaTime;
 			}
-		}
-			
-		if (gamePlayController.state == GameState.CheckCard && Player.Me.isPlaying && !hasShowCard) {
-			checkCardPanel.SetActive (true);
-		} else {
-			checkCardPanel.SetActive (false);
-		}
 
+			if (Player.Me.isPlaying && !Player.Me.hasShowCard && !checkCardPanel.gameObject.activeInHierarchy) {
+				checkCardPanel.gameObject.SetActive (true);
+				Debug.Log ("Show checkCardPanel");
+			}
+		}
+	
 		CheckCardAnimation ();
 	}
 
@@ -102,7 +102,7 @@ public class CheckCardController : BaseStateController {
 
 	public void SetUI() {
 		if (isMeShowCard ()) {
-			hasShowCard = true;
+			Player.Me.hasShowCard = true;
 		}
 		
 		var game = gamePlayController.game;
@@ -176,7 +176,7 @@ public class CheckCardController : BaseStateController {
 							MusicController.instance.Play ("niu" + round.niuArray [i], seats [i].player.sex);
 						}
 
-						gamePlayController.game.HideStateLabel ();
+						//gamePlayController.game.HideStateLabel ();
 						isMoveCardArray [i] = false;
 
 						var game = gamePlayController.game;
@@ -264,12 +264,14 @@ public class CheckCardController : BaseStateController {
 	}
 
 	private void HandleUser0ShowCardNotify(int niu, int[] cardSequences, int mutiple) {
+		checkCardPanel.gameObject.SetActive(false);
+
 		Round round = gamePlayController.game.currentRound;
 		round.niuArray[0] = niu;
 		round.cardSequenceArray[0] = cardSequences;
 		round.multipleArray[0] = mutiple;
 
-		hasShowCard = true;
+		Player.Me.hasShowCard = true;
 
 		//user1 亮牌
 		StartCoroutine(TurnUserCardsUp(0));
@@ -287,10 +289,6 @@ public class CheckCardController : BaseStateController {
 		};
 
 		gameSocket.EmitJson (Messages.ShowCard, JsonConvert.SerializeObject (request), (string msg) => {
-			Debug.Log("ShowCardAck: " + msg);
-
-			ShowCardAck notify = JsonConvert.DeserializeObject<ShowCardAck[]>(msg)[0];
-			HandleUser0ShowCardNotify(notify.niu, notify.cardSequences, notify.multiple);
 		});
 	}
 
@@ -298,7 +296,7 @@ public class CheckCardController : BaseStateController {
 		string[] cards = gamePlayController.game.currentRound.playerCardsDict[Player.Me.userId];
 		cards [4] = notify.card;
 
-		gamePlayController.game.HideStateLabel ();
+		//gamePlayController.game.HideStateLabel ();
 		gamePlayController.state = GameState.CheckCard;
 	}
 

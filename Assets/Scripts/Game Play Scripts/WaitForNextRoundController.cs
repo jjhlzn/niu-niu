@@ -20,12 +20,12 @@ public class WaitForNextRoundController : BaseStateController {
 	private Seat[] seats;
 
 	private float stateTimeLeft; //这状态停留的时间
-	public bool hasReady;
+	//public bool hasReady;
 
 	public void Init() {
 		seats = gamePlayerController.game.seats;
 		stateTimeLeft = Constants.MaxStateTimeLeft;
-		hasReady = false;
+		//hasReady = false;
 	}
 
 	/**
@@ -33,7 +33,7 @@ public class WaitForNextRoundController : BaseStateController {
 	 * */
 	public override void Reset() {
 		stateTimeLeft = Constants.MaxStateTimeLeft;
-		hasReady = false;
+		//hasReady = false;
 	}
 
 	public override GamePlayController GetGamePlayController ()
@@ -44,18 +44,20 @@ public class WaitForNextRoundController : BaseStateController {
 	// Update is called once per frame
 	public new void Update() {
 		if (gamePlayerController.state == GameState.WaitForNextRound) {
-			if (stateTimeLeft < 0) {
+			if (stateTimeLeft > 0) {
 				gamePlayerController.game.ShowStateLabel ("下一局游戏即将开始: " + Mathf.Round(stateTimeLeft));
 				stateTimeLeft -= Time.deltaTime;
 			}
+
+			var game = gamePlayerController.game;
+			if (Player.Me.isPlaying && !Player.Me.hasReady) {
+				readyButton.gameObject.SetActive (true);
+			} else {
+				readyButton.gameObject.SetActive (false);
+			}
 		}
 
-		var game = gamePlayerController.game;
-		if (game.state == GameState.WaitForNextRound && Player.Me.isPlaying && !hasReady) {
-			readyButton.gameObject.SetActive (true);
-		} else {
-			readyButton.gameObject.SetActive (false);
-		}
+
 
 	}
 
@@ -63,10 +65,11 @@ public class WaitForNextRoundController : BaseStateController {
 		var game = gamePlayerController.game;
 		//var round = game.currentRound;
 		int seatIndex = game.GetSeatIndex (Player.Me.userId);
-		if (seatIndex != -1 && game.seats[seatIndex].player.isReady) {
-			hasReady = true;
+		if (seatIndex != -1 && game.seats [seatIndex].player.isReady) {
+			Player.Me.hasReady = true;
+		} else {
+			Player.Me.hasReady = false;
 		}
-		hasReady = false;
 	}
 
 	public void SetUI() {
@@ -90,14 +93,6 @@ public class WaitForNextRoundController : BaseStateController {
 		};
 
 		gameSocket.EmitJson (Messages.Ready, JsonConvert.SerializeObject(request), (string msg) => {
-			//界面的元素全部还原，各个Controller全部Reset
-			hasReady = true;
-			readyButton.gameObject.SetActive(false);
-
-			gamePlayerController.game.UpdateGameInfos ();
-			gamePlayerController.game.seats[0].player.isReady = true;
-			gamePlayerController.game.seats[0].UpdateUI(gamePlayerController.game);
-			MusicController.instance.Play (AudioItem.Ready, seats [0].player.sex);
 		});  
 	}
 
@@ -106,11 +101,18 @@ public class WaitForNextRoundController : BaseStateController {
 		int seatIndex = gamePlayerController.game.GetSeatIndex (notify.userId);
 		seats [seatIndex].readyImage.gameObject.SetActive (true);
 		if (seats [seatIndex].player.userId == Player.Me.userId) {
-			return;
-		}
+			//界面的元素全部还原，各个Controller全部Reset
+			Player.Me.hasReady = true;
+			readyButton.gameObject.SetActive(false);
 
-		gamePlayerController.game.seats[seatIndex].player.isReady = true;
-		gamePlayerController.game.seats[seatIndex].UpdateUI(gamePlayerController.game);
-		MusicController.instance.Play (AudioItem.Ready, seats [seatIndex].player.sex);
+			gamePlayerController.game.UpdateGameInfos ();
+			gamePlayerController.game.seats[0].player.isReady = true;
+			gamePlayerController.game.seats[0].UpdateUI(gamePlayerController.game);
+			MusicController.instance.Play (AudioItem.Ready, seats [0].player.sex);
+		} else {
+			gamePlayerController.game.seats[seatIndex].player.isReady = true;
+			gamePlayerController.game.seats[seatIndex].UpdateUI(gamePlayerController.game);
+			MusicController.instance.Play (AudioItem.Ready, seats [seatIndex].player.sex);
+		}
 	}
 }

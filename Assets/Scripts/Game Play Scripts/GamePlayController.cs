@@ -136,6 +136,10 @@ public class GamePlayController : MonoBehaviour {
 			game.seats [i].Reset ();
 		}
 
+		var playingPalyers = game.PlayingPlayers;
+		foreach (var player in playingPalyers)
+			player.Reset ();
+
 		beforeGameStartController.Reset ();
 		firstDealerController.Reset ();
 		robBankerController.Reset ();

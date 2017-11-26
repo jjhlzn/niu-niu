@@ -102,6 +102,9 @@ public class SomePlayerBetNotify : BaseGameResponse {
 	public int bet;
 }
 
+public class BetAck : BaseGameResponse {
+}
+
 public class SomePlayerShowCardNotify : BaseGameResponse {
 	public string userId;
 	public string[] cards;

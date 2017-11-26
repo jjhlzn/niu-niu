@@ -25,6 +25,7 @@ public class FirstDealerController : BaseStateController {
 
 	private bool isFirstDealing;
 	public bool isFirstDealDone;
+	private List<Player> playingPlayers;
 
 
 	void Start () {
@@ -53,7 +54,7 @@ public class FirstDealerController : BaseStateController {
 	public new void Update ()  {
 		base.Update ();
 
-		if (gamePlayController.state.Equals (GameState.FirstDeal)) {
+		if (gamePlayController.state == GameState.FirstDeal && gamePlayController.game.IsStateLabelVisible()) {
 			gamePlayController.game.HideStateLabel ();
 		} 
 
@@ -67,7 +68,7 @@ public class FirstDealerController : BaseStateController {
 		var round = game.currentRound;
 		if (isFirstDealing && !beforeGameStartController.isMoveSeat) {
 			float waitTime = 0;
-			List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
+			//List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
 
 			for (int i = 0; i < playingPlayers.Count; i++) {
 				Player player = playingPlayers [i];
@@ -101,12 +102,10 @@ public class FirstDealerController : BaseStateController {
 		Debug.Log ("FirstDealController.SetUI() called");
 		var game = gamePlayController.game;
 		FirstDeal ();
-		List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
 		//Debug.Log ("playingPlayers.count = " + playingPlayers.Count);
 		for (int i = 0; i < playingPlayers.Count; i++) {
-
 			Player player = playingPlayers [i];
-			Debug.Log ("player.userId = " + player.userId);
+			//Debug.Log ("player.userId = " + player.userId);
 			Image[] cards = player.seat.cards;
 			Vector3[] targetCardPositions = player.seat.cardPositions;
 			for (int j = 0; j < 4; j++) {
@@ -180,10 +179,10 @@ public class FirstDealerController : BaseStateController {
 	}
 
 	private void FirstDeal() {
-		List<Player> players = gamePlayController.game.PlayingPlayers;
-
-		for (int i = 0; i < players.Count; i++) {
-			FirstDeal (players[i]);
+		//List<Player> players = gamePlayController.game.PlayingPlayers;
+		playingPlayers = gamePlayController.game.PlayingPlayers;
+		for (int i = 0; i < playingPlayers.Count; i++) {
+			FirstDeal (playingPlayers[i]);
 		}
 	}
 

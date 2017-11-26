@@ -20,10 +20,10 @@ public class RobBankerController : BaseStateController {
 	private Seat[] seats;
 
 	private float stateTimeLeft; //这状态停留的时间
-	private bool hasRobBanker = false; 
+	//private bool hasRobBanker = false; 
 
 	public override void Reset() {
-		hasRobBanker = false;
+		//hasRobBanker = false;
 		stateTimeLeft = Constants.MaxStateTimeLeft;
 	}
 
@@ -49,13 +49,12 @@ public class RobBankerController : BaseStateController {
 				gamePlayerController.game.ShowStateLabel ("抢庄: " + Mathf.Round (stateTimeLeft));
 				stateTimeLeft -= Time.deltaTime;
 			}
+
+			if (Player.Me.isPlaying && !Player.Me.hasRobBanker && !robRankerPanel.gameObject.activeInHierarchy) {
+				robRankerPanel.gameObject.SetActive (true);
+			}
 		}
 			
-		if (gamePlayerController.state == GameState.RobBanker && Player.Me.isPlaying && !hasRobBanker) {
-			robRankerPanel.gameObject.SetActive (true);
-		} else {
-			robRankerPanel.gameObject.SetActive (false);
-		}
 	}
 
 	private bool IsMeRobed() {
@@ -71,8 +70,8 @@ public class RobBankerController : BaseStateController {
 		var game = gamePlayerController.game;
 
 		if (IsMeRobed()) {
-			hasRobBanker = true;
-			//robRankerPanel.gameObject.SetActive (false);
+			Player.Me.hasRobBanker = true;
+			robRankerPanel.gameObject.SetActive (false);
 		} 
 
 		foreach (KeyValuePair<string, bool> pair in game.currentRound.robBankerDict) {
@@ -94,7 +93,8 @@ public class RobBankerController : BaseStateController {
 	}
 
 	private void HandleSeat0RobBanker(bool isRob) {
-		hasRobBanker = true;
+		robRankerPanel.gameObject.SetActive (false);
+		Player.Me.hasRobBanker = true;
 		seats[0].isRobImage.gameObject.SetActive(true);
 		if (isRob) {
 			seats[0].isRobImage.sprite = robSprite;
@@ -106,6 +106,7 @@ public class RobBankerController : BaseStateController {
 	}
 
 	private void HandleOtherSeatRobBanker(int seatIndex, bool isRob) {
+		seats [seatIndex].player.hasRobBanker = true;
 		seats[seatIndex].isRobImage.gameObject.SetActive(true);
 		if (isRob) {
 			seats[seatIndex].isRobImage.sprite = robSprite;
@@ -129,7 +130,6 @@ public class RobBankerController : BaseStateController {
 		};
 
 		gamePlayerController.gameSocket.EmitJson (Messages.RobBanker, JsonConvert.SerializeObject (robReq), (string msg) => {
-			HandleSeat0RobBanker(isRob);
 		});
 	}
 		
@@ -143,7 +143,7 @@ public class RobBankerController : BaseStateController {
 			}
 
 			if (seatIndex == 0) {
-				//HandleSeat0RobBanker (notify.isRob);
+				HandleSeat0RobBanker(notify.isRob);
 				return;
 			} else {
 				HandleOtherSeatRobBanker (seatIndex, notify.isRob);

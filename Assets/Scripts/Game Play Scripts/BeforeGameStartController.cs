@@ -77,15 +77,9 @@ public class BeforeGameStartController : BaseStateController {
 	public new void Update ()  {
 		base.Update ();
 
-		if (!gamePlayerController.isInited) {
-			return;
-		}
-
 		if (gamePlayerController.state == GameState.BeforeStart) {
 			gamePlayerController.game.ShowStateLabel ("等待其他玩家加入...");
-		} else {
-			standUpButton.interactable = false;
-		}
+		} 
 			
 		if (isMoveSeat) {
 			

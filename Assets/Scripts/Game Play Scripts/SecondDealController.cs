@@ -101,7 +101,8 @@ public class SecondDealController : BaseStateController {
 			}
 
 			//判断最后一张牌是否已经发好
-			if (Utils.isTwoPositionIsEqual (playingPlayers [playingPlayers.Count - 1].seat.cards [4].transform.position, playingPlayers [playingPlayers.Count - 1].seat.cardPositions [4])) {
+			if (Utils.isTwoPositionIsEqual (playingPlayers [playingPlayers.Count - 1].seat.cards [4].transform.position, 
+					playingPlayers [playingPlayers.Count - 1].seat.cardPositions [4])) {
 				StartCoroutine (GoToNextState ());
 				isSecondDealing = false;
 				isSecondDealDone = true;
@@ -135,7 +136,6 @@ public class SecondDealController : BaseStateController {
 		yield return new WaitForSeconds (.4f);
 		if (gamePlayController.state == GameState.SecondDeal)
 			gamePlayController.state = GameState.CheckCard;
-
 	}
 
 	private void SecondDeal() {
@@ -162,14 +162,6 @@ public class SecondDealController : BaseStateController {
 		SecondDeal ();
 		gamePlayController.state = GameState.SecondDeal;
 
-		/*
-		if (betController.IsAllBetCompleted) {
-			
-		} else {
-			canSecondDeal = true;
-		}*/
 		isSecondDealing = true;
 	}
-
-
 }

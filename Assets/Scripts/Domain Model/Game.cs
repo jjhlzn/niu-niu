@@ -163,14 +163,22 @@ public class Game
 	}
 
 	public void ShowStateLabel(string msg) {
+		if (this.gameStateLabel.gameObject.activeInHierarchy && this.gameStateLabel.text.Equals(msg))
+			return;
 		this.gameStateLabel.text = msg;
 		this.gameStateLabel.gameObject.SetActive (true);
 		this.gameStateLabelBackground.gameObject.SetActive (true);
+		Debug.Log (state.value+ ": ShowStateLabel, msgs = " + msg);
 	}
 
 	public void HideStateLabel() {
 		this.gameStateLabel.gameObject.SetActive (false);
 		this.gameStateLabelBackground.gameObject.SetActive (false);
+		Debug.Log (state.value+ ": hideStateLabel");
+	}
+
+	public bool IsStateLabelVisible() {
+		return this.gameStateLabel.gameObject.activeInHierarchy;
 	}
 
 	public Sprite getNiuSprite(int niu) {

@@ -34,6 +34,13 @@ public class Player
 
 	public Seat seat;  //座位的索引号，
 	public int score;
+
+
+	public bool hasRobBanker;
+	public bool hasBet;
+	public bool hasShowCard;
+	public bool hasReady;
+
 	public Image[] cards {
 		get {
 			return seat.cards;
@@ -52,6 +59,13 @@ public class Player
 	public Player(string userId, String nickName, string imageUrl) : this(userId) {
 		this.nickname = nickName;
 		this.headimgurl = imageUrl;
+	}
+
+	public void Reset() {
+		hasRobBanker = false;
+		hasBet = false;
+		hasShowCard = false;
+		hasReady = false;
 	}
 
 	public void Sit(Seat seat) {

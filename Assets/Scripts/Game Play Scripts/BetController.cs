@@ -20,7 +20,7 @@ public class BetController : BaseStateController {
 
 	private bool[] isMoveChipArray;
 	private bool[] isBetCompletedArray;
-	private bool hasBet = false;
+	//private bool hasBet = false;
 	private float stateTimeLeft; //这状态停留的时间
 	private float animationTime = 1f;
 
@@ -50,7 +50,7 @@ public class BetController : BaseStateController {
 	}
 
 	public override void Reset() {
-		hasBet = false;
+		//hasBet = false;
 		isMoveChipArray = new bool[Game.SeatCount];
 		isBetCompletedArray = new bool[Game.SeatCount];
 		stateTimeLeft = Constants.MaxStateTimeLeft - animationTime;
@@ -70,19 +70,14 @@ public class BetController : BaseStateController {
 				gamePlayController.game.ShowStateLabel ("请选择下注分数: " + Mathf.Round (stateTimeLeft));
 				stateTimeLeft -= Time.deltaTime;
 			}
+
+			if (   Player.Me.isPlaying
+				&& !Player.Me.hasBet
+				&& gamePlayController.game.currentRound.banker != gamePlayController.game.PlayingPlayers [0].userId) {
+				gamePlayController.game.ShowBetButtons ();
+			} 
 		} 
-
-		if ( Player.Me.isPlaying
-			&& gamePlayController.state == GameState.Bet 
-			&& !hasBet 
-			&& gamePlayController.game.currentRound.banker != gamePlayController.game.PlayingPlayers [0].userId) {
-
-			gamePlayController.game.ShowBetButtons ();
-		} else {
-			gamePlayController.game.HideBetButtons ();
-		}
-
-
+			
 		BetAnimation ();
 	}
 
@@ -101,8 +96,6 @@ public class BetController : BaseStateController {
 				seats[i].chipCountLabel.gameObject.SetActive (true);
 				isBetCompletedArray [i] = true;
 			} 
-
-
 		}
 	}
 		
@@ -110,7 +103,8 @@ public class BetController : BaseStateController {
 	private void BetAnimation() {
 		for (int i = 0; i < Game.SeatCount; i++) {
 			if (isMoveChipArray [i]) {
-				seats[i].chipImageForBet.gameObject.SetActive (true);
+				if (!seats[i].chipImageForBet.gameObject.activeInHierarchy)
+					seats[i].chipImageForBet.gameObject.SetActive (true);
 
 				Vector3 targetPosition = seats[i].chipPositionWhenBet;
 				float step = 0;
@@ -131,11 +125,9 @@ public class BetController : BaseStateController {
 					isBetCompletedArray [i] = true;
 
 					if (gamePlayController.state == GameState.Bet) {
-						//if (IsAllBetCompleted && secondDealController.canSecondDeal) {
 						if (IsAllBetCompleted) {
 							Debug.Log ("In BetControoler: change to SecondSeal state");
 							gamePlayController.game.HideStateLabel ();
-							//gamePlayController.state = GameState.SecondDeal;
 						}
 					}
 				}
@@ -144,10 +136,11 @@ public class BetController : BaseStateController {
 	}
 
 	private void HandleUser0BetNotify(int bet) {
-		
-		hasBet = true;
+		gamePlayController.game.HideBetButtons ();
+		Player.Me.hasBet = true;
 		gamePlayController.game.currentRound.playerBets[0] = bet;
 		isMoveChipArray[0] = true;
+		MusicController.instance.Play (AudioItem.Bet, seats [0].player.sex);
 	}
 
 	public void SetBetClick(Button[] buttons) {
@@ -175,8 +168,6 @@ public class BetController : BaseStateController {
 		};
 
 		socket.EmitJson (Messages.Bet, JsonConvert.SerializeObject(req), (string msg) => {
-			HandleUser0BetNotify(mybet);
-			MusicController.instance.Play (AudioItem.Bet, seats [0].player.sex);
 		}); 
 
 	}
@@ -184,10 +175,6 @@ public class BetController : BaseStateController {
 	public void HandleResponse(SomePlayerBetNotify notify) {
 		Game game = gamePlayController.game;
 		int index = game.GetSeatIndex (notify.userId);
-
-		if (notify.userId == Player.Me.userId) {
-			return;
-		}
 
 		if (index == 0) {
 			HandleUser0BetNotify (notify.bet);

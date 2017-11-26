@@ -31,6 +31,7 @@ public class CompareCardController : BaseStateController {
 	private bool moveFromBanker;
 	private bool showScoreLabel;
 	private bool moveScoreLabel;
+	private bool hasSetAfterAllAnimCompleted;
 	public bool allAnimCompleted;
 	private bool[] hasPlayedTransmitCoin = new bool[Game.SeatCount];
 	private float moveTimeLeft;
@@ -47,6 +48,7 @@ public class CompareCardController : BaseStateController {
 		showScoreLabel = false;
 		moveScoreLabel = false;
 		allAnimCompleted = false;
+		hasSetAfterAllAnimCompleted = false;
 		for (int i = 0; i < Game.SeatCount; i++) {
 			hasPlayedTransmitCoin [i] = false;
 		}
@@ -71,21 +73,19 @@ public class CompareCardController : BaseStateController {
 
 	// Update is called once per frame
 	public new void Update ()  {
+		
 		base.Update ();
-
-		if (gamePlayController.state == GameState.CompareCard ) {
+		if (gamePlayController.state == GameState.CompareCard) {
 			gamePlayController.game.ShowStateLabel ("比牌中...");
 		}
-
 		CompareCardAnimation ();
 	}
 
 	private void CompareCardAnimation() {
-		//Debug.Log ("isAllPlayerShowCardAnimCompleted: " +  checkCardController.isAllPlayerShowCardAnimCompleted);
 		if (checkCardController.isAllPlayerShowCardAnimCompleted) {
-
+			//Debug.Log ("CompareCardAnimation Start");
 			if (moveToBanker) {
-
+				
 				if (moveChipFromOtheToBankerArray.Length == 0) {
 					//moveToBanker结束
 					moveTimeLeft = MoveTime;
@@ -150,6 +150,24 @@ public class CompareCardController : BaseStateController {
 			if (moveScoreLabel) {
 				MoveScoreLabels ();
 			}
+
+			if (allAnimCompleted && !hasSetAfterAllAnimCompleted) {
+				hasSetAfterAllAnimCompleted = true;
+				if (gamePlayController.game.HasNextRound ()) {
+					if (gamePlayController.state == GameState.CompareCard) {
+						gamePlayController.state = GameState.WaitForNextRound;
+						waitForNextRoundController.Reset ();
+					}
+				} else {
+					gamePlayController.state = GameState.GameOver;
+					if (gameOverController.isGetGameOverNotify) {
+						gameOverController.HandleGameOverResponse ();
+					}
+				}
+				gamePlayController.game.HideStateLabel ();
+				Debug.Log ("Go to " + gamePlayController.state.value);
+			}
+			//Debug.Log ("CompareCardAnimation End");
 		} 
 	}
 
@@ -199,22 +217,6 @@ public class CompareCardController : BaseStateController {
 			readyButton.gameObject.SetActive (true);
 			moveScoreLabel = false;
 			allAnimCompleted = true;
-			gamePlayController.game.HideStateLabel ();
-
-			if (gamePlayController.game.HasNextRound ()) {
-				if (gamePlayController.state == GameState.CompareCard) {
-					gamePlayController.state = GameState.WaitForNextRound;
-					waitForNextRoundController.Reset ();
-				}
-			} else {
-				gamePlayController.state = GameState.GameOver;
-				if (gameOverController.isGetGameOverNotify) {
-					gameOverController.HandleGameOverResponse();
-				}
-			}
-			Debug.Log ("Go to " + gamePlayController.state.value);
-
-
 		}
 	}
 
@@ -312,7 +314,7 @@ public class CompareCardController : BaseStateController {
 			playingPlayers [i].score = scoreDict [playingPlayers [i].userId];
 		}
 
-		game.HideStateLabel();
+		//game.HideStateLabel();
 		gamePlayController.state = GameState.CompareCard;
 		moveToBanker = true;
 	}
