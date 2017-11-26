@@ -61,18 +61,14 @@ public class FirstDealerController : BaseStateController {
 		FirstDealAnimation ();
 	}
 
-
-
 	private void FirstDealAnimation() {
 		var game = gamePlayController.game;
 		var round = game.currentRound;
 		if (isFirstDealing && !beforeGameStartController.isMoveSeat) {
 			float waitTime = 0;
-			//List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
 
 			for (int i = 0; i < playingPlayers.Count; i++) {
 				Player player = playingPlayers [i];
-				//Debug.Log ("player: " + player.userId + " sit on seats: " + player.seat.seatIndex);
 				FirstGiveCardsAnimation (player, waitTime);
 
 				//每个成员之间加入一个延时
@@ -83,7 +79,6 @@ public class FirstDealerController : BaseStateController {
 			//判断最后一张牌是否已经发好
 			if (Utils.isTwoPositionIsEqual(playingPlayers[playingPlayers.Count - 1].seat.cards[3].transform.position, 
 				playingPlayers[playingPlayers.Count - 1].seat.cardPositions[3])) {
-				//Debug.Log ("Player.Me.isPlaying = " + Player.Me.isPlaying);
 				if (Player.Me.isPlaying) {
 					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [0], round.playerCardsDict[Player.Me.userId] [0]));
 					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [1], round.playerCardsDict[Player.Me.userId] [1]));
@@ -99,39 +94,33 @@ public class FirstDealerController : BaseStateController {
 	}
 
 	public void SetUI() {
-		Debug.Log ("FirstDealController.SetUI() called");
 		var game = gamePlayController.game;
 		FirstDeal ();
-		//Debug.Log ("playingPlayers.count = " + playingPlayers.Count);
 		for (int i = 0; i < playingPlayers.Count; i++) {
 			Player player = playingPlayers [i];
-			//Debug.Log ("player.userId = " + player.userId);
 			Image[] cards = player.seat.cards;
 			Vector3[] targetCardPositions = player.seat.cardPositions;
 			for (int j = 0; j < 4; j++) {
 				Vector3 targetCard = targetCardPositions [j];
 				cards [j].transform.position = targetCard;
-				if (i == 0) {
+				if (i == 0 && player.userId == Player.Me.userId) {
 					Vector3 localScale = new Vector3 ();
 					localScale.x = user0CardScale;
 					localScale.y = user0CardScale;
 					cards [j].transform.localScale = localScale;
-					if (game.currentRound.playerCardsDict.ContainsKey(player.userId))
-						cards [j].sprite = deck.GetCardFaceImage (game.currentRound.playerCardsDict[player.userId][j]);
+					Debug.Log ("game.currentRound.playerCardsDict.ContainsKey ("+player.userId+"): " + game.currentRound.playerCardsDict.ContainsKey (player.userId));
+					if (game.currentRound.playerCardsDict.ContainsKey (player.userId)) {
+						cards [j].sprite = deck.GetCardFaceImage (game.currentRound.playerCardsDict [player.userId] [j]);
+						Debug.Log ("Set My Card " + j + "th sprite, card is " + cards[j]);
+					}
 				}
 
 				cards [j].gameObject.SetActive (true);
 			}
-
-
 		}
 		isFirstDealDone = true;
 	}
-
-	/**
-	 * 发4张牌给指定的玩家的动画
-	 * */
-
+		
 	private void FirstGiveCardsAnimation(Player player, float waitTime) {
 		float step = dealSpeed * Time.deltaTime;
 		Image[] cards = player.seat.cards;
@@ -144,9 +133,7 @@ public class FirstDealerController : BaseStateController {
 	}
 
 	IEnumerator GiveCardAnimation(Player player, Image card, Vector3 targetCard, float step, float waitTime) {
-
 		yield return new WaitForSeconds (waitTime);
-
 		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
 		if (player.seat.seatIndex == 0) {
 			Vector3 localScale = new Vector3 ();
@@ -155,31 +142,25 @@ public class FirstDealerController : BaseStateController {
 			card.transform.localScale = localScale;
 		}
 	}
-
-
-
+		
 	IEnumerator TurnCardUp(Image card, string cardValue) {
 		if (!string.IsNullOrEmpty (cardValue)) {
 			Animator anim = card.GetComponent<Animator> ();
 			anim.Play ("TurnUp");
 			yield return new WaitForSeconds (turnUpTime);
 			card.sprite = deck.GetCardFaceImage (cardValue);
-
 			anim.Play ("TurnBackNow2");
 		}
 	    yield return new WaitForSeconds (turnUpTime);
 	}
-
-
+		
 	IEnumerator GoToNextState() {
 		yield return new WaitForSeconds (.3f);
-
 		if (gamePlayController.state == GameState.FirstDeal)
 			gamePlayController.state = GameState.RobBanker;
 	}
 
 	private void FirstDeal() {
-		//List<Player> players = gamePlayController.game.PlayingPlayers;
 		playingPlayers = gamePlayController.game.PlayingPlayers;
 		for (int i = 0; i < playingPlayers.Count; i++) {
 			FirstDeal (playingPlayers[i]);
@@ -206,7 +187,6 @@ public class FirstDealerController : BaseStateController {
 	public void HandleResponse(StartGameNotify notify) {
 		Dictionary<string, string[]> cardsDict = notify.cardsDict;
 		Dictionary<string, int[]> betsDict = notify.betsDict;
-
 		HandleResponse (cardsDict, betsDict);
 	}
 		

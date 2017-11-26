@@ -168,13 +168,13 @@ public class Game
 		this.gameStateLabel.text = msg;
 		this.gameStateLabel.gameObject.SetActive (true);
 		this.gameStateLabelBackground.gameObject.SetActive (true);
-		Debug.Log (state.value+ ": ShowStateLabel, msgs = " + msg);
+		//Debug.Log (state.value+ ": ShowStateLabel, msgs = " + msg);
 	}
 
 	public void HideStateLabel() {
 		this.gameStateLabel.gameObject.SetActive (false);
 		this.gameStateLabelBackground.gameObject.SetActive (false);
-		Debug.Log (state.value+ ": hideStateLabel");
+		//Debug.Log (state.value+ ": hideStateLabel");
 	}
 
 	public bool IsStateLabelVisible() {
