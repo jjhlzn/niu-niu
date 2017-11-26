@@ -39,7 +39,7 @@ public class MusicController : MonoBehaviour {
 		bgAudioSource.clip = Resources.Load("sounds/GameSound") as AudioClip;
 		bgAudioSource.volume = 0.3f;
 		bgAudioSource.loop = true;
-		bgAudioSource.Play (); 
+		//bgAudioSource.Play (); 
 	}
 
 	public void Play(string audioName, int sex) {

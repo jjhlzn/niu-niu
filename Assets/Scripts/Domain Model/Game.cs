@@ -217,6 +217,8 @@ public class Game
 	}
 
 	public void HideBetButtons() {
+		if (!betButtons [0].gameObject.activeInHierarchy)
+			return;
 		for(int i = 0; i < betButtons.Length; i++) {
 			betButtons[i].gameObject.SetActive (false);
 			betLabels[i].gameObject.SetActive (false);

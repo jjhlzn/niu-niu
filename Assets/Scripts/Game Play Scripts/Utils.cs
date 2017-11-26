@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class Utils
 {
+	public static string Message_Key = "message";
+
 	public Utils ()
 	{
 	}
@@ -16,6 +18,12 @@ public class Utils
 		float deltaY = Mathf.Abs(v1.y - v2.y);
 		//Debug.Log ("deltaX = " + deltaX + ", deltaY = " + deltaY);
 		return deltaX < 0.000001f && deltaY  < 0.000001f; 
+	}
+
+	public static string GetNumberSring(int number) {
+		if (number > 0)
+			return "+" + number;
+		return "" + number;
 	}
 }
 

@@ -71,8 +71,12 @@ public class GoToCheckCardNotify : BaseGameResponse {
 }
 
 public class SomePlayerSitDownNotify : BaseGameResponse {
-	public string seat;
-	public string userId;
+	public string seat = "";
+	public string userId = "";
+	public string headImageUrl = "";
+	public string nickName = "";
+	public int sex = 1;
+	public string ip = "";
 }
 
 public class SomePlayerStandUpNotify : BaseGameResponse {
@@ -126,6 +130,7 @@ public class ShowCardResult {
 }
 
 public class JoinRoomResponse : BaseGameResponse {
+	public string creater;
 	public string state;
 	public string banker;
 	public int totalRoundCount;

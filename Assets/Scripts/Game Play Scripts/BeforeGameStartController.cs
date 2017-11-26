@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using socket.io;
+using cn.sharesdk.unity3d;
 using Newtonsoft.Json;
 
 public class BeforeGameStartController : BaseStateController {
@@ -21,9 +22,15 @@ public class BeforeGameStartController : BaseStateController {
 	[SerializeField]
 	private Button readyButton;
 	[SerializeField]
+	private Button shareButton;
+	[SerializeField]
 	private Button dismissRoomBtn;
 	[SerializeField]
 	private Button leaveRoomBtn;
+
+	[SerializeField]
+	private ShareSDK ssdk;
+
 
 	[SerializeField]
 	private Image card;
@@ -40,6 +47,8 @@ public class BeforeGameStartController : BaseStateController {
 
 	// Use this for initialization
 	void Start () {
+		ssdk.shareHandler = ShareResultHandler;
+
 		seats = gamePlayerController.game.seats;
 
 		positions = new Vector3[seats.Length];
@@ -78,7 +87,6 @@ public class BeforeGameStartController : BaseStateController {
 			standUpButton.interactable = false;
 		}
 			
-
 		if (isMoveSeat) {
 			
 			float step = moveSeatSpeed * Time.deltaTime;
@@ -164,19 +172,37 @@ public class BeforeGameStartController : BaseStateController {
 
 		if (game.state == GameState.BeforeStart) {
 			startButton.gameObject.SetActive (true);
+			shareButton.gameObject.SetActive (true);
 			if (Player.Me.isPlaying)
 				standUpButton.interactable = true;
 			else
 				standUpButton.interactable = false;
+
+			//房主不能离开房间
+			if (game.creater == Player.Me.userId)
+				leaveRoomBtn.interactable = false;
+			else
+				leaveRoomBtn.interactable = true;
+
+			if (Player.Me.seat != null)
+				leaveRoomBtn.interactable = false;
 		} else {
 			startButton.gameObject.SetActive (false);
+			shareButton.gameObject.SetActive (false);
+			dismissRoomBtn.interactable = false;
+			leaveRoomBtn.interactable = false;
 			standUpButton.interactable = false;
 		}
+			
 
 		if (game.state == GameState.WaitForNextRound) {
 			readyButton.gameObject.SetActive (true);
 		} else {
 			readyButton.gameObject.SetActive (false);
+		}
+
+		if (Player.Me.userId != game.creater) {
+			startButton.gameObject.SetActive (false);
 		}
 	}
 
@@ -198,6 +224,9 @@ public class BeforeGameStartController : BaseStateController {
 			}
 
 			startButton.gameObject.SetActive(false);
+			shareButton.gameObject.SetActive(false);
+			leaveRoomBtn.interactable = false;
+			dismissRoomBtn.interactable = false;
 			standUpButton.interactable = false;
 		}); 
 	}
@@ -330,7 +359,8 @@ public class BeforeGameStartController : BaseStateController {
 			if (Player.Me.userId != gamePlayerController.game.creater) {
 				leaveRoomBtn.interactable = true;
 			}
-			//isSeat = false;
+
+			standUpButton.interactable = false;
 
 			Debug.Log("standup from seat: " + Player.Me.seat );
 
@@ -340,6 +370,57 @@ public class BeforeGameStartController : BaseStateController {
 				seat.UpdateUI(gamePlayerController.game);
 			}
 		});
+
+		setUpGameController.CloseMenuClick ();
+	}
+
+	public void ShareClick() {
+		Debug.Log ("Share Click");
+		var game = gamePlayerController.game;
+		ShareContent content = new ShareContent();
+
+
+		//content.SetImageUrl("https://f1.webshare.mob.com/code/demo/img/1.jpg");
+		content.SetTitle("房间【" + game.roomNo + "】");
+		content.SetText("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
+		content.SetImageUrl("https://f1.webshare.mob.com/code/demo/img/1.jpg");
+		content.SetUrl("http://www.mob.com");
+		content.SetUrlDescription("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
+		content.SetDesc ("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
+
+		content.SetShareType (ContentType.Webpage);
+		ssdk.ShareContent (PlatformType.WechatPlatform, content);
+	
+	}
+
+	public void ShareImageClick() {
+		Debug.Log ("Share Click");
+		ScreenCapture.CaptureScreenshot("zhanji.png");
+		var game = gamePlayerController.game;
+		ShareContent content = new ShareContent();
+		//content.SetText("房间【" + game.roomNo + "】");
+		content.SetImagePath(Application.persistentDataPath + "/zhanji.png");
+		content.SetShareType(ContentType.Image);
+		ssdk.ShareContent (PlatformType.WeChat, content);
+
+	}
+
+
+	void ShareResultHandler (int reqID, ResponseState state, PlatformType type, Hashtable result)
+	{
+		if (state == ResponseState.Success)
+		{
+			print ("share result :");
+			print (MiniJSON.jsonEncode(result));
+		}
+		else if (state == ResponseState.Fail)
+		{
+			print ("fail! throwable stack = " + result["stack"] + "; error msg = " + result["msg"]);
+		}
+		else if (state == ResponseState.Cancel) 
+		{
+			print ("cancel !");
+		}
 	}
 
 
@@ -352,6 +433,10 @@ public class BeforeGameStartController : BaseStateController {
 				if (notify.userId == Player.Me.userId)
 					player = Player.Me;
 				player.userId = notify.userId;
+				player.headimgurl = notify.headImageUrl;
+				player.nickname = notify.nickName;
+				player.sex = notify.sex;
+				player.ip = notify.ip;
 				player.seat = seat;
 				seat.player = player;
 				seat.UpdateUI(gamePlayerController.game);
@@ -393,6 +478,4 @@ public class BeforeGameStartController : BaseStateController {
 			seats [seatIndex].readyImage.gameObject.SetActive (true);
 		}
 	}
-
-
 }

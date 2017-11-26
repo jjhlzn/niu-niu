@@ -38,7 +38,7 @@ public class Connect : MonoBehaviour {
 
 	private void SetServerUrlAndRoomNo() {
 		Dictionary<string, string> parameters = Scenes.getSceneParameters ();
-	    serverUrl = "http://localhost:3000";
+		serverUrl = ServerUtils.protocol + "://" + ServerUtils.mainServer + ":" + ServerUtils.port;
 	    roomNo = "123456";
 		if (parameters != null) {
 			serverUrl = parameters ["serverUrl"];

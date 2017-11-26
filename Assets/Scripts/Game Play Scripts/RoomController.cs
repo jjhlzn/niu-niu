@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
@@ -24,10 +26,12 @@ public class RoomController : MonoBehaviour
 
 
 	public void DismissRoomSureClick() {
+		Debug.Log ("DismissRoomSureClick called");
 		var game = gamePlayController.game;
 		var socket = gamePlayController.gameSocket;
 
 		if (game.state != GameState.BeforeStart) {
+			Debug.Log ("state is not BeforeStart, state = " + game.state.value);
 			return;
 		}
 
@@ -36,18 +40,17 @@ public class RoomController : MonoBehaviour
 			roomNo = game.roomNo
 		};
 
-		socket.Emit (Messages.DismissRoom, JsonConvert.SerializeObject (req), (string msg) => {
+		socket.EmitJson (Messages.DismissRoom, JsonConvert.SerializeObject (req), (string msg) => {
 
 			Debug.Log("DismissRoomAck: " + msg);
 			DismissRoomResponse resp = JsonConvert.DeserializeObject<DismissRoomResponse[]>(msg)[0];
 			if (resp.status != 0)
 				return;
 
-			if (resp.roomNo != game.roomNo) {
-				return;
-			}
 			//处理
-			Scenes.Load ("MainPage");
+			Dictionary<string, string> parameters = new Dictionary<string, string> ();
+			//parameters[Utils.Message_Key] = "该房间已经被解散了";
+			Scenes.Load ("MainPage", parameters);
 		});
 	}
 
@@ -57,23 +60,28 @@ public class RoomController : MonoBehaviour
 
 	//目前房主不能离开房间，房主只能解散房间，游戏开始之后就不能离开房间
 	public void LeaveRoomClick() {
+		Debug.Log ("Leave Room Click");
+
 		var game = gamePlayController.game;
 		var socket = gamePlayController.gameSocket;
 
 		if (game.state != GameState.BeforeStart || Player.Me.userId == game.creater) {
+			Debug.Log("game.state is not BeforeStart or I am room ceater, can't leave room");
 			return;
 		}
 
 		//检查用户是否坐下座位上
-		if (Player.Me.seat == null)
+		if (Player.Me.seat != null) {
+			Debug.Log("Player.Me.seat is not null, can't leave room");
 			return;
+		}
 
 		var req = new {
 			userId = Player.Me.userId,
 			roomNo = game.roomNo
 		};
 
-		socket.Emit (Messages.LeaveRoom, JsonConvert.SerializeObject (req), (string msg) => {
+		socket.EmitJson (Messages.LeaveRoom, JsonConvert.SerializeObject (req), (string msg) => {
 			Debug.Log("LeaveRoomResponse: " + msg);
 			LeaveRoomResponse resp = JsonConvert.DeserializeObject<LeaveRoomResponse[]>(msg)[0];
 			if (resp.status != 0)
@@ -81,6 +89,25 @@ public class RoomController : MonoBehaviour
 
 			Scenes.Load("MainPage");
 		});
+
+		setupGame.CloseMenuClick ();
+	}
+
+	public void HandleResponse(DismissRoomResponse notify) {
+		var game = gamePlayController.game;
+		if (Player.Me.userId == game.creater) {
+			return;
+		}
+
+		if (game.roomNo == notify.roomNo) {
+
+			Dictionary<string, string> parameters = new Dictionary<string, string> ();
+			parameters[Utils.Message_Key] = "该房间已经被解散了";
+
+			//处理
+			Scenes.Load ("MainPage", parameters);
+		}
+
 	}
 }
 

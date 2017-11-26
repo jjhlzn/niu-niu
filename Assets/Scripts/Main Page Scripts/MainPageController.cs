@@ -17,6 +17,11 @@ public class MainPageController : MonoBehaviour {
 	[SerializeField]
 	private Image userImage;
 
+	[SerializeField]
+	private GameObject messagePanel;
+	[SerializeField]
+	private Text messageLabel;
+
 	// Use this for initialization
 	void Start () {
 		Player.Me = LoginController.CreateMockPlayer ();
@@ -25,12 +30,28 @@ public class MainPageController : MonoBehaviour {
 		idLabel.text = "ID: " + Player.Me.userId;
 		coinLabel.text = "1000";
 		StartCoroutine (LoadImage (Player.Me.headimgurl));
+
+		ImageLoader.instance.Load (Player.Me.headimgurl, (Sprite sprite) => {
+			userImage.sprite = sprite;
+			Player.Me.userHeadImage = userImage.sprite; 
+		});
+
 		CheckPlayerInGame ();
+		ShowMessageIfNeed ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
+	}
+
+	private void ShowMessageIfNeed() {
+		Dictionary<string, string> parameters = Scenes.getSceneParameters ();
+		if (parameters != null && parameters.ContainsKey (Utils.Message_Key)) {
+			string message = parameters [Utils.Message_Key];
+			messageLabel.text = message;
+			messageLabel.gameObject.SetActive (true);
+		}
 	}
 
 	public void CreateRoomClick() {
@@ -104,6 +125,11 @@ public class MainPageController : MonoBehaviour {
 			Debug.Log("Received: " + req.downloadHandler.text);
 			handle (req.downloadHandler.text);
 		}
+	}
+
+
+	public void MessagePanelSureButtonClick() {
+		messagePanel.gameObject.SetActive (false);
 	}
 }
 public delegate void ResponseHandle(string jsonString);

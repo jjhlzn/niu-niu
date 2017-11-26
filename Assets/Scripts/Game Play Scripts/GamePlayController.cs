@@ -71,32 +71,11 @@ public class GamePlayController : MonoBehaviour {
 	private ShareSDK ssdk;
 
 
-	public void ShareClick() {
-		/*
-		ShareContent content = new ShareContent();
-		content.SetText("this is a test string.");
-		content.SetImageUrl("https://f1.webshare.mob.com/code/demo/img/1.jpg");
-		content.SetTitle("test title");
-		content.SetTitleUrl("http://www.mob.com");
-		content.SetSite("Mob-ShareSDK");
-		content.SetSiteUrl("http://www.mob.com");
-		content.SetUrl("http://www.mob.com");
-		content.SetComment("test description");
-		content.SetMusicUrl("http://mp3.mwap8.com/destdir/Music/2009/20090601/ZuiXuanMinZuFeng20090601119.mp3");
-		content.SetShareType(ContentType.Webpage);
-
-		ssdk.ShareContent(PlatformType.WeChat, content);  // .ShowPlatformList(null, content, 100, 100);
-		*/
-
-	}
-
-
 
 	// Use this for initialization
 	void Start () {
 		Debug.Log ("GamePlayController Start");
 		game = new Game ();
-
 		game.seats = setupCardGame.seats;
 		for (int i = 0; i < game.seats.Length; i++) {
 			game.seats [i].game = game;
@@ -191,6 +170,7 @@ public class GamePlayController : MonoBehaviour {
 			throw new UnityException (resp.errorMessage);
 		}
 		game.roomNo = resp.roomNo;
+		game.creater = resp.creater;
 		GameState state = GameState.GetGameState (resp.state);
 		game.totalRoundCount = resp.totalRoundCount;
 		game.currentRoundNo = resp.currentRoundNo;

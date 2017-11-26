@@ -164,9 +164,10 @@ public class CompareCardController : BaseStateController {
 	private void ShowScoreLabel(int index) {
 		Text scoreLabel = seats [index].scoreLabel;
 		//Debug.Log ("userId: " + seats [index].player.userId);
-		scoreLabel.text = gamePlayController.game.currentRound.resultDict [seats [index].player.userId] + "";
+		int thisRoundScore = gamePlayController.game.currentRound.resultDict [seats [index].player.userId];
+		scoreLabel.text = Utils.GetNumberSring (thisRoundScore);
 		int score = seats [index].player.score;
-		seats [index].playerScoreLabel.text = score > 0 ? "+" + score : score + "";
+		seats [index].playerScoreLabel.text = Utils.GetNumberSring (score);
 		scoreLabel.gameObject.SetActive (true);
 		Animator anim = scoreLabel.GetComponent<Animator> ();
 		StartCoroutine(ShowScoreLabel(scoreLabel, anim));

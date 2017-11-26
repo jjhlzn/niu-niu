@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 public class Player
 {
-	public static Player Me = new Player("7654321");
+	public static Player Me = new Player("7654321", "金军航", "http://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83ercUcNbFyyGQUZEwiaSM5X1mylHCibYpfIiaYbysg2FA0ibtwVPBaxSRktg3h2UHTJTAaTwIJjsfrwlmg/0");
 
 	public string headimgurl = "";
 	public string province = "";
@@ -14,6 +14,8 @@ public class Player
 	public string openid = "";
 	public string nickname = "";
 	public int sex;
+	public string ip = "";
+	public string geoPosition = "";
 
 	public Sprite userHeadImage;
 
@@ -43,10 +45,13 @@ public class Player
 		score = 0;
 	}
 		
-
-	public Player(string userId) {
-		score = 0;
+	public Player(string userId) : this(){
 		this.userId = userId;
+	}
+
+	public Player(string userId, String nickName, string imageUrl) : this(userId) {
+		this.nickname = nickName;
+		this.headimgurl = imageUrl;
 	}
 
 	public void Sit(Seat seat) {

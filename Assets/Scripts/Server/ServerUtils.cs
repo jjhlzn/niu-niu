@@ -7,7 +7,7 @@ public class ServerUtils
 	{
 	}
 
-	public static string mainServer = "localhost";
+	public static string mainServer =  "localhost" ; // "192.168.31.175";
 	public static string protocol = "http";
 	public static int port = 3000;
 

@@ -27,6 +27,8 @@ public class SetupCardGame : BaseStateController {
 	[SerializeField]
 	private GameObject userPanel;
 	[SerializeField]
+	private GameObject cardsGameObject;
+	[SerializeField]
 	private Text scoreLabel;
 	[SerializeField]
 	private Image niuImage;

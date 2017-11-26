@@ -54,9 +54,7 @@ public class GameOverPanel : MonoBehaviour
 		winOrLoseSigns[0] = Resources.Load<Sprite> ("sprites/gameplay/big_winner_sign");
 		winOrLoseSigns[1] = Resources.Load<Sprite> ("sprites/gameplay/big_loser_sign");
 	}
-
-	
-
+		
 	public void Setup(GameObject panel, GameObject eachPanel, GameObject parent) {
 		wholePanel = panel;
 		GameObject eachUserPanel = null;
