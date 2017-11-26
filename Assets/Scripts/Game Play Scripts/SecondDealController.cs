@@ -25,6 +25,7 @@ public class SecondDealController : BaseStateController {
 	private bool isSecondDealing;
 	private bool isShowCardBeforeDeal;
 	public bool isSecondDealDone;
+	private bool isPlayDealAudio;
 	//public bool canSecondDeal;
 
 	public override void Reset() {
@@ -33,6 +34,7 @@ public class SecondDealController : BaseStateController {
 		isShowCardBeforeDeal = false;
 		isSecondDealDone = false;
 		timeLeft = waitTimeBeforeSecondDeal;
+		isPlayDealAudio = false;
 	}
 
 	public void Init() {
@@ -89,6 +91,11 @@ public class SecondDealController : BaseStateController {
 				deck.ShowNotDealCardsForSecondDeal(gamePlayController.game.PlayingPlayers.Count);
 			}
 
+			if(!isPlayDealAudio) {
+				isPlayDealAudio = true;
+				MusicController.instance.Play (AudioItem.Deal, isLoop: true);
+			}
+
 			float waitTime = 0;
 			int playerCount = gamePlayController.game.PlayingPlayers.Count;
 			List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
@@ -103,6 +110,7 @@ public class SecondDealController : BaseStateController {
 			//判断最后一张牌是否已经发好
 			if (Utils.isTwoPositionIsEqual (playingPlayers [playingPlayers.Count - 1].seat.cards [4].transform.position, 
 					playingPlayers [playingPlayers.Count - 1].seat.cardPositions [4])) {
+				MusicController.instance.Stop (AudioItem.Deal);
 				StartCoroutine (GoToNextState ());
 				isSecondDealing = false;
 				isSecondDealDone = true;

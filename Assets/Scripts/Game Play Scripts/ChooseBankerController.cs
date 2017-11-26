@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ChooseBankerController : BaseStateController {
-	public static int ChooseTotalCount = 15;
-	private float BankerSignMoveTimeInterval = .03f;
+	public static int ChooseTotalCount = 60;
+	private float BankerSignMoveTimeInterval = .005f;
 	private float moveBankerSignSpeed = 10f;
 
 	[SerializeField]
@@ -90,6 +90,13 @@ public class ChooseBankerController : BaseStateController {
 		bankerSign.gameObject.SetActive (true);
 	}
 
+	IEnumerator SetRobingBorderImage() {
+		yield return new WaitForSeconds (.5f);
+		foreach (Seat seat in seats) {
+			seat.robingSeatBorderImage.gameObject.SetActive (false);
+		}
+	}
+
 
 	private void ChooseBankerAnimation() {
 		var game = gamePlayController.game;
@@ -100,6 +107,7 @@ public class ChooseBankerController : BaseStateController {
 				for (int i = 0; i < playingPlayers.Count; i++) {
 					Player player = playingPlayers [i];
 					if (player.userId == userIds [chooseIndex] && isPlayerRobBanker(game.currentRound.robBankerPlayers, player.userId)) {
+						MusicController.instance.Play (AudioItem.RandomSelectBanker);
 						player.seat.robingSeatBorderImage.gameObject.SetActive (true);
 					} else {
 						player.seat.robingSeatBorderImage.gameObject.SetActive (false);
@@ -109,9 +117,11 @@ public class ChooseBankerController : BaseStateController {
 				if (chooseCount > ChooseTotalCount
 					&& seats [game.GetSeatIndex (userIds [chooseIndex])].player.userId == game.currentRound.banker) {
 					Debug.Log ("choose banker compeleted");
+					/*
 					foreach (Seat seat in seats) {
 						seat.robingSeatBorderImage.gameObject.SetActive (false);
-					}
+					}*/
+					StartCoroutine (SetRobingBorderImage ());
 					isChoosingBanker = false;
 					chooseCompleted = true;
 

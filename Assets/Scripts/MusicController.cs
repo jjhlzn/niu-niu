@@ -42,13 +42,16 @@ public class MusicController : MonoBehaviour {
 		//bgAudioSource.Play (); 
 	}
 
-	public void Play(string audioName, int sex) {
+	public void Play(string audioName, int sex = 1, bool isLoop = false ) {
 		if (manAudios.ContainsKey (audioName)) {
-			manAudios [audioName].Play ();
+			manAudios [audioName].loop = isLoop;
+			if (!manAudios [audioName].isPlaying) {
+				manAudios [audioName].Play ();
+			}
 		}
 	}
 
-	public void Stop(string audioName, int sex) {
+	public void Stop(string audioName, int sex = 1) {
 		if (manAudios.ContainsKey(audioName)) {
 			if (manAudios[audioName].isPlaying) {
 				manAudios[audioName].Stop();
@@ -81,6 +84,8 @@ public class AudioItem {
 
 		audioItems.Add(new AudioItem(Deal, MAN, "sounds/dell"));
 		audioItems.Add(new AudioItem(Deal, WOMEN, "sounds/dell"));
+		//audioItems.Add(new AudioItem(Deal, MAN, "sounds/deal_card"));
+		//audioItems.Add(new AudioItem(Deal, WOMEN, "sounds/deal_card"));
 
 		/*
 		audioItems.Add(new AudioItem(Ready, MAN, "sounds/ready"));
@@ -96,6 +101,9 @@ public class AudioItem {
 		audioItems.Add(new AudioItem(TransmitCoin, MAN, "sounds/translate_coins"));
 		audioItems.Add(new AudioItem(TransmitCoin, WOMEN, "sounds/translate_coins"));
 
+		audioItems.Add(new AudioItem(RandomSelectBanker, MAN, "sounds/random_banker"));
+		audioItems.Add(new AudioItem(RandomSelectBanker, WOMEN, "sounds/random_banker"));
+
 		for (int i = 0; i < 13; i++) {
 			audioItems.Add(new AudioItem("niu"+i, MAN, "sounds/man/cow_"+i));
 		}
@@ -108,6 +116,7 @@ public class AudioItem {
 	public static string Rob = "Rob";
 	public static string NotRob = "NotRob";
 	public static string TransmitCoin = "TransmitCoin";
+	public static string RandomSelectBanker = "RandomSelectBanker";
 	public static string niu0 = "niu0";
 	public static string niu1 = "niu1";
 	public static string niu2 = "niu2";

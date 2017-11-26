@@ -418,32 +418,33 @@ public class SetupCardGame : BaseStateController {
 	}
 
 	private Image GetNiuImage(int index) {
-		int x = 0, y = 0;
+		int initialX = 0, initialY = 0;
 		Image image = Instantiate (niuImage);
 		switch (index) {
 		case 0:
-			x = -100;
-			y = -277;
+			initialX = -100;
+			initialY = -260;
+
 			break;
 		case 1:
-			x = -448;
-			y = -65;
+			initialX = -408;
+			initialY = -55;
 			break;
 		case 2:
-			x = -340;
-			y = 121;
+			initialX = -290;
+			initialY = 110;
 			break;
 		case 3:
-			x = -20;
-			y = 170;
+			initialX = -50;
+			initialY = 176;
 			break;
 		case 4:
-			x = 220;
-			y = 95;
+			initialX = 210;
+			initialY = 95;
 			break;
 		case 5:
-			x = 320;
-			y = -70;
+			initialX = 300;
+			initialY = -70;
 			break;
 		}
 			
@@ -451,41 +452,42 @@ public class SetupCardGame : BaseStateController {
 
 
 		Vector3 localScale = new Vector3 ();
-		localScale.x = 0.5f;
-		localScale.y = 0.5f;
+		localScale.x = 0.64f;
+		localScale.y = 0.64f;
 		image.transform.localScale = localScale;
 
-		image.transform.position = new Vector3 ( (x + 20) / TransformConstant, (y - 30) / TransformConstant, 0);
+		image.transform.position = new Vector3 ( (initialX + 20) / TransformConstant, (initialY - 40) / TransformConstant, 0);
 		return image;
 	}
 
 	private Image GetMutipleImage(int index) {
-		int x = 0, y = 0;
+		int initialX = 0, initialY = 0;
 		Image image = Instantiate (mutipleImage);
 		switch (index) {
 		case 0:
-			x = -100;
-			y = -277;
+			initialX = -100;
+			initialY = -260;
+
 			break;
 		case 1:
-			x = -448;
-			y = -65;
+			initialX = -408;
+			initialY = -55;
 			break;
 		case 2:
-			x = -340;
-			y = 121;
+			initialX = -290;
+			initialY = 110;
 			break;
 		case 3:
-			x = -20;
-			y = 170;
+			initialX = -50;
+			initialY = 176;
 			break;
 		case 4:
-			x = 220;
-			y = 95;
+			initialX = 210;
+			initialY = 95;
 			break;
 		case 5:
-			x = 320;
-			y = -70;
+			initialX = 300;
+			initialY = -70;
 			break;
 		}
 
@@ -497,7 +499,7 @@ public class SetupCardGame : BaseStateController {
 		localScale.y = 0.4f;
 		image.transform.localScale = localScale;
 
-		image.transform.position = new Vector3 ( (x + 130) / TransformConstant, (y - 30) / TransformConstant, 0);
+		image.transform.position = new Vector3 ( (initialX + 140) / TransformConstant, (initialY - 45) / TransformConstant, 0);
 		return image;
 	}
 
@@ -590,9 +592,7 @@ public class SetupCardGame : BaseStateController {
 			Image temp = Instantiate (card);
 
 			temp.gameObject.transform.SetParent (cardPanel.transform);
-			Vector3 localScale = new Vector3 ();
-			localScale.x = 1;
-			localScale.y = 1;
+			Vector3 localScale = new Vector3 (1f, 1f);
 			temp.transform.localScale = localScale;
 
 			temp.gameObject.transform.position = deckCardPosition.transform.position;
@@ -638,7 +638,7 @@ public class SetupCardGame : BaseStateController {
 	void Create4BetsButtonPositions() {
 		betButtonPositionsFor4Button = new Vector3[4];
 		betLabelPositionsFor4Button = new Vector3[4];
-		int X = -132, Y = -125, YForLabel = -158;
+		int X = -132, Y = -125, YForLabel = -168;
 		for (int i = 0; i < betButtonPositionsFor4Button.Length; i++) {
 			
 			betButtonPositionsFor4Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);
@@ -652,7 +652,7 @@ public class SetupCardGame : BaseStateController {
 	void Create3BetsButtonPositions() {
 		betButtonPositionsFo3Button = new Vector3[3];
 		betLabelPositionsFo3Button = new Vector3[3];
-		int X = -84, Y = -125, YForLabel = -158;
+		int X = -84, Y = -125, YForLabel = -170;
 		for (int i = 0; i < betButtonPositionsFo3Button.Length; i++) {
 			
 			betButtonPositionsFo3Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);

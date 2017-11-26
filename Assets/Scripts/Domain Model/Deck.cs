@@ -22,7 +22,13 @@ public class Deck
 		//Debug.Log ("deal card cardIndex  = " + validStart);
 
 		Image card = cards [validStart];
-		card.transform.SetSiblingIndex (validStart);
+		try {
+			card.transform.SetSiblingIndex (validStart);
+		}
+		catch(Exception ex) {
+			Debug.LogError ("validStart = " + validStart);
+			Debug.LogError (ex);
+		}
 		validStart++;
 		return card;
 	}

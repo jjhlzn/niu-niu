@@ -74,6 +74,8 @@ public class GamePlayController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		Debug.Log ("GamePlayController Start");
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
 		game = new Game ();
 		game.seats = setupCardGame.seats;
 		for (int i = 0; i < game.seats.Length; i++) {

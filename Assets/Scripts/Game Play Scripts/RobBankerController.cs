@@ -12,9 +12,8 @@ public class RobBankerController : BaseStateController {
 	[SerializeField]
 	private GameObject robRankerPanel;
 
-	[SerializeField]
+
 	private Sprite robSprite;
-	[SerializeField]
 	private Sprite notRobSprite;
 
 	private Seat[] seats;
@@ -28,6 +27,8 @@ public class RobBankerController : BaseStateController {
 	}
 
 	void Start() {
+		robSprite = Resources.Load<Sprite> ("sprites/gameplay/RobImage");
+		notRobSprite = Resources.Load<Sprite> ("sprites/gameplay/NotRobImage");
 		seats = gamePlayerController.game.seats;
 	}
 

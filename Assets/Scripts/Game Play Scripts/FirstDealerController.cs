@@ -25,7 +25,9 @@ public class FirstDealerController : BaseStateController {
 
 	private bool isFirstDealing;
 	public bool isFirstDealDone;
+	private bool isPlayDealAudio;
 	private List<Player> playingPlayers;
+
 
 
 	void Start () {
@@ -43,6 +45,7 @@ public class FirstDealerController : BaseStateController {
 	public override void Reset() {
 		isFirstDealing = false;
 		isFirstDealDone = false;
+		isPlayDealAudio = false;
 	}
 		
 	public override GamePlayController GetGamePlayController ()
@@ -67,10 +70,14 @@ public class FirstDealerController : BaseStateController {
 		if (isFirstDealing && !beforeGameStartController.isMoveSeat) {
 			float waitTime = 0;
 
+	
+			MusicController.instance.Play (AudioItem.Deal, isLoop: true);
+
+
 			for (int i = 0; i < playingPlayers.Count; i++) {
 				Player player = playingPlayers [i];
 				FirstGiveCardsAnimation (player, waitTime);
-
+			
 				//每个成员之间加入一个延时
 				waitTime += dealWaitTimeBetweenPlayer;
 			}
@@ -85,7 +92,7 @@ public class FirstDealerController : BaseStateController {
 					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [2], round.playerCardsDict[Player.Me.userId] [2]));
 					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [3], round.playerCardsDict[Player.Me.userId] [3]));
 				}
-
+				MusicController.instance.Stop (AudioItem.Deal);
 				isFirstDealing = false;
 				isFirstDealDone = true;
 				StartCoroutine (GoToNextState ());
@@ -126,6 +133,7 @@ public class FirstDealerController : BaseStateController {
 		Image[] cards = player.seat.cards;
 		Vector3[] targetCardPositions = player.seat.cardPositions;
 		for (int i = 0; i < 4; i++) {
+
 			Vector3 targetCard = targetCardPositions [i];
 			StartCoroutine(GiveCardAnimation(player, cards[i], targetCard, step, waitTime));
 			waitTime += waitTimeDeltaBetweenCard;

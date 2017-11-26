@@ -22,7 +22,7 @@ public class GameOverPanel : MonoBehaviour
 			if (score > 0) {
 				panel.ScoreLabel.color = Color.red;
 			} else {
-				panel.ScoreLabel.color = Color.green;
+				panel.ScoreLabel.color = Color.blue;
 			}
 			panel.userIdLabel.text = players [i].userId;
 
