@@ -80,10 +80,7 @@ public class BetController : BaseStateController {
 			
 		BetAnimation ();
 	}
-
-
-
-
+		
 	public void SetUI() {
 		var game = gamePlayController.game;
 		var round = game.currentRound;
@@ -95,6 +92,10 @@ public class BetController : BaseStateController {
 				seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
 				seats[i].chipCountLabel.gameObject.SetActive (true);
 				isBetCompletedArray [i] = true;
+
+				if (Player.Me.isPlaying && Player.Me.seat.seatIndex == i) {
+					Player.Me.hasBet = true;
+				}
 			} 
 		}
 	}
