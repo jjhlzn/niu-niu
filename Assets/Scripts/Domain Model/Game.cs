@@ -32,6 +32,8 @@ public class Game
 		deck = new Deck ();
 	}  
 
+
+
 	public bool isMeSeated {   //我是否已经坐下
 		get {
 			foreach (Seat seat in seats) {
@@ -44,6 +46,8 @@ public class Game
 	}
 		
 	public bool isInited;
+	public bool isPause;
+
 	public GameState state;
 	public string roomNo;
 	public List<Round> rounds;
@@ -66,6 +70,11 @@ public class Game
 	public Vector3[] betLabelPositionsFor4Button;
 	public Text roomLabel;
 	public Text roundLabel;
+
+	public void Reset() {
+		rounds = new List<Round> ();
+		currentRound = null;
+	}
 
 	public int LastPlayerSeatIndex {
 		get {

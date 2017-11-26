@@ -5,8 +5,6 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
 
-
-
 public class MessageHandler<T, U> where T : BaseGameResponse 
 								   where U : BaseStateController
 {
@@ -19,7 +17,9 @@ public class MessageHandler<T, U> where T : BaseGameResponse
 		this.game = game;
 	}
 
+	//
 	public void Handle(string msg) {
+		
 		//检查消息的类型，根据消息的类型，将消息转为为相应的类型。
 		Debug.Log(typeof(T).Name + ": " + msg);
 		T resp = JsonConvert.DeserializeObject<T>(msg);
@@ -29,7 +29,10 @@ public class MessageHandler<T, U> where T : BaseGameResponse
 			return;
 		}
 
-
+		if (!this.game.isInited) {
+			return;
+		}
+	
 		MethodInfo method = null;
 		MethodInfo[] methods = controller.GetType ().GetMethods ();
 		for (int i = 0; i < methods.Length; i++) {
@@ -44,6 +47,11 @@ public class MessageHandler<T, U> where T : BaseGameResponse
 		}
 			
 		method.Invoke (controller, new T[]{ resp });
+		if (game.isPause) {
+			//加入队列。
+		} else {
+			
+		}
 	}
 
 }

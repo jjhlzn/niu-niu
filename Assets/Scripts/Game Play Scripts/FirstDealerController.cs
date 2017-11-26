@@ -169,9 +169,16 @@ public class FirstDealerController : BaseStateController {
 
 	private void FirstDeal(Player player) {
 		player.seat.cards [0] = deck.Deal ();
+		player.seat.cards [0].sprite = deck.cardBack;
+
 		player.seat.cards [1] = deck.Deal ();
+		player.seat.cards [1].sprite = deck.cardBack;
+
 		player.seat.cards [2] = deck.Deal ();
+		player.seat.cards [2].sprite = deck.cardBack;
+
 		player.seat.cards [3] = deck.Deal ();
+		player.seat.cards [3].sprite = deck.cardBack;
 	}
 
 	/******* 处理服务器的通知***************/

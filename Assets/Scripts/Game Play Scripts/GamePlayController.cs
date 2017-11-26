@@ -1,14 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using socket.io;
 using Newtonsoft.Json;
 
 using cn.sharesdk.unity3d;
-
-
 
 
 public class GamePlayController : MonoBehaviour {
@@ -64,6 +62,7 @@ public class GamePlayController : MonoBehaviour {
 
 	public bool isInited; //是否初始化好
 	public bool isConnected; //是否已经连接到网络
+	public DateTime pauseTime = DateTime.Now;
 	public Socket gameSocket;
 	public Game game;
 
@@ -122,12 +121,9 @@ public class GamePlayController : MonoBehaviour {
 		}
 	}
 
-
-
-
-		
-
-	public void Reset() { }
+	public void Reset() {
+		PrepareForNewRound ();
+	}
 
 	public void PrepareForNewRound() {
 		game.deck.Reset ();
@@ -173,6 +169,8 @@ public class GamePlayController : MonoBehaviour {
 			Debug.LogError ("status = " + resp.status + ", message = " + resp.errorMessage);
 			throw new UnityException (resp.errorMessage);
 		}
+		Reset ();
+
 		game.roomNo = resp.roomNo;
 		game.creater = resp.creater;
 		GameState state = GameState.GetGameState (resp.state);
@@ -371,6 +369,29 @@ public class GamePlayController : MonoBehaviour {
 			string userId = pair.Key;
 			int index = game.GetSeatIndex (userId);
 			game.seats [index].player.isReady = true;
+		}
+	}
+		
+
+	void OnApplicationPause(bool pauseStatus)
+	{
+		//isPaused = pauseStatus;
+		Debug.Log("OnApplicationPause: pauseStatus = " + pauseStatus);
+		if (pauseStatus) {
+			pauseTime = DateTime.Now;
+		} else {
+
+			DateTime now = DateTime.Now;
+			var differ = now - pauseTime;
+			double seconds = differ.TotalSeconds;
+
+			if (seconds < 3) {
+				//什么都不需要坐
+			} else {
+				isConnected = false;
+				isInited = false;
+				game.isInited = false;
+			}
 		}
 	}
 }

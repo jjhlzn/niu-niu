@@ -18,6 +18,7 @@ public class RoomController : MonoBehaviour
 	private GameObject dismissRoomPanel;
 
 
+
 	//解散房间，目前只允许游戏未开始的时候解散房间
 	public void DismissRoomClick() {
 		setupGame.CloseMenuClick ();

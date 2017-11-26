@@ -9,7 +9,8 @@ using Newtonsoft.Json;
 //将图片进行缓存
 public class ImageLoader : MonoBehaviour
 {
-	Dictionary<string, Sprite> dict = new Dictionary<string, Sprite> ();
+	[SerializeField]
+	private Dictionary<string, Sprite> dict = new Dictionary<string, Sprite> ();
 	private static ImageLoader _instance;
 	public static ImageLoader instance
 	{
@@ -43,11 +44,11 @@ public class ImageLoader : MonoBehaviour
 		//Debug.Log ("www.texture.width = " + www.texture.width);
 
 		//www.texture.Compress(false);
-		Sprite sprite = Sprite.Create(www.texture, new Rect(0, 0, www.texture.width,www.texture.height),  new Vector3 (0, 0, 0));
-		dict [url] = sprite;
-		imageHanlder (sprite); 
-
-
+		if (www != null && www.texture != null) { 
+			Sprite sprite = Sprite.Create (www.texture, new Rect (0, 0, www.texture.width, www.texture.height), new Vector3 (0, 0, 0));
+			dict [url] = sprite;
+			imageHanlder (sprite); 
+		}
 	}
 }
 	

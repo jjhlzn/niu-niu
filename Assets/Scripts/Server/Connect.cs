@@ -5,7 +5,7 @@ using socket.io;
 using Newtonsoft.Json;
 
 public class Connect : MonoBehaviour {
-	private const float retryTimeInterval = 5000; //服务器中断，重连间隔时间
+	private const float retryTimeInterval = 5; //服务器中断，重连间隔时间
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -19,7 +19,7 @@ public class Connect : MonoBehaviour {
 
 	void Start() {
 		SetServerUrlAndRoomNo ();
-		connect (serverUrl, roomNo);
+		connect ();
 	}
 
 	void Update () {
@@ -27,10 +27,11 @@ public class Connect : MonoBehaviour {
 			timeLeft -= Time.deltaTime;
 		}
 
+		//Debug.Log ("gamePlayController.isConnected = " + gamePlayController.isConnected + ", timeLeft = " + timeLeft);
 		if (!gamePlayController.isConnected && timeLeft < 0 ) {
 			timeLeft = retryTimeInterval;
 			Debug.Log ("retry connect");
-			connect (serverUrl, roomNo);
+			connect ();
 		}
 
 		//Debug.Log ("isConnected = " + gamePlayController.isConnected + ", timeLeft = " + timeLeft);
@@ -47,7 +48,7 @@ public class Connect : MonoBehaviour {
 		Debug.Log ("serverUrl = " + serverUrl);
 	}
 
-	public void connect(string serverUrl, string roomNo) {
+	public void connect() {
 		if (isConnecting)
 			return;
 		Debug.Log ("connecting to server ...");
