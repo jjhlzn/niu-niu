@@ -132,6 +132,15 @@ public class ShowCardResult {
 	public int multiple;
 }
 
+public class JoinRoomResponsePlayerInfo {
+	public string seat = "";
+	public string userId = "";
+	public string headImageUrl = "";
+	public string nickName = "";
+	public int sex = 1;
+	public string ip = "";
+}
+
 public class JoinRoomResponse : BaseGameResponse {
 	public string creater;
 	public string state;
@@ -143,7 +152,7 @@ public class JoinRoomResponse : BaseGameResponse {
 	public Dictionary<string, int[]> playerBets = new Dictionary<string, int[]>();
 	public Dictionary<string, string> scores = new Dictionary<string, string>();
 
-	public Dictionary<string, string> sitdownPlayers = new Dictionary<string, string>();
+	public Dictionary<string, JoinRoomResponsePlayerInfo> sitdownPlayers = new Dictionary<string, JoinRoomResponsePlayerInfo>();
 	public Dictionary<string, bool> robBankerPlayers = new Dictionary<string, bool>();
 	public Dictionary<string, int> betPlayers = new Dictionary<string, int>();
 	public Dictionary<string, ShowCardResult> showcardPlayers = new Dictionary<string, ShowCardResult> ();

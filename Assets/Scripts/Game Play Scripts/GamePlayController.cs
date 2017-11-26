@@ -260,18 +260,23 @@ public class GamePlayController : MonoBehaviour {
 	}
 
 	private void SetSitdownPlayers(JoinRoomResponse resp, Game game) {
-		Dictionary<string, string> playerDict = resp.sitdownPlayers;
-		foreach (KeyValuePair<string, string> pair in playerDict) 
+		Dictionary<string, JoinRoomResponsePlayerInfo> playerDict = resp.sitdownPlayers;
+		foreach (KeyValuePair<string, JoinRoomResponsePlayerInfo> pair in playerDict) 
 		{
 			string userId = pair.Key;
-			string seatNo = pair.Value;
-			int seatIndex = game.GetSeatIndexThroughSeatNo (seatNo);
+			JoinRoomResponsePlayerInfo userInfo = pair.Value;
+			int seatIndex = game.GetSeatIndexThroughSeatNo (userInfo.seat);
 			Seat seat = game.seats [seatIndex];
 			Player player = new Player ();
 			if (userId == Player.Me.userId) {
 				player = Player.Me;
+			} else {
+				player.userId = userId;
+				player.sex = userInfo.sex;
+				player.nickname = userInfo.nickName;
+				player.headimgurl = userInfo.headImageUrl;
+				player.ip = userInfo.ip;
 			}
-			player.userId = userId;
 			seat.player = player;
 			player.seat = seat;
 			//player.isPlaying = true;
