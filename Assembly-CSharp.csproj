@@ -60,6 +60,7 @@
      <Compile Include="Assets\LINQtoGameObject\Scripts\GameObjectExtensions.Enumerable.cs" />
      <Compile Include="Assets\LINQtoGameObject\Scripts\GameObjectExtensions.Operate.cs" />
      <Compile Include="Assets\LINQtoGameObject\Scripts\GameObjectExtensions.Traverse.cs" />
+     <Compile Include="Assets\Scripts\CanvasScreenAutoFix.cs" />
      <Compile Include="Assets\Scripts\CardScript.cs" />
      <Compile Include="Assets\Scripts\Domain Model\Card.cs" />
      <Compile Include="Assets\Scripts\Domain Model\Deck.cs" />

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ChooseBankerController : BaseStateController {
 	public static int ChooseTotalCount = 60;
-	private float BankerSignMoveTimeInterval = .005f;
+	private float BankerSignMoveTimeInterval = .002f;
 	private float moveBankerSignSpeed = 10f;
 
 	[SerializeField]

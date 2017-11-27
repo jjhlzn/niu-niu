@@ -30,8 +30,10 @@ public class MainPageController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Player.Me = LoginController.CreateMockPlayer ();
-
+		//Player.Me = LoginController.CreateMockPlayer ();
+		if (!LoginController.isFromLogin) {
+			Player.Me = LoginController.CreateMockPlayer ();
+		}
 		nickNameLabel.text = Player.Me.nickname;
 		idLabel.text = "ID: " + Player.Me.userId;
 		coinLabel.text = "1000";
@@ -110,7 +112,7 @@ public class MainPageController : MonoBehaviour {
 				Scenes.Load("Gameplay", parameters); 
 			}
 		};
-		StartCoroutine (PostRequest(ServerUtils.GetCheckUserInGameUrl() + "?req=" 
+		StartCoroutine (ServerUtils.PostRequest(ServerUtils.GetCheckUserInGameUrl() + "?req=" 
 			+ JsonConvert.SerializeObject(new {userId = Player.Me.userId}), "{}", checkUserInGame));
 	}
 
@@ -196,11 +198,11 @@ public class MainPageController : MonoBehaviour {
 				ShowMessagePanel("该房间不存在");
 			}
 		};
-		StartCoroutine(PostRequest(ServerUtils.GetRoomUrl(), JsonConvert.SerializeObject(new {roomNo = roomNo}), handler));
+		StartCoroutine( ServerUtils.PostRequest(ServerUtils.GetRoomUrl(), JsonConvert.SerializeObject(new {roomNo = roomNo}), handler));
 	}
 
 }
-public delegate void ResponseHandle(string jsonString);
+
 /*
 public interface ResponseHandler {
     void Handle(string jsonString);

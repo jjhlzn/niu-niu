@@ -146,15 +146,15 @@ namespace cn.sharesdk.unity3d
 		#if UNITY_ANDROID
 		public string SortId = "5";
 		public const int type = (int) PlatformType.WeChat;
-		public string AppId = "wx4868b35061f87885";
-		public string AppSecret = "64020361b8ec4c99936c0e3999a9f249";
+		public string AppId = "wx73653b5260b24787";
+		public string AppSecret = "fc31886ecfd2fe190822b4fb72adb9f7";
 		public string userName = "gh_afb25ac019c9@app";
 		public string path = "/page/API/pages/share/share";
 		public bool BypassApproval = true;
 		#elif UNITY_IPHONE
 		public const int type = (int) PlatformType.WeChat;
-		public string app_id = "wx4868b35061f87885";
-		public string app_secret = "64020361b8ec4c99936c0e3999a9f249";
+		public string app_id = "wx73653b5260b24787";
+		public string app_secret = "fc31886ecfd2fe190822b4fb72adb9f7";
 		#endif
 	}
 
@@ -164,13 +164,13 @@ namespace cn.sharesdk.unity3d
 		#if UNITY_ANDROID
 		public string SortId = "6";
 		public const int type = (int) PlatformType.WeChatMoments;
-		public string AppId = "wx4868b35061f87885";
-		public string AppSecret = "64020361b8ec4c99936c0e3999a9f249";
+		public string AppId = "wx73653b5260b24787";
+		public string AppSecret = "fc31886ecfd2fe190822b4fb72adb9f7";
 		public bool BypassApproval = false;
 		#elif UNITY_IPHONE
 		public const int type = (int) PlatformType.WeChatMoments;
-		public string app_id = "wx4868b35061f87885";
-		public string app_secret = "64020361b8ec4c99936c0e3999a9f249";
+		public string app_id = "wx73653b5260b24787";
+		public string app_secret = "fc31886ecfd2fe190822b4fb72adb9f7";
 		#endif
 	}
 
@@ -180,12 +180,12 @@ namespace cn.sharesdk.unity3d
 		#if UNITY_ANDROID
 		public string SortId = "7";
 		public const int type = (int) PlatformType.WeChatFavorites;
-		public string AppId = "wx4868b35061f87885";
-		public string AppSecret = "64020361b8ec4c99936c0e3999a9f249";
+		public string AppId = "wx73653b5260b24787";
+		public string AppSecret = "fc31886ecfd2fe190822b4fb72adb9f7";
 		#elif UNITY_IPHONE
 		public const int type = (int) PlatformType.WeChatFavorites;
-		public string app_id = "wx4868b35061f87885";
-		public string app_secret = "64020361b8ec4c99936c0e3999a9f249";
+		public string app_id = "wx73653b5260b24787";
+		public string app_secret = "fc31886ecfd2fe190822b4fb72adb9f7";
 		#endif
 	}
 
@@ -763,8 +763,8 @@ namespace cn.sharesdk.unity3d
 		//对于安卓端，请在类Wechat,WechatMoments或WechatFavorite中配置相关信息↑	
 		#elif UNITY_IPHONE
 		public const int type = (int) PlatformType.WechatPlatform;
-		public string app_id = "wx4868b35061f87885";
-		public string app_secret = "64020361b8ec4c99936c0e3999a9f249";
+		public string app_id = "wx73653b5260b24787";
+		public string app_secret = "fc31886ecfd2fe190822b4fb72adb9f7";
 		#endif
 	}
 

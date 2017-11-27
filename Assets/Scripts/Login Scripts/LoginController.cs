@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 public class LoginController : MonoBehaviour {
 
+	public static bool isFromLogin = false;
 
 	[SerializeField]
 	private ShareSDK ssdk;
@@ -18,6 +19,8 @@ public class LoginController : MonoBehaviour {
 	[SerializeField]
 	private Text userInfoLabel;
 
+	[SerializeField]
+	private GameObject loginTipPanel;
 
 	void Start() {
 		ssdk.authHandler = AuthResultHandler;
@@ -25,10 +28,11 @@ public class LoginController : MonoBehaviour {
 	}
 
 	public void LoginClick() {
+		isFromLogin = true;
 		Debug.Log ("login clicked");
-		Player.Me = CreateMockPlayer ();
-		GoToMainPage ();
-		//ssdk.Authorize (PlatformType.WeChat);
+		//Player.Me = CreateMockPlayer ();
+		//GoToMainPage ();
+		ssdk.Authorize (PlatformType.WeChat);
 		//TODO： 应该有个动画
 	}
 
@@ -40,6 +44,7 @@ public class LoginController : MonoBehaviour {
 			Debug.Log ("authorize success !");
 			debugLabel.text = "authorize success !";
 			ssdk.GetUserInfo(PlatformType.WeChat);
+			loginTipPanel.SetActive (true);
 		}
 		else if (state == ResponseState.Fail)
 		{
@@ -65,6 +70,19 @@ public class LoginController : MonoBehaviour {
 			Player.Me = me;
 			userInfoLabel.text = me.nickname + " " + me.userId;
 
+			ResponseHandle handler = (string msg) => {
+				loginTipPanel.SetActive (false);
+				LoginResponse resp = JsonConvert.DeserializeObject<LoginResponse>(msg);
+				if (resp.status != 0) {
+					Debug.LogError("登陆失败，errorMessage = " + resp.errorMessage);
+					return;
+				}
+				Player.Me.userId = resp.userId;
+				//Parameters<string, string>
+				Scenes.Load("MainPage", new Dictionary<string, string>());
+			};
+
+			StartCoroutine (ServerUtils.PostRequest (ServerUtils.GetLoginUrl(), MiniJSON.jsonEncode(result), handler));
 		}
 		else if (state == ResponseState.Fail)
 		{

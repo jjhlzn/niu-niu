@@ -189,3 +189,7 @@ public class GetRoomResponse : BaseGameResponse {
 	public string serverUrl;
 	public bool isExist;
 }
+
+public class LoginResponse : BaseGameResponse {
+	public string userId;
+}

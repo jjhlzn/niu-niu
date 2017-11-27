@@ -101,8 +101,8 @@ public class AudioItem {
 		audioItems.Add(new AudioItem(TransmitCoin, MAN, "sounds/translate_coins"));
 		audioItems.Add(new AudioItem(TransmitCoin, WOMEN, "sounds/translate_coins"));
 
-		audioItems.Add(new AudioItem(RandomSelectBanker, MAN, "sounds/random_banker"));
-		audioItems.Add(new AudioItem(RandomSelectBanker, WOMEN, "sounds/random_banker"));
+		//audioItems.Add(new AudioItem(RandomSelectBanker, MAN, "sounds/random_banker"));
+		//audioItems.Add(new AudioItem(RandomSelectBanker, WOMEN, "sounds/random_banker"));
 
 		for (int i = 0; i < 13; i++) {
 			audioItems.Add(new AudioItem("niu"+i, MAN, "sounds/man/cow_"+i));
