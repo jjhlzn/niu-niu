@@ -37,8 +37,8 @@ namespace cn.sharesdk.unity3d
 		public WeChat wechat;
 		public WeChatMoments wechatMoments; 
 		public WeChatFavorites wechatFavorites;
-		public Yixin yixin;
-		public YixinMoments yixinMoments;
+		//public Yixin yixin;
+		//public YixinMoments yixinMoments;
 		public FacebookMessenger facebookMessenger;
 		public Instapaper instapaper;
 		public AliSocial aliSocial;
@@ -516,7 +516,7 @@ namespace cn.sharesdk.unity3d
 	//BypassApproval是绕过审核的标记，设置为true后AppId将被忽略，故不经过
 	//审核的应用也可以执行分享，但是仅限于分享文字或图片，不能分享其他类型，
 	//默认值为false。
-
+	/*
 	[Serializable]
 	public class Yixin : DevInfo 
 	{
@@ -549,7 +549,7 @@ namespace cn.sharesdk.unity3d
 		public string redirect_uri = "https://open.yixin.im/resource/oauth2_callback.html";
 		public string auth_type = "both";   //can pass "both","sso",or "web" 
 		#endif
-	}
+	}*/
 
 	[Serializable]
 	public class Mingdao : DevInfo 
