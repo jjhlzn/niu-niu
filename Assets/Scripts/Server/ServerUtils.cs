@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 public class ServerUtils
 {
 	public ServerUtils ()
@@ -17,5 +16,9 @@ public class ServerUtils
 
 	public static string GetCreateRoomUrl() {
 		return protocol + "://" + mainServer + ":" + port + "/createroom";
+	}
+
+	public static string GetRoomUrl() {
+		return protocol + "://" + mainServer + ":" + port + "/getroom";
 	}
 }

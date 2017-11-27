@@ -22,6 +22,12 @@ public class MainPageController : MonoBehaviour {
 	[SerializeField]
 	private Text messageLabel;
 
+	[SerializeField]
+	private GameObject joinRoomPanel;
+	[SerializeField]
+	private Text[] numberLabels;
+	private int curNumberIndex;
+
 	// Use this for initialization
 	void Start () {
 		Player.Me = LoginController.CreateMockPlayer ();
@@ -35,6 +41,7 @@ public class MainPageController : MonoBehaviour {
 			userImage.sprite = sprite;
 			Player.Me.userHeadImage = userImage.sprite; 
 		});
+		ResetNumberLabels ();
 
 		CheckPlayerInGame ();
 		ShowMessageIfNeed ();
@@ -49,9 +56,14 @@ public class MainPageController : MonoBehaviour {
 		Dictionary<string, string> parameters = Scenes.getSceneParameters ();
 		if (parameters != null && parameters.ContainsKey (Utils.Message_Key)) {
 			string message = parameters [Utils.Message_Key];
-			messageLabel.text = message;
-			messageLabel.gameObject.SetActive (true);
+			ShowMessagePanel (message);
 		}
+	}
+
+	private void ShowMessagePanel(string msg) {
+		messageLabel.text = msg;
+		messageLabel.gameObject.SetActive (true);
+		messagePanel.SetActive (true);
 	}
 
 	public void CreateRoomClick() {
@@ -69,8 +81,6 @@ public class MainPageController : MonoBehaviour {
 			}
 		};
 		StartCoroutine (PostRequest(ServerUtils.GetCreateRoomUrl(), JsonConvert.SerializeObject(new {userId = Player.Me.userId}), createRoom));
-
-	
 	}
 
 	void OnDestory() {
@@ -78,7 +88,7 @@ public class MainPageController : MonoBehaviour {
 	}
 
 	public void JoinRoomClick() {
-		
+		joinRoomPanel.SetActive (true);
 	}
 
 	IEnumerator LoadImage(string url) {
@@ -126,11 +136,69 @@ public class MainPageController : MonoBehaviour {
 			handle (req.downloadHandler.text);
 		}
 	}
-
-
+		
 	public void MessagePanelSureButtonClick() {
 		messagePanel.gameObject.SetActive (false);
 	}
+
+	public void NumberClick() {
+		if (curNumberIndex == 6)
+			return;
+		string buttonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
+		int number = int.Parse (buttonName [buttonName.Length - 1] + "");
+		numberLabels [curNumberIndex++].text = number + "";
+		if (curNumberIndex == 6) {
+			string roomNo = "";
+			foreach (Text text in numberLabels) {
+				roomNo += text.text;
+			}
+			JoinRoom (roomNo);
+		}
+	}
+
+	public void ReinputClick() {
+		ResetNumberLabels ();
+	}
+
+	public void DeleteClick() {
+		if (curNumberIndex == 0)
+			return;
+		numberLabels [--curNumberIndex].text = "";
+	}
+
+	public void CloseJoinRoomPanel() {
+		joinRoomPanel.SetActive (false);
+		ResetNumberLabels ();
+	}
+
+	private void ResetNumberLabels() {
+		foreach (Text text in numberLabels) {
+			text.text = "";
+		}
+		curNumberIndex = 0;
+	}
+
+	private void JoinRoom(string roomNo) {
+		Debug.Log ("JoinRoom roomNo = " + roomNo);
+		ShowMessagePanel ("查找房间中...");
+		//检查房间是否存在， 如果存在就跳转到游戏的界面
+		ResponseHandle handler = delegate(string jsonString){
+			Debug.Log("GetRoomResponse: " + jsonString);
+			//加入玩家已经游戏了，那么跳转到Gameplay Scene。否则什么都不需要坐。
+			GetRoomResponse resp = JsonConvert.DeserializeObject<GetRoomResponse>(jsonString);
+			Dictionary<string, string> parameters = new Dictionary<string, string>();
+			if (resp.isExist) {
+				parameters["roomNo"] = resp.roomNo;
+				parameters["serverUrl"] = resp.serverUrl;
+				Scenes.Load("Gameplay", parameters); 
+			} else {
+				//房间不存在
+				ShowMessagePanel("该房间不存在");
+			}
+		};
+		StartCoroutine(PostRequest(ServerUtils.GetRoomUrl(), JsonConvert.SerializeObject(new {roomNo = roomNo}), handler));
+	}
+
 }
 public delegate void ResponseHandle(string jsonString);
 /*

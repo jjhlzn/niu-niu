@@ -184,3 +184,8 @@ public class GameOverResponse : BaseGameResponse {
 	public bool gameOverAfterRound;
 	public Dictionary<string, int> resultDict;   //本局的输赢关系
 }
+
+public class GetRoomResponse : BaseGameResponse {
+	public string serverUrl;
+	public bool isExist;
+}
