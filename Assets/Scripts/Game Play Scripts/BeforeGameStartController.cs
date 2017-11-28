@@ -427,8 +427,8 @@ public class BeforeGameStartController : BaseStateController {
 				if (notify.userId == Player.Me.userId)
 					player = Player.Me;
 				player.userId = notify.userId;
-				player.headimgurl = notify.headImageUrl;
-				player.nickname = notify.nickName;
+				player.headimgurl = notify.headimgurl;
+				player.nickname = notify.nickname;
 				player.sex = notify.sex;
 				player.ip = notify.ip;
 				player.seat = seat;

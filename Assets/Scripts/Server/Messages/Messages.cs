@@ -73,8 +73,8 @@ public class GoToCheckCardNotify : BaseGameResponse {
 public class SomePlayerSitDownNotify : BaseGameResponse {
 	public string seat = "";
 	public string userId = "";
-	public string headImageUrl = "";
-	public string nickName = "";
+	public string headimgurl = "";
+	public string nickname = "";
 	public int sex = 1;
 	public string ip = "";
 }
@@ -135,8 +135,8 @@ public class ShowCardResult {
 public class JoinRoomResponsePlayerInfo {
 	public string seat = "";
 	public string userId = "";
-	public string headImageUrl = "";
-	public string nickName = "";
+	public string headimgurl = "";
+	public string nickname = "";
 	public int sex = 1;
 	public string ip = "";
 }

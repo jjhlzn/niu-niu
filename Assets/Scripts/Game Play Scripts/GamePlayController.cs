@@ -273,8 +273,8 @@ public class GamePlayController : MonoBehaviour {
 			} else {
 				player.userId = userId;
 				player.sex = userInfo.sex;
-				player.nickname = userInfo.nickName;
-				player.headimgurl = userInfo.headImageUrl;
+				player.nickname = userInfo.nickname;
+				player.headimgurl = userInfo.headimgurl;
 				player.ip = userInfo.ip;
 			}
 			seat.player = player;
