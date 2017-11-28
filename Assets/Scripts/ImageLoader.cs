@@ -5,35 +5,41 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
+using socket.io;
 
 //将图片进行缓存
 public class ImageLoader : MonoBehaviour
 {
-	[SerializeField]
 	private Dictionary<string, Sprite> dict = new Dictionary<string, Sprite> ();
-	private static ImageLoader _instance;
-	public static ImageLoader instance
-	{
-		get    
-		{
-			//If _instance hasn't been set yet, we grab it from the scene!
-			//This will only happen the first time this reference is used.
 
-			if(_instance == null)
-				_instance = GameObject.FindObjectOfType<ImageLoader>();
-			return _instance;
+	public static ImageLoader Instance;
+
+	void Awake() {
+		MakeSingleton ();
+	}
+
+	void MakeSingleton() {
+		if (Instance != null) {
+			Destroy (gameObject);
+		} else {
+			Instance = this;
+			DontDestroyOnLoad (gameObject);
 		}
 	}
 
 	public void Load(string url, ImageHandler imageHanlder) {
+		
 		//return;
 		if (string.IsNullOrEmpty (url))
 			return;
 		
 		if (dict.ContainsKey (url)) {
+			Debug.Log ("Find Image in Cache, url = " + url);
 			imageHanlder( dict [url] );
 			return;
 		}
+
+		Debug.Log ("load Image from network, url = " + url);
 		StartCoroutine(LoadImage(url, imageHanlder));
 	}
 

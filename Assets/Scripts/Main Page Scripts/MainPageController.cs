@@ -28,8 +28,7 @@ public class MainPageController : MonoBehaviour {
 	private Text[] numberLabels;
 	private int curNumberIndex;
 
-	// Use this for initialization
-	void Start () {
+	void Awake() {
 		//Player.Me = LoginController.CreateMockPlayer ();
 		if (!LoginController.isFromLogin) {
 			Player.Me = LoginController.CreateMockPlayer ();
@@ -37,16 +36,21 @@ public class MainPageController : MonoBehaviour {
 		nickNameLabel.text = Player.Me.nickname;
 		idLabel.text = "ID: " + Player.Me.userId;
 		coinLabel.text = "1000";
-		StartCoroutine (LoadImage (Player.Me.headimgurl));
 
-		ImageLoader.instance.Load (Player.Me.headimgurl, (Sprite sprite) => {
+		ImageLoader.Instance.Load (Player.Me.headimgurl, (Sprite sprite) => {
 			userImage.sprite = sprite;
 			Player.Me.userHeadImage = userImage.sprite; 
 		});
+
 		ResetNumberLabels ();
 
 		CheckPlayerInGame ();
 		ShowMessageIfNeed ();
+	}
+
+	// Use this for initialization
+	void Start () {
+		
 	}
 	
 	// Update is called once per frame
@@ -82,6 +86,7 @@ public class MainPageController : MonoBehaviour {
 				Scenes.Load("Gameplay", parameters); 
 			}
 		};
+		Debug.Log ("createRoomUrl: " + ServerUtils.GetCreateRoomUrl());
 		StartCoroutine (PostRequest(ServerUtils.GetCreateRoomUrl(), JsonConvert.SerializeObject(new {userId = Player.Me.userId}), createRoom));
 	}
 

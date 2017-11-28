@@ -63,6 +63,7 @@ public class GamePlayController : MonoBehaviour {
 	public bool isInited; //是否初始化好
 	public bool isConnected; //是否已经连接到网络
 	public DateTime pauseTime = DateTime.Now;
+	public GameState pauseState;
 	public Socket gameSocket;
 	public Game game;
 
@@ -387,7 +388,13 @@ public class GamePlayController : MonoBehaviour {
 			var differ = now - pauseTime;
 			double seconds = differ.TotalSeconds;
 
-			if (seconds < 3) {
+			int pauseSecs = 13;
+
+			if (pauseState == GameState.CompareCard || pauseState == GameState.CheckCard) {
+				pauseSecs = 3;
+			}
+
+			if (seconds < pauseSecs) {
 				//什么都不需要坐
 			} else {
 				isConnected = false;

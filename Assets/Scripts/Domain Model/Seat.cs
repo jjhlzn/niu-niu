@@ -76,14 +76,9 @@ public class Seat
 
 			//player.headimgurl = game.PlayingPlayers [0].headimgurl;
 			if (string.IsNullOrEmpty(player.headimgurl)) {
-				//Debug.Log ("______________________________________________________________________");
-				//Debug.Log ("playerImage.sprite.texture.width = " + playerImage.sprite.texture.width);
-				//Sprite sprite = Sprite.Create (playerImage.sprite.texture, new Rect (0, 0, playerImage.sprite.texture.width,
-					//playerImage.sprite.texture.height), new Vector3 (0, 0, 0));
-				//playerImage.sprite = sprite;
 				playerImage.gameObject.SetActive (true);
 			} else {
-				ImageLoader.instance.Load (player.headimgurl, (Sprite sprite) => {
+				ImageLoader.Instance.Load (player.headimgurl, (Sprite sprite) => {
 					playerImage.sprite = sprite;
 					playerImage.gameObject.SetActive (true);
 

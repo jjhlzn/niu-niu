@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CanvasScreenAutoFix : MonoBehaviour
+public class CanvasScreenAutoFix : CanvasScaler
 {
 	public static CanvasScreenAutoFix instance;
 
@@ -18,19 +18,23 @@ public class CanvasScreenAutoFix : MonoBehaviour
 	{
 		if (is1920x1080 ()) {
 			Debug.Log ("is 1920 * 1080");
-			GetComponent<CanvasScaler> ().matchWidthOrHeight = 0.5f;
+			matchWidthOrHeight = 0.5f;
+
 		} else if (isIphonex ()) {
 			Debug.Log ("is Height First");
-			GetComponent<CanvasScaler> ().matchWidthOrHeight = 1f;
+			matchWidthOrHeight = 1f;
+
 		} else if (isWidthFirst ()) {
 			Debug.Log ("is Width First");
-			GetComponent<CanvasScaler> ().matchWidthOrHeight = 0f;
+			matchWidthOrHeight = 0f;
+
 		}
 			
 	}
 
-	private void Awake()
+     void Awake()
 	{
+		
 		ResizeCanvas();
 		if(instance == null)
 		{
