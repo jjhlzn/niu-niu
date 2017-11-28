@@ -28,7 +28,9 @@ public class MainPageController : MonoBehaviour {
 	private Text[] numberLabels;
 	private int curNumberIndex;
 
-	void Awake() {
+
+	// Use this for initialization
+	void Start () {
 		//Player.Me = LoginController.CreateMockPlayer ();
 		if (!LoginController.isFromLogin) {
 			Player.Me = LoginController.CreateMockPlayer ();
@@ -46,11 +48,6 @@ public class MainPageController : MonoBehaviour {
 
 		CheckPlayerInGame ();
 		ShowMessageIfNeed ();
-	}
-
-	// Use this for initialization
-	void Start () {
-		
 	}
 	
 	// Update is called once per frame
