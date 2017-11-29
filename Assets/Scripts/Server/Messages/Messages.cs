@@ -30,11 +30,14 @@ public class Messages
 	public static string SomePlayerShowCard = "SomePlayerShowCard";
 	public static string Ready = "Ready";
 	public static string SomePlayerReady = "SomePlayerReady";
+	public static string Delegate = "Delegate";   //委托给服务器
+	public static string SomePlayerDelegate = "SomePlayerDelegate";  //手机切入后台 & 断线 
+	public static string NotDelegate = "NotDelegate";   //委托给服务器
+	public static string SomePlayerNotDelegate = "SomePlayerNotDelegate";  //手机切入后台 & 断线 
 }
 
 public class StartGameRequest {
 	public string type = "startGame";
-
 }
 
 public class BaseGameResponse {
@@ -157,6 +160,7 @@ public class JoinRoomResponse : BaseGameResponse {
 	public Dictionary<string, int> betPlayers = new Dictionary<string, int>();
 	public Dictionary<string, ShowCardResult> showcardPlayers = new Dictionary<string, ShowCardResult> ();
 	public Dictionary<string, bool> readyPlayers = new Dictionary<string,bool> ();
+	public string[] delegatePlayers = new string[0];
 }
 
 public class CheckUserInGameResponse : BaseGameResponse {
@@ -191,5 +195,14 @@ public class GetRoomResponse : BaseGameResponse {
 }
 
 public class LoginResponse : BaseGameResponse {
+	public string userId;
+}
+	
+
+public class SomePlayerDeleteNotify : BaseGameResponse {
+	public string userId;
+}
+
+public class SomePlayerNotDeleteNotify : BaseGameResponse {
 	public string userId;
 }

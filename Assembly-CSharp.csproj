@@ -52,9 +52,9 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\__Sample\Client\Src\Acks.cs" />
-     <Compile Include="Assets\__Sample\Client\Src\Connect.cs" />
      <Compile Include="Assets\__Sample\Client\Src\Events.cs" />
      <Compile Include="Assets\__Sample\Client\Src\Namespace.cs" />
+     <Compile Include="Assets\__Sample\Client\Src\SampleConnect.cs" />
      <Compile Include="Assets\Demo.cs" />
      <Compile Include="Assets\LINQtoGameObject\Examples\SampleSceneScript.cs" />
      <Compile Include="Assets\LINQtoGameObject\Scripts\GameObjectExtensions.Enumerable.cs" />

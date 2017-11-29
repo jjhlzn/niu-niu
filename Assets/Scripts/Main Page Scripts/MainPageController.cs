@@ -48,6 +48,7 @@ public class MainPageController : MonoBehaviour {
 
 		CheckPlayerInGame ();
 		ShowMessageIfNeed ();
+
 	}
 	
 	// Update is called once per frame

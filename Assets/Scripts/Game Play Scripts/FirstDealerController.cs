@@ -19,6 +19,9 @@ public class FirstDealerController : BaseStateController {
 	[SerializeField]
 	private GameObject deckCardPosition; //发牌位置
 
+	[SerializeField]
+	private Button shareButton;
+
 
 	private Deck deck;
 	private Seat[] seats;
@@ -208,6 +211,9 @@ public class FirstDealerController : BaseStateController {
 
 	private void HandleResponse(Dictionary<string, string[]> cardsDict, Dictionary<string, int[]> betsDict) {
 		var game = gamePlayController.game;
+		//if (shareButton.gameObject.activeInHierarchy) {
+			beforeGameStartController.UpdateButtonStatusAfterStart ();
+		//}
 
 		//更新位置UI
 		for (int i = 0; i < seats.Length; i++) {

@@ -254,6 +254,9 @@ public class SetupCardGame : BaseStateController {
 			case "Ready Image":
 				seat.readyImage = image;
 				break;
+			case "Leave Image Sign":
+				seat.leaveImage = image;
+				break;
 			case "Chip Image":
 				image.transform.SetParent (userPanel.transform);
 				image.transform.localScale = new Vector3 (ChipScale, ChipScale);

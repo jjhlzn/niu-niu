@@ -6,7 +6,7 @@ namespace Sample {
     /// <summary>
     /// The basic sample to show how to connect to a server
     /// </summary>
-    public class Connect : MonoBehaviour {
+    public class Connect1 : MonoBehaviour {
 
         void Start() {
             var serverUrl = "http://localhost:7001";

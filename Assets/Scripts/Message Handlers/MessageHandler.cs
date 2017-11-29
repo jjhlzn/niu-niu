@@ -9,12 +9,12 @@ public class MessageHandler<T, U> where T : BaseGameResponse
 								   where U : BaseStateController
 {
 	private U controller;
-	private Game game;
+	//private Game game;
 	
 	public MessageHandler (U controller, Game game)
 	{
 		this.controller = controller;
-		this.game = game;
+		//this.game = game;
 	}
 
 	//
@@ -29,7 +29,8 @@ public class MessageHandler<T, U> where T : BaseGameResponse
 			return;
 		}
 
-		if (!this.game.isInited) {
+		var game = controller.GetGamePlayController ().game;
+		if (!game.isInited) {
 			return;
 		}
 	
@@ -47,6 +48,7 @@ public class MessageHandler<T, U> where T : BaseGameResponse
 		}
 			
 		method.Invoke (controller, new T[]{ resp });
+
 		if (game.isPause) {
 			//加入队列。
 		} else {

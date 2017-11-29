@@ -56,9 +56,6 @@ public class WaitForNextRoundController : BaseStateController {
 				readyButton.gameObject.SetActive (false);
 			}
 		}
-
-
-
 	}
 
 	private void CheckMeReady() {

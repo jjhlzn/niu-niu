@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 public class Player
 {
-	public static Player Me = new Player("7654321", "金军航", "http://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83ercUcNbFyyGQUZEwiaSM5X1mylHCibYpfIiaYbysg2FA0ibtwVPBaxSRktg3h2UHTJTAaTwIJjsfrwlmg/0");
+	public static Player Me = new Player("7654321", "7654321", "http://www.gx8899.com/uploads/allimg/2016101713/0rbdwhgad3z.jpg");
 
 	public string headimgurl = "";
 	public string province = "";
@@ -31,6 +31,7 @@ public class Player
 	}
 	public bool isPlaying;  //用于区分仅仅坐下，但是没有玩的玩家，对于BeforeStart和WaitForNext的时候，坐下的玩家就表示Playing，其他的状态则不是
 	public bool isReady;    //这个状态则只对于WaitForNext的时候有用，其他游戏状态不会用到这个状态。
+	public bool isDelegate;
 
 	public Seat seat;  //座位的索引号，
 	public int score;

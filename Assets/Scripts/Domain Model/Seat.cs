@@ -32,6 +32,7 @@ public class Seat
 	public Button sitdownButton;
 	public Vector3 bankerSignPosition;
 	public Image readyImage;
+	public Image leaveImage;
 	public Text scoreLabel;
 	public Image chipImageForBet;
 	public Vector3 originChipImagePositionForBet;
@@ -57,6 +58,10 @@ public class Seat
 
 	public bool hasPlayer() {
 		return player != null;
+	}
+
+	public void HideIsRobImage() {
+		isRobImage.gameObject.SetActive (false);
 	}
 
 	public void UpdateUI(Game game) {
@@ -104,6 +109,9 @@ public class Seat
 			} else {
 				scoreLabel.gameObject.SetActive (false);
 			}
+				
+			Debug.Log ("player.isDelegate = " + player.isDelegate);
+			leaveImage.gameObject.SetActive (player.isDelegate);
 
 		} else {
 			//Debug.Log ("player is null");
@@ -123,6 +131,7 @@ public class Seat
 				emptySeatImage.gameObject.SetActive (true);
 			}
 			readyImage.gameObject.SetActive (false);
+			leaveImage.gameObject.SetActive (false);
 		} 
 
 

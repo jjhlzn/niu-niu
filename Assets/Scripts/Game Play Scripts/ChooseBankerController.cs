@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ChooseBankerController : BaseStateController {
-	public static int ChooseTotalCount = 60;
+	public static int ChooseTotalCount = 50;
 	private float BankerSignMoveTimeInterval = .002f;
-	private float moveBankerSignSpeed = 10f;
+	private float moveBankerSignSpeed = 13f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
@@ -102,6 +102,8 @@ public class ChooseBankerController : BaseStateController {
 		var game = gamePlayController.game;
 		if (isChoosingBanker) {
 			timeLeft -= Time.deltaTime;
+
+
 			if (timeLeft < 0) {
 				List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
 				for (int i = 0; i < playingPlayers.Count; i++) {
@@ -191,6 +193,7 @@ public class ChooseBankerController : BaseStateController {
 			if (seats [i].hasPlayer ()) {
 				userIds [index++] = seats[i].player.userId;
 			}
+			seats [i].HideIsRobImage ();
 		}
 		game.HideStateLabel ();
 		chooseIndex = 0;

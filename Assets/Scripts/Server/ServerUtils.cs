@@ -16,6 +16,7 @@ public class ServerUtils
 	public static string mainServer =  "niu.yhkamani.com" ; //"192.168.1.114" ; //"localhost" ;  //"192.168.1.114";
 	public static string protocol = "http";
 	public static int port = 80;
+	public static int socketIOPort = 3001;
 
 	public static string GetCheckUserInGameUrl() {
 		return protocol + "://" + mainServer + ":" + port + "/checkuseringame";

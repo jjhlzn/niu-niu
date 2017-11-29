@@ -13,8 +13,8 @@ public class BetController : BaseStateController {
 	[SerializeField]
 	private SecondDealController secondDealController;
 
-	private float user0ChipMoveSpeed = 180f;
-	private float chipMoveSpeed = 180f;
+	private float user0ChipMoveSpeed = 220f;
+	private float chipMoveSpeed = 220f;
 
 	private Seat[] seats;
 

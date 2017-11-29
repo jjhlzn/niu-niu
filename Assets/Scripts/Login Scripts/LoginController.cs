@@ -99,9 +99,10 @@ public class LoginController : MonoBehaviour {
 	}
 
 	public static Player CreateMockPlayer() {
-		string json = @"{""country"":""CN"", ""province"":""Zhejiang"", ""headimgurl"":""http://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83ercUcNbFyyGQUZEwiaSM5X1mylHCibYpfIiaYbysg2FA0ibtwVPBaxSRktg3h2UHTJTAaTwIJjsfrwlmg/0"", ""unionid"":""omrAqw3jZJyVBtnJHN2atDrlFDRY"", ""openid"":""oa75AwCba3xVbNeCNraVMZENVeg0"", ""nickname"":""\u91d1"", ""city"":""Jinhua"", ""sex"":1, ""language"":""zh_CN"", ""privilege"":[]}";
+		string json = @"{""country"":""CN"", ""province"":""Zhejiang"", ""headimgurl"":""http://www.gx8899.com/uploads/allimg/2016101713/0rbdwhgad3z.jpg"", ""unionid"":""omrAqw3jZJyVBtnJHN2atDrlddFDRY"", ""openid"":""oa75AwCba3xVbNeCNraVMZENVeg0"", ""nickname"":""\u91d1"", ""city"":""Jinhua"", ""sex"":1, ""language"":""zh_CN"", ""privilege"":[]}";
 		Player me = JsonConvert.DeserializeObject<Player> (json);
 		me.userId = "7654321";
+		me.nickname = "7654321";
 		return me;
 	}
 

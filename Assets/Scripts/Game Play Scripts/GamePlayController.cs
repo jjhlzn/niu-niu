@@ -46,6 +46,9 @@ public class GamePlayController : MonoBehaviour {
 	[SerializeField]
 	private GameObject messagePanel;
 	[SerializeField]
+	private GameObject connectFailMessagePanel;
+
+	[SerializeField]
 	private Text roomLabel;
 	[SerializeField]
 	private Text roundLabel;
@@ -117,7 +120,7 @@ public class GamePlayController : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!isConnected) {
+		if (!isConnected && !connectFailMessagePanel.activeInHierarchy) {
 			messagePanel.SetActive (true);
 		} else {
 			messagePanel.SetActive (false);
@@ -164,6 +167,8 @@ public class GamePlayController : MonoBehaviour {
 		gameSocket.On (Messages.GoToCompareCard, new MessageHandler<GoToCompareCardNotify, CompareCardController> (compareController, game).Handle);
 		gameSocket.On (Messages.SomePlayerReady, new MessageHandler<SomePlayerReadyNotify, WaitForNextRoundController>(waitForNextRoundController, game).Handle);
 		gameSocket.On (Messages.GoToGameOver, new MessageHandler<GameOverResponse, GameOverController> (gameOverController, game).Handle);
+		gameSocket.On (Messages.SomePlayerDelegate, new MessageHandler<SomePlayerDeleteNotify, BeforeGameStartController> (beforeGameStartController, game).Handle);
+		gameSocket.On (Messages.SomePlayerNotDelegate, new MessageHandler<SomePlayerNotDeleteNotify, BeforeGameStartController> (beforeGameStartController, game).Handle);
 	}
 
 	public void HandleResponse(JoinRoomResponse resp) {
@@ -184,6 +189,7 @@ public class GamePlayController : MonoBehaviour {
 			//加载坐在座位的玩家信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
+			SetDelegatePlayers (resp, game);
 			beforeGameStartController.SetUI ();
 
 		} else if (state == GameState.RobBanker) {
@@ -192,6 +198,7 @@ public class GamePlayController : MonoBehaviour {
 			//加载抢庄的玩家信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
+			SetDelegatePlayers (resp, game);
 
 			SetRobBankerPlayers (resp, game);
 			SetMyCards (resp, game);
@@ -206,6 +213,7 @@ public class GamePlayController : MonoBehaviour {
 			//加载下注的玩家信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
+			SetDelegatePlayers (resp, game);
 
 			SetBanker (resp, game);
 			SetMyBets (resp, game);
@@ -222,7 +230,7 @@ public class GamePlayController : MonoBehaviour {
 			//加载亮牌的玩家信息，以及他的牌的信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
-
+			SetDelegatePlayers (resp, game);
 
 			SetBanker (resp, game);
 			SetMyCards (resp, game);
@@ -244,6 +252,8 @@ public class GamePlayController : MonoBehaviour {
 			//加载已经准备好的玩家信息
 			SetSitdownPlayers (resp, game);
 			SetPlayingPlayers (resp, game);
+			SetDelegatePlayers (resp, game);
+
 			beforeGameStartController.SetUI ();
 
 			SetReadyPlayers (resp, game);
@@ -297,6 +307,16 @@ public class GamePlayController : MonoBehaviour {
 			for(int i = 0; i < Game.SeatCount; i++) {
 				if (game.seats [i].player != null)
 					game.seats [i].player.isPlaying = true;
+			}
+		}
+	}
+
+	private void SetDelegatePlayers(JoinRoomResponse resp, Game game) {
+		foreach (string userId in resp.delegatePlayers) {
+			var seatIndex = game.GetSeatIndex (userId);
+			if (seatIndex != -1) {
+				if (game.seats [seatIndex].player.userId != Player.Me.userId)
+					game.seats [seatIndex].player.isDelegate = true;
 			}
 		}
 	}
@@ -380,10 +400,15 @@ public class GamePlayController : MonoBehaviour {
 	{
 		//isPaused = pauseStatus;
 		Debug.Log("OnApplicationPause: pauseStatus = " + pauseStatus);
+
 		if (pauseStatus) {
 			pauseTime = DateTime.Now;
+			if (isConnected) {
+				gameSocket.EmitJson(Messages.Delegate, JsonConvert.SerializeObject(new {userId = Player.Me.userId, roomNo = game.roomNo}));
+			}
 		} else {
-
+			if (gameSocket != null && gameSocket.IsConnected)
+				gameSocket.EmitJson(Messages.NotDelegate, JsonConvert.SerializeObject(new {userId = Player.Me.userId, roomNo = game.roomNo}));
 			DateTime now = DateTime.Now;
 			var differ = now - pauseTime;
 			double seconds = differ.TotalSeconds;
@@ -401,6 +426,16 @@ public class GamePlayController : MonoBehaviour {
 				isInited = false;
 				game.isInited = false;
 			}
+		}
+	}
+
+	public void ConnectFailConfirmClick() {
+		connectFailMessagePanel.gameObject.SetActive (false);
+	}
+
+	public void ShowConnectFailMessage() {
+		if (!connectFailMessagePanel.gameObject.activeInHierarchy) {
+			connectFailMessagePanel.gameObject.SetActive (true);
 		}
 	}
 }

@@ -197,6 +197,7 @@ public class BeforeGameStartController : BaseStateController {
 
 		if (Player.Me.userId != game.creater) {
 			startButton.gameObject.SetActive (false);
+			dismissRoomBtn.gameObject.SetActive (false);
 		}
 	}
 
@@ -217,17 +218,13 @@ public class BeforeGameStartController : BaseStateController {
 				seat.readyImage.gameObject.SetActive(false);
 			}
 
-			startButton.gameObject.SetActive(false);
-			shareButton.gameObject.SetActive(false);
-			leaveRoomBtn.interactable = false;
-			dismissRoomBtn.interactable = false;
-			standUpButton.interactable = false;
+			UpdateButtonStatusAfterStart();
 		}); 
 	}
 
 
-	private void HandleUser0Ready() {
-		readyButton.gameObject.SetActive(false);
+	private void HandleMeReady() {
+		readyButton.gameObject.SetActive (false);
 	}
 		
 	public void SetSeatClick() {
@@ -277,16 +274,23 @@ public class BeforeGameStartController : BaseStateController {
 				seat.UpdateUI(gamePlayerController.game);
 			}
 
-			if (game.state == GameState.BeforeStart) {
+			if (game.state == GameState.BeforeStart || game.state == GameState.WaitForNextRound) {
 				MoveSeats(seatIndex);
+				Player.Me.isPlaying = true;
+			} else {
+				Player.Me.isPlaying = false;
+			}
 
-				if (gamePlayerController.game.PlayerCount >= 2 && game.state == GameState.BeforeStart) {
+			if (game.state == GameState.BeforeStart) {
+				if (gamePlayerController.game.PlayerCount >= 2) {
 					startButton.interactable = true;
 				} else {
 					startButton.interactable = false;
 				} 
-			} else {
-				Player.Me.isPlaying = false;
+			} 
+				
+			if (game.state == GameState.WaitForNextRound) {
+				readyButton.gameObject.SetActive(true);
 			}
 		});
 	}
@@ -377,8 +381,8 @@ public class BeforeGameStartController : BaseStateController {
 		//content.SetImageUrl("https://f1.webshare.mob.com/code/demo/img/1.jpg");
 		content.SetTitle("房间【" + game.roomNo + "】");
 		content.SetText("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
-		content.SetImageUrl("https://f1.webshare.mob.com/code/demo/img/1.jpg");
-		content.SetUrl("http://www.mob.com");
+		content.SetImageUrl("http://is5.mzstatic.com/image/thumb/Purple18/v4/d7/7e/2a/d77e2a15-3898-8fcf-9ea9-7e48a0593af0/source/512x512bb.jpg");
+		content.SetUrl("http://niu.yhkamani.com/share");
 		content.SetUrlDescription("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
 		content.SetDesc ("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
 
@@ -466,10 +470,50 @@ public class BeforeGameStartController : BaseStateController {
 	public void HandleResponse(SomePlayerReadyNotify notify) {
 		int seatIndex = gamePlayerController.game.GetSeatIndex (notify.userId);
 
-		if (seatIndex == 0) {
-			HandleUser0Ready ();
+		if (notify.userId == Player.Me.userId) {
+			HandleMeReady ();
 		} else {
 			seats [seatIndex].readyImage.gameObject.SetActive (true);
 		}
+	}
+
+	public void HandleResponse(SomePlayerDeleteNotify notify) {
+		if (notify.roomNo != gamePlayerController.game.roomNo)
+			return;
+
+		if (notify.userId == Player.Me.userId)
+			return;
+		
+		HandleDelegate (true, gamePlayerController.game.GetSeatIndex (notify.userId));
+	}
+
+	public void HandleResponse(SomePlayerNotDeleteNotify notify) {
+		if (notify.roomNo != gamePlayerController.game.roomNo)
+			return;
+
+		if (notify.userId == Player.Me.userId)
+			return;
+
+		HandleDelegate (false, gamePlayerController.game.GetSeatIndex (notify.userId));
+	}
+
+	private void HandleDelegate(bool isDelegte, int seatIndex) {
+		if (seatIndex == -1)
+			return;
+	
+		var game = gamePlayerController.game;
+		var player = seats [seatIndex].player;
+		player.isDelegate = isDelegte;
+		player.seat.UpdateUI (gamePlayerController.game);
+
+	}
+
+	public void UpdateButtonStatusAfterStart() {
+		startButton.gameObject.SetActive(false);
+		shareButton.gameObject.SetActive(false);
+		readyButton.gameObject.SetActive (false);
+		leaveRoomBtn.interactable = false;
+		dismissRoomBtn.interactable = false;
+		standUpButton.interactable = false;
 	}
 }
