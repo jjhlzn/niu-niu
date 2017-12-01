@@ -156,7 +156,7 @@ public class ChooseBankerController : BaseStateController {
 
 				//动画执行玩了，看看状态还需要切换，因为动画可能以前落后游戏进度
 				if (game.state == GameState.ChooseBanker) {
-					game.HideStateLabel ();
+					//game.HideStateLabel ();
 					game.state = GameState.Bet;
 				}
 			}

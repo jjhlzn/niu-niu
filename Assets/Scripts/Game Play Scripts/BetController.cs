@@ -128,7 +128,7 @@ public class BetController : BaseStateController {
 					if (gamePlayController.state == GameState.Bet) {
 						if (IsAllBetCompleted) {
 							Debug.Log ("In BetControoler: change to SecondSeal state");
-							gamePlayController.game.HideStateLabel ();
+							//gamePlayController.game.HideStateLabel ();
 						}
 					}
 				}

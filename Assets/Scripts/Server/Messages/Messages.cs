@@ -34,6 +34,7 @@ public class Messages
 	public static string SomePlayerDelegate = "SomePlayerDelegate";  //手机切入后台 & 断线 
 	public static string NotDelegate = "NotDelegate";   //委托给服务器
 	public static string SomePlayerNotDelegate = "SomePlayerNotDelegate";  //手机切入后台 & 断线 
+	public static string RoomHasDismissed = "RoomHasDismissed";
 }
 
 public class StartGameRequest {
@@ -205,4 +206,7 @@ public class SomePlayerDeleteNotify : BaseGameResponse {
 
 public class SomePlayerNotDeleteNotify : BaseGameResponse {
 	public string userId;
+}
+
+public class RoomHasDismissedNotify : BaseGameResponse {
 }

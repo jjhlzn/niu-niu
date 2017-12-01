@@ -146,6 +146,10 @@ public class Connect : MonoBehaviour {
 			JoinRoomResponse resp = JsonConvert.DeserializeObject<JoinRoomResponse[]>(msg)[0];
 			if (resp.status != 0) {
 				Debug.LogError("ErrorMessage: " + resp.errorMessage);
+
+				Dictionary<string, string> parameters = new Dictionary<string, string>();
+				parameters[Utils.Message_Key] = "该房间不存在";
+				Scenes.Load("MainPage",parameters);
 				return;
 			}
 

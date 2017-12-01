@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using cn.sharesdk.unity3d;
 
 public class GameOverController : BaseStateController {
 
@@ -9,6 +10,9 @@ public class GameOverController : BaseStateController {
 
 	[SerializeField]
 	private CompareCardController comparedCardController;
+
+	[SerializeField]
+	private ShareSDK ssdk;
 
 	[SerializeField]
 	private Connect connect;
@@ -70,6 +74,16 @@ public class GameOverController : BaseStateController {
 	}
 
 	public void ShareClick() {
-		ScreenCapture.CaptureScreenshot ("zhanji.png");
+		Debug.Log ("Share Click");
+		ScreenCapture.CaptureScreenshot("zhanji.png");
+		var game = gamePlayController.game;
+		ShareContent content = new ShareContent();
+		//content.SetText("房间【" + game.roomNo + "】");
+		content.SetTitle("");
+		content.SetImagePath(Application.temporaryCachePath.Replace("cache", "files") + "/zhanji.png");
+		content.SetShareType(ContentType.Image);
+		ssdk.ShareContent (PlatformType.WeChat, content);
 	}
+
+
 }

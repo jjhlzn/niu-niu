@@ -56,6 +56,12 @@ public class SetupCardGame : BaseStateController {
 	private GameObject menuPanel;
 
 	[SerializeField]
+	private GameObject connectingPanel;
+
+	[SerializeField]
+	private Canvas canvas;
+
+	[SerializeField]
 	private GameObject scorePanel;
 	[SerializeField]
 	private GameObject eachScorePanel;
@@ -91,6 +97,11 @@ public class SetupCardGame : BaseStateController {
 		//把移动的庄家放在最上面一层
 		bankerSign.transform.SetParent(userPanel.transform);
 		bankerSign.transform.SetAsLastSibling ();
+
+		menuButton.transform.SetParent (canvas.transform);
+		menuButton.transform.SetAsLastSibling ();
+
+
 	}
 
 	private void SetGameOverPanel() {

@@ -18,6 +18,8 @@ public class MainPageController : MonoBehaviour {
 	private Image userImage;
 
 	[SerializeField]
+	private GameObject confirmMessagePanel;
+	[SerializeField]
 	private GameObject messagePanel;
 	[SerializeField]
 	private Text messageLabel;
@@ -60,8 +62,14 @@ public class MainPageController : MonoBehaviour {
 		Dictionary<string, string> parameters = Scenes.getSceneParameters ();
 		if (parameters != null && parameters.ContainsKey (Utils.Message_Key)) {
 			string message = parameters [Utils.Message_Key];
-			ShowMessagePanel (message);
+			ShowConfirmMessagePanel (message);
 		}
+	}
+
+	private void ShowConfirmMessagePanel(string msg) {
+		messageLabel.text = msg;
+		messageLabel.gameObject.SetActive (true);
+		confirmMessagePanel.SetActive (true);
 	}
 
 	private void ShowMessagePanel(string msg) {
@@ -134,6 +142,7 @@ public class MainPageController : MonoBehaviour {
 		if (req.isNetworkError)
 		{
 			Debug.Log("Error While Sending: " + req.error);
+			ShowConfirmMessagePanel ("服务器连接失败");
 		}
 		else
 		{
@@ -143,7 +152,7 @@ public class MainPageController : MonoBehaviour {
 	}
 		
 	public void MessagePanelSureButtonClick() {
-		messagePanel.gameObject.SetActive (false);
+		confirmMessagePanel.gameObject.SetActive (false);
 	}
 
 	public void NumberClick() {
@@ -198,16 +207,55 @@ public class MainPageController : MonoBehaviour {
 				Scenes.Load("Gameplay", parameters); 
 			} else {
 				//房间不存在
-				ShowMessagePanel("该房间不存在");
+				ShowConfirmMessagePanel("该房间不存在");
 			}
 		};
 		StartCoroutine( ServerUtils.PostRequest(ServerUtils.GetRoomUrl(), JsonConvert.SerializeObject(new {roomNo = roomNo}), handler));
 	}
 
-}
+	public void JoinRoomFromUrl( string url )  
+	{  
+		Debug.Log( "openUrl： " + url );  
+		string roomNo = url.Replace ("wx73653b5260b24787://?room=", ""); 
+		Debug.Log ("roomNo = " + roomNo);
+		JoinRoom (roomNo);
+	}  
 
-/*
-public interface ResponseHandler {
-    void Handle(string jsonString);
-} */
+
+	private void LoadActivityParamsForAndroid() {
+		if (Application.platform != RuntimePlatform.Android)
+			return;
+
+		string arguments = "";
+		AndroidJavaClass UnityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"); 
+		AndroidJavaObject currentActivity = UnityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+		if (currentActivity == null) {
+			Debug.Log ("currentActivity is null");
+			return;
+		}
+
+		AndroidJavaObject intent = currentActivity.Call<AndroidJavaObject>("getIntent");
+
+		string data = intent.Call<string> ("getDataString");
+		Debug.Log ("data = " + data);
+
+		if (!string.IsNullOrEmpty (data)) {
+			
+			string roomNo = data.Replace ("wx73653b5260b24787://?room=", "");
+			Debug.Log ("roomNo = " + roomNo);
+			JoinRoom (roomNo);
+		}
+	}
+
+	void OnApplicationPause(bool pauseStatus)
+	{
+		if (pauseStatus) {
+		} else {  //回到主界面
+			Debug.Log("");
+			LoadActivityParamsForAndroid();
+		}
+	}
+
+}
 	

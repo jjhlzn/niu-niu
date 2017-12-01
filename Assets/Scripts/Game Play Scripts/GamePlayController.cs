@@ -52,6 +52,8 @@ public class GamePlayController : MonoBehaviour {
 	private Text roomLabel;
 	[SerializeField]
 	private Text roundLabel;
+	[SerializeField]
+	private Button menuButton;
 
 
 	public GameState state {
@@ -117,11 +119,15 @@ public class GamePlayController : MonoBehaviour {
 		compareController.Init ();
 
 		game.UpdateGameInfos ();
+
+		menuButton.gameObject.transform.SetAsLastSibling ();
 	}
 
 	void Update() {
 		if (!isConnected && !connectFailMessagePanel.activeInHierarchy) {
+			
 			messagePanel.SetActive (true);
+			messagePanel.transform.SetAsLastSibling ();
 		} else {
 			messagePanel.SetActive (false);
 		}
@@ -169,6 +175,7 @@ public class GamePlayController : MonoBehaviour {
 		gameSocket.On (Messages.GoToGameOver, new MessageHandler<GameOverResponse, GameOverController> (gameOverController, game).Handle);
 		gameSocket.On (Messages.SomePlayerDelegate, new MessageHandler<SomePlayerDeleteNotify, BeforeGameStartController> (beforeGameStartController, game).Handle);
 		gameSocket.On (Messages.SomePlayerNotDelegate, new MessageHandler<SomePlayerNotDeleteNotify, BeforeGameStartController> (beforeGameStartController, game).Handle);
+		gameSocket.On (Messages.RoomHasDismissed, new MessageHandler<RoomHasDismissedNotify, BeforeGameStartController> (beforeGameStartController, game).Handle);
 	}
 
 	public void HandleResponse(JoinRoomResponse resp) {
@@ -386,6 +393,8 @@ public class GamePlayController : MonoBehaviour {
 		}
 	}
 
+
+
 	private void SetReadyPlayers(JoinRoomResponse resp, Game game) {
 		Dictionary<string, bool> readyPlayerDict = resp.readyPlayers;
 		foreach (KeyValuePair<string, bool> pair in readyPlayerDict) {
@@ -401,6 +410,9 @@ public class GamePlayController : MonoBehaviour {
 		//isPaused = pauseStatus;
 		Debug.Log("OnApplicationPause: pauseStatus = " + pauseStatus);
 
+		if (game.state == GameState.GameOver)
+			return;
+
 		if (pauseStatus) {
 			pauseTime = DateTime.Now;
 			if (isConnected) {
@@ -413,11 +425,16 @@ public class GamePlayController : MonoBehaviour {
 			var differ = now - pauseTime;
 			double seconds = differ.TotalSeconds;
 
-			int pauseSecs = 13;
+			int pauseSecs = 15;
 
 			if (pauseState == GameState.CompareCard || pauseState == GameState.CheckCard) {
-				pauseSecs = 3;
-			}
+				pauseSecs = 10;
+			} else if (pauseState == GameState.BeforeStart || pauseState == GameState.GameOver) {
+				pauseSecs = 60 * 50;
+			} else if (pauseState == GameState.FirstDeal || pauseState == GameState.RobBanker 
+				|| pauseState == GameState.ChooseBanker) {
+				pauseSecs = 30;
+			} 
 
 			if (seconds < pauseSecs) {
 				//什么都不需要坐
