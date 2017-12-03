@@ -18,8 +18,16 @@ public class SecondDealController : BaseStateController {
 	[SerializeField]
 	private GameObject deckCardPosition;
 
-	private Deck deck;
-	private Seat[] seats;
+	private Deck deck {
+		get {
+			return gamePlayController.game.deck;
+		}
+	}
+	private Seat[] seats {
+		get {
+			return gamePlayController.game.seats;
+		}
+	}
 
 	private float timeLeft;
 	private bool isSecondDealing;
@@ -38,8 +46,6 @@ public class SecondDealController : BaseStateController {
 	}
 
 	public void Init() {
-		seats = gamePlayController.game.seats;
-		deck = gamePlayController.game.deck;
 
 		isSecondDealing = false;
 		//canSecondDeal = false;

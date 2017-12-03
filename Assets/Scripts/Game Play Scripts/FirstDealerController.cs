@@ -23,8 +23,16 @@ public class FirstDealerController : BaseStateController {
 	private Button shareButton;
 
 
-	private Deck deck;
-	private Seat[] seats;
+	private Deck deck {
+		get {
+			return gamePlayController.game.deck;
+		}
+	}
+	private Seat[] seats {
+		get {
+			return gamePlayController.game.seats;
+		}
+	}
 
 	private bool isFirstDealing;
 	public bool isFirstDealDone;
@@ -34,13 +42,9 @@ public class FirstDealerController : BaseStateController {
 
 
 	void Start () {
-		seats = gamePlayController.game.seats;
-		deck = gamePlayController.game.deck;
 	}
 
 	public void Init() {
-		seats = gamePlayController.game.seats;
-		deck = gamePlayController.game.deck;
 		isFirstDealing = false;
 		isFirstDealDone = false;
 	}
@@ -113,11 +117,12 @@ public class FirstDealerController : BaseStateController {
 			for (int j = 0; j < 4; j++) {
 				Vector3 targetCard = targetCardPositions [j];
 				cards [j].transform.position = targetCard;
-				if (i == 0 && player.userId == Player.Me.userId) {
-					Vector3 localScale = new Vector3 ();
-					localScale.x = user0CardScale;
-					localScale.y = user0CardScale;
+				if (i == 0) {
+					Vector3 localScale = new Vector3 (user0CardScale, user0CardScale);
 					cards [j].transform.localScale = localScale;
+				}
+
+				if (i == 0 && player.userId == Player.Me.userId) {
 					Debug.Log ("game.currentRound.playerCardsDict.ContainsKey ("+player.userId+"): " + game.currentRound.playerCardsDict.ContainsKey (player.userId));
 					if (game.currentRound.playerCardsDict.ContainsKey (player.userId)) {
 						cards [j].sprite = deck.GetCardFaceImage (game.currentRound.playerCardsDict [player.userId] [j]);

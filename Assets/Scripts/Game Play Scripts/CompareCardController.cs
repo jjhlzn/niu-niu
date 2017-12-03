@@ -23,7 +23,11 @@ public class CompareCardController : BaseStateController {
 	[SerializeField]
 	private Button readyButton;
 
-	private Seat[] seats;
+	private Seat[] seats {
+		get {
+			return gamePlayController.game.seats;
+		}
+	}
 
 	public int[] moveChipFromOtheToBankerArray;
 	public int[] moveChipFromBankerToOtherArray;
@@ -37,7 +41,6 @@ public class CompareCardController : BaseStateController {
 	private float moveTimeLeft;
 
 	public void Init() {
-		seats = gamePlayController.game.seats;
 	}
 
 	public override void Reset() {

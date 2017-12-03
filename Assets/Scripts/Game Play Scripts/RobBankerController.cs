@@ -16,7 +16,11 @@ public class RobBankerController : BaseStateController {
 	private Sprite robSprite;
 	private Sprite notRobSprite;
 
-	private Seat[] seats;
+	private Seat[] seats {
+		get {
+			return gamePlayerController.game.seats;
+		}
+	}
 
 	private float stateTimeLeft; //这状态停留的时间
 	//private bool hasRobBanker = false; 
@@ -29,11 +33,9 @@ public class RobBankerController : BaseStateController {
 	void Start() {
 		robSprite = Resources.Load<Sprite> ("sprites/gameplay/RobImage");
 		notRobSprite = Resources.Load<Sprite> ("sprites/gameplay/NotRobImage");
-		seats = gamePlayerController.game.seats;
 	}
 
 	public void Init() {
-		seats = gamePlayerController.game.seats;
 		stateTimeLeft = Constants.MaxStateTimeLeft;
 	}
 		

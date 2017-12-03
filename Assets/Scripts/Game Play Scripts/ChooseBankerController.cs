@@ -15,7 +15,11 @@ public class ChooseBankerController : BaseStateController {
 	private Image bankerSign;
 	//private Vector3 bankerSignOriginPosition;
 
-	private Seat[] seats;
+	private Seat[] seats {
+		get {
+			return gamePlayController.game.seats;
+		}
+	}
 
 	private bool chooseCompleted;
 	private string[] userIds;
@@ -35,7 +39,6 @@ public class ChooseBankerController : BaseStateController {
 	}
 
 	public void Init() {
-		seats = gamePlayController.game.seats;
 		bankerSign.gameObject.SetActive (false);
 	}
 

@@ -13,17 +13,22 @@ public class WaitForNextRoundController : BaseStateController {
 	private GamePlayController gamePlayerController;
 	[SerializeField]
 	private SetupCardGame setUpGameController; 
+	[SerializeField]
+	private BeforeGameStartController beforeGameStartController;
 
 	[SerializeField]
 	private Button readyButton;
 
-	private Seat[] seats;
+	private Seat[] seats {
+		get {
+			return gamePlayerController.game.seats;
+		}
+	}
 
 	private float stateTimeLeft; //这状态停留的时间
 	//public bool hasReady;
 
 	public void Init() {
-		seats = gamePlayerController.game.seats;
 		stateTimeLeft = Constants.MaxStateTimeLeft;
 		//hasReady = false;
 	}
@@ -54,6 +59,13 @@ public class WaitForNextRoundController : BaseStateController {
 				readyButton.gameObject.SetActive (true);
 			} else {
 				readyButton.gameObject.SetActive (false);
+			}
+
+			//Debug.Log ("Player.Me.seat != null is " + (Player.Me.seat != null));
+			//Debug.Log ("Player.Me.seat.seatIndex is " + Player.Me.seat.seatIndex);
+			if (!Player.Me.isPlaying && Player.Me.seat != null && Player.Me.seat.seatIndex != 0) {
+				beforeGameStartController.MoveSeats (Player.Me.seat.seatIndex);
+				Player.Me.isPlaying = true;
 			}
 		}
 	}

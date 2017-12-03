@@ -7209,7 +7209,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1280, y: 720}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0.5
+  m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -8612,7 +8612,7 @@ MonoBehaviour:
       AppSecret: fc31886ecfd2fe190822b4fb72adb9f7
       userName: gh_afb25ac019c9@app
       path: /page/API/pages/share/share
-      BypassApproval: 1
+      BypassApproval: 0
     wechatMoments:
       Enable: 1
       SortId: 6
@@ -9128,6 +9128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gamePlayerController: {fileID: 1193017314}
   setUpGameController: {fileID: 1193017316}
+  beforeGameStartController: {fileID: 1945840095}
   readyButton: {fileID: 131127926}
 --- !u!4 &1232574141
 Transform:
@@ -10148,7 +10149,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1321189815
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10422,7 +10423,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 6eda2c2fcce0944a8a699204a386c9b3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d63f9d5ee829146ff871feb00207ef3a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10490,7 +10491,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 6eda2c2fcce0944a8a699204a386c9b3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d63f9d5ee829146ff871feb00207ef3a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -14065,7 +14066,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 6eda2c2fcce0944a8a699204a386c9b3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d63f9d5ee829146ff871feb00207ef3a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

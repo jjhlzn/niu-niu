@@ -16,7 +16,11 @@ public class BetController : BaseStateController {
 	private float user0ChipMoveSpeed = 220f;
 	private float chipMoveSpeed = 220f;
 
-	private Seat[] seats;
+	private Seat[] seats {
+		get {
+			return gamePlayController.game.seats;
+		}
+	}
 
 	private bool[] isMoveChipArray;
 	private bool[] isBetCompletedArray;
@@ -27,7 +31,6 @@ public class BetController : BaseStateController {
 	public bool IsAllBetCompleted {
 		get {
 			bool result = true;
-			var seats = gamePlayController.game.seats;
 			for (var i = 0; i < seats.Length; i++) {
 				var player = seats [i].player;
 				if (seats [i].hasPlayer () && player.isPlaying && player.userId != gamePlayController.game.currentRound.banker) {
@@ -39,7 +42,6 @@ public class BetController : BaseStateController {
 	}
 
 	public void Init() {
-		seats = gamePlayController.game.seats;
 		stateTimeLeft = Constants.MaxStateTimeLeft - animationTime;
 		gamePlayController.game.HideBetButtons ();
 	}

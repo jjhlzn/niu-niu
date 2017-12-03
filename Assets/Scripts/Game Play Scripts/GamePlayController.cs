@@ -82,6 +82,12 @@ public class GamePlayController : MonoBehaviour {
 		Debug.Log ("GamePlayController Start");
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
+		CreateGame ();
+
+
+	}
+
+	private void CreateGame() {
 		game = new Game ();
 		game.seats = setupCardGame.seats;
 		for (int i = 0; i < game.seats.Length; i++) {
@@ -103,6 +109,7 @@ public class GamePlayController : MonoBehaviour {
 		game.betLabelPositionsFor3Button = setupCardGame.betLabelPositionsFo3Button;
 		game.betButtonPositionsFor4Button = setupCardGame.betButtonPositionsFor4Button;
 		game.betLabelPositionsFor4Button = setupCardGame.betLabelPositionsFor4Button;
+
 		betController.SetBetClick (game.betButtons);
 
 		foreach (Seat seat in game.seats) {
@@ -119,7 +126,6 @@ public class GamePlayController : MonoBehaviour {
 		compareController.Init ();
 
 		game.UpdateGameInfos ();
-
 		menuButton.gameObject.transform.SetAsLastSibling ();
 	}
 
@@ -138,12 +144,15 @@ public class GamePlayController : MonoBehaviour {
 	}
 
 	public void PrepareForNewRound() {
-		game.deck.Reset ();
 		game.GoToNextRound ();
+		ResetUI ();
+	}
+
+	public void ResetUI() {
+		game.deck.Reset ();
 		for (int i = 0; i < Game.SeatCount; i++) {
 			game.seats [i].Reset ();
 		}
-
 		var playingPalyers = game.PlayingPlayers;
 		foreach (var player in playingPalyers)
 			player.Reset ();
@@ -183,6 +192,13 @@ public class GamePlayController : MonoBehaviour {
 		if (resp.status != 0) {
 			Debug.LogError ("status = " + resp.status + ", message = " + resp.errorMessage);
 			throw new UnityException (resp.errorMessage);
+		}
+
+
+		if (game == null) {
+			Debug.Log ("game is null, CreatGame() is called");
+			CreateGame ();
+
 		}
 		Reset ();
 
@@ -410,7 +426,7 @@ public class GamePlayController : MonoBehaviour {
 		//isPaused = pauseStatus;
 		Debug.Log("OnApplicationPause: pauseStatus = " + pauseStatus);
 
-		if (game.state == GameState.GameOver)
+		if (game != null  &&  (game.state == GameState.GameOver || game.state == GameState.BeforeStart ))
 			return;
 
 		if (pauseStatus) {

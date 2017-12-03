@@ -35,7 +35,11 @@ public class BeforeGameStartController : BaseStateController {
 	[SerializeField]
 	private Image card;
 
-	private Seat[] seats;
+	private Seat[] seats {
+		get {
+			return gamePlayerController.game.seats;
+		}
+	}
 
 	public bool isMoveSeat;
 	private int[] fromPositions;
@@ -48,8 +52,6 @@ public class BeforeGameStartController : BaseStateController {
 	// Use this for initialization
 	void Start () {
 		ssdk.shareHandler = ShareResultHandler;
-
-		seats = gamePlayerController.game.seats;
 
 		positions = new Vector3[seats.Length];
 		for(int i = 0; i < seats.Length; i++) {
@@ -113,6 +115,8 @@ public class BeforeGameStartController : BaseStateController {
 				foreach (Seat seat in seats) {
 					seat.UpdateUI (gamePlayerController.game);
 				}
+
+				gamePlayerController.ResetUI ();
 			}
 		} 
 	}
@@ -134,6 +138,7 @@ public class BeforeGameStartController : BaseStateController {
 		return seatIndex;
 	}
 
+	//没有做在
 	public bool IsNeedMoveSeat() {
 		return getMoveSeatIndex () != -1;
 	}
@@ -141,7 +146,7 @@ public class BeforeGameStartController : BaseStateController {
 
 	public void SetUI() {
 		var game = gamePlayerController.game;
-
+		Debug.Log ("game.roomNo = " + game.roomNo);
 		//需要循转座位
 		if ( IsNeedMoveSeat() ) {
 			//first has player seat index
@@ -268,7 +273,7 @@ public class BeforeGameStartController : BaseStateController {
 
 			seats[seatIndex].player = Player.Me;
 			Player.Me.seat = seats[seatIndex];
-			//Debug.Log("Player.Me.userId = " + Player.Me.userId);
+			Debug.Log("Player.Me.seat.seatIndex = " + Player.Me.seat.seatIndex);
 
 			foreach(Seat seat in seats) {
 				seat.UpdateUI(gamePlayerController.game);
@@ -297,6 +302,8 @@ public class BeforeGameStartController : BaseStateController {
 
 	//移动玩家
 	public void MoveSeats(int seatIndex) {
+		Debug.Log ("MoveSeats is called");
+
 		//如果坐在第一个位置，就不需要移动
 		if (seatIndex == 0)
 			return;
@@ -376,16 +383,15 @@ public class BeforeGameStartController : BaseStateController {
 		Debug.Log ("Share Click");
 		var game = gamePlayerController.game;
 		ShareContent content = new ShareContent();
-		//content.SetImageUrl("https://f1.webshare.mob.com/code/demo/img/1.jpg");
 		content.SetTitle("房间【" + game.roomNo + "】");
 		content.SetText("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
 		content.SetImageUrl("http://is5.mzstatic.com/image/thumb/Purple18/v4/d7/7e/2a/d77e2a15-3898-8fcf-9ea9-7e48a0593af0/source/512x512bb.jpg");
 		content.SetUrl("http://niu.yhkamani.com/share?room="+game.roomNo);
-		content.SetUrlDescription("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
-		content.SetDesc ("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
+		//content.SetUrlDescription("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
+		//content.SetDesc ("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
 
 		content.SetShareType (ContentType.Webpage);
-		ssdk.ShareContent (PlatformType.WechatPlatform, content);
+		ssdk.ShareContent (PlatformType.WeChat, content);
 	}
 
 

@@ -18,8 +18,16 @@ public class CheckCardController : BaseStateController {
 	[SerializeField]
 	private GameObject checkCardPanel;
 
-	private Deck deck;
-	private Seat[] seats;
+	private Deck deck {
+		get {
+			return gamePlayController.game.deck;
+		}
+	}
+	private Seat[] seats {
+		get {
+			return gamePlayController.game.seats;
+		}
+	}
 
 	private bool[] playerShowCardCompleted;
 	private bool[] isMoveCardArray;
@@ -43,8 +51,6 @@ public class CheckCardController : BaseStateController {
 	}
 
 	public void Init() {
-		deck = gamePlayController.game.deck;
-		seats = gamePlayController.game.seats;
 		stateTimeLeft = Constants.MaxStateTimeLeft;
 	}
 
