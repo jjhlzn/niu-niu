@@ -13,7 +13,7 @@ public class ServerUtils
 	{
 	}
 
-	public static string mainServer = "192.168.1.114";  //  "niu.yhkamani.com" ; //"192.168.1.114" ; //"localhost" ;  //"192.168.1.114";
+	public static string mainServer = "192.168.31.175";  //  "niu.yhkamani.com" ; //"192.168.1.114" ; //"localhost" ;  //"192.168.31.175";
 	public static string protocol = "http";
 	public static int port = 3001;
 	public static int socketIOPort = 3001;
@@ -35,8 +35,9 @@ public class ServerUtils
 	}
 
 
-	public static IEnumerator PostRequest(string url, string json, ResponseHandle handle)
+	public static IEnumerator PostRequest(string url, string json, ResponseHandle handle, ResponseHandle errorHandle = null)
 	{
+		Debug.Log ("Post Request: url = " + url);
 		var req = new UnityWebRequest(url, "POST");
 		byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
 		req.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
@@ -50,6 +51,11 @@ public class ServerUtils
 		if (req.isNetworkError)
 		{
 			Debug.Log("Error While Sending: " + req.error);
+			if (errorHandle != null)
+				errorHandle (req.error);
+			else {
+				Debug.Log ("errorHandler is null");
+			}
 		}
 		else
 		{

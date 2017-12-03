@@ -7,6 +7,7 @@ public class MusicController : MonoBehaviour {
 
 	private Dictionary<string, AudioSource> manAudios = new Dictionary<string, AudioSource>();
 	private Dictionary<string, AudioSource> womenAudios = new Dictionary<string, AudioSource>();
+	private AudioSource bgAudioSource;
 
 	void Awake() {
 		SetUp ();
@@ -23,8 +24,6 @@ public class MusicController : MonoBehaviour {
 	}
 
 	private void SetUp() {
-		
-
 		foreach (AudioItem item in AudioItem.audioItems) {
 			AudioSource audioSource = gameObject.AddComponent<AudioSource>();
 			audioSource.clip = Resources.Load(item.fileName) as AudioClip;
@@ -35,14 +34,36 @@ public class MusicController : MonoBehaviour {
 		}
 
 
-		AudioSource bgAudioSource = gameObject.AddComponent<AudioSource>();
+	    bgAudioSource = gameObject.AddComponent<AudioSource>();
 		bgAudioSource.clip = Resources.Load("sounds/GameSound") as AudioClip;
 		bgAudioSource.volume = 0.3f;
 		bgAudioSource.loop = true;
-		//bgAudioSource.Play (); 
+		if (IsMusicOn())
+			bgAudioSource.Play (); 
+	}
+
+
+	private bool IsAudioOn() {
+		return PlayerPrefs.GetInt (Utils.Audio_Key, 1) != 0;
+	}
+
+	private bool IsMusicOn() {
+		return PlayerPrefs.GetInt (Utils.Music_Key, 1) != 0;
+	}
+
+	public void PlayBackgroundMusic(bool play) {
+		if (play) {
+			bgAudioSource.Play ();
+		} else {
+			bgAudioSource.Stop ();
+		}
 	}
 
 	public void Play(string audioName, int sex = 1, bool isLoop = false ) {
+		if (!IsAudioOn()) {
+			return;
+		}
+
 		if (manAudios.ContainsKey (audioName)) {
 			manAudios [audioName].loop = isLoop;
 			if (!manAudios [audioName].isPlaying) {
@@ -52,6 +73,10 @@ public class MusicController : MonoBehaviour {
 	}
 
 	public void Stop(string audioName, int sex = 1) {
+		if (!IsAudioOn()) {
+			return;
+		}
+
 		if (manAudios.ContainsKey(audioName)) {
 			if (manAudios[audioName].isPlaying) {
 				manAudios[audioName].Stop();

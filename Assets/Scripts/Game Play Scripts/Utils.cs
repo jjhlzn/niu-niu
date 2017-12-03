@@ -8,6 +8,9 @@ public class Utils
 {
 	public static string Message_Key = "message";
 
+	public static string Music_Key = "Music";
+	public static string Audio_Key = "Audio";
+
 	public Utils ()
 	{
 	}

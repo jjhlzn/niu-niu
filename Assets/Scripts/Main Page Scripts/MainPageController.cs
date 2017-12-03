@@ -30,6 +30,22 @@ public class MainPageController : MonoBehaviour {
 	private Text[] numberLabels;
 	private int curNumberIndex;
 
+	[SerializeField]
+	private GameObject createRoomPanel;
+
+	[SerializeField]
+	private GameObject settingsPanel;
+	[SerializeField]
+	private Button musicButton;
+	[SerializeField]
+	private Button audioButton;
+
+	public static string Music_On_Key = "Music_On";
+	public static string Music_Off_Key = "Music_Off";
+	public static string Audio_On_Key = "Audio_On";
+	public static string Audio_Off_Key = "Audio_Off";
+	private Dictionary<string, Sprite> audioSettingsImageDict = new Dictionary<string, Sprite> ();
+	private Dictionary<string, Sprite> gamePropertiesImageDict = new Dictionary<string ,Sprite>();
 
 	// Use this for initialization
 	void Start () {
@@ -51,6 +67,15 @@ public class MainPageController : MonoBehaviour {
 		CheckPlayerInGame ();
 		ShowMessageIfNeed ();
 
+		Sprite[] sprites = Resources.LoadAll<Sprite>("sprites/mainpage/createroom");
+		foreach (Sprite sprite in sprites) {
+			gamePropertiesImageDict [sprite.name] = sprite;
+		}
+
+		audioSettingsImageDict[Music_On_Key] = Resources.Load<Sprite> ("sprites/mainpage/settings/btn_open");
+		audioSettingsImageDict[Audio_On_Key] = Resources.Load<Sprite> ("sprites/mainpage/settings/btn_open");
+		audioSettingsImageDict[Music_Off_Key] = Resources.Load<Sprite> ("sprites/mainpage/settings/btn_close");
+		audioSettingsImageDict[Audio_Off_Key] = Resources.Load<Sprite> ("sprites/mainpage/settings/btn_close");
 	}
 	
 	// Update is called once per frame
@@ -78,7 +103,17 @@ public class MainPageController : MonoBehaviour {
 		messagePanel.SetActive (true);
 	}
 
+	private void HideMessagePanel() {
+		messagePanel.SetActive (false);
+	}
+
+	public void ShowCreateRoomClick() {
+		createRoomPanel.SetActive (true);
+
+	}
+
 	public void CreateRoomClick() {
+		
 		//创建房间
 		Debug.Log("create room click");
 		ResponseHandle createRoom = delegate(string jsonString){
@@ -93,7 +128,36 @@ public class MainPageController : MonoBehaviour {
 			}
 		};
 		Debug.Log ("createRoomUrl: " + ServerUtils.GetCreateRoomUrl());
-		StartCoroutine (PostRequest(ServerUtils.GetCreateRoomUrl(), JsonConvert.SerializeObject(new {userId = Player.Me.userId}), createRoom));
+
+		var req = new {
+			userId = Player.Me.userId,
+			jushu = int.Parse(GetGameProperty("gameproperty_jushu")),
+			fangfei = GetGameProperty("gameproperty_fangfei"),
+			fengshu = GetGameProperty("gameproperty_fengshu"),
+			qz = GetGameProperty("gameproperty_qz"),
+			wanfa = GetGameProperty("gameproperty_wanfa")
+		};
+
+		StartCoroutine (PostRequest(ServerUtils.GetCreateRoomUrl(), JsonConvert.SerializeObject(req), createRoom));
+	}
+		
+
+	private string GetGameProperty(string tag) {
+		GameObject[] objs = GameObject.FindGameObjectsWithTag (tag);
+		foreach (GameObject obj in objs) {
+			Button btn = obj.GetComponent<Button> ();
+			if (btn.image.sprite.name.EndsWith ("_y")) {
+				int index = btn.image.name.IndexOf ("_");
+				string result = btn.name.Substring (index + 1);
+				Debug.Log (result);
+				return result;
+			}
+		}
+		return "";
+	}
+
+	public void CloseCreateRoomClick() {
+		createRoomPanel.SetActive (false);
 	}
 
 	void OnDestory() {
@@ -210,7 +274,14 @@ public class MainPageController : MonoBehaviour {
 				ShowConfirmMessagePanel("该房间不存在");
 			}
 		};
-		StartCoroutine( ServerUtils.PostRequest(ServerUtils.GetRoomUrl(), JsonConvert.SerializeObject(new {roomNo = roomNo}), handler));
+
+		ResponseHandle errorHandler = delegate (string error) {
+			Debug.Log("errorHandler is called");
+			HideMessagePanel();
+			ShowConfirmMessagePanel("连接服务器失败，请检查你的网络");	
+		};
+
+		StartCoroutine( ServerUtils.PostRequest(ServerUtils.GetRoomUrl(), JsonConvert.SerializeObject(new {roomNo = roomNo}), handler, errorHandler));
 	}
 
 	public void JoinRoomFromUrl( string url )  
@@ -221,6 +292,87 @@ public class MainPageController : MonoBehaviour {
 		JoinRoom (roomNo);
 	}  
 
+
+	public void GamePropertyClick() {
+		string name = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
+
+		string tag = "";
+		if (name.StartsWith ("jushu_")) {
+			tag = "gameproperty_jushu";
+			
+		} else if (name.StartsWith("fangfei_")){
+			tag = "gameproperty_fangfei";
+		} else if (name.StartsWith("qz_")) {
+			tag = "gameproperty_qz";
+		} else if (name.StartsWith("wanfa_")) {
+			tag = "gameproperty_wanfa";
+		} else if (name.StartsWith("fengshu_")) {
+			tag = "gameproperty_fengshu";
+		}
+
+		if (!string.IsNullOrEmpty (tag)) {
+			GameObject[] objs = GameObject.FindGameObjectsWithTag (tag);
+			foreach (GameObject obj in objs) {
+				Button btn = obj.GetComponent<Button>();
+				string spriteName = "";
+				if (btn.name == name) {
+					spriteName = btn.name + "_y";
+				} else {
+					spriteName = btn.name + "_n";
+				}
+
+				Debug.Log ("spriteName = " + spriteName);
+				btn.image.sprite = gamePropertiesImageDict [spriteName];
+				//btn.transform.localScale = new Vector3 (1f, 1f);
+			}
+		}
+	}
+
+	public void ShowSettingsClick() {
+		bool isMusicOn = PlayerPrefs.GetInt (Utils.Music_Key, 1) != 0;
+		bool isAudioOn = PlayerPrefs.GetInt (Utils.Audio_Key, 1) != 0;
+		if (isMusicOn) {
+			musicButton.image.sprite = this.audioSettingsImageDict [Music_On_Key];
+		} else {
+			musicButton.image.sprite = this.audioSettingsImageDict [Music_Off_Key];
+		}
+
+		if (isAudioOn) {
+			audioButton.image.sprite = audioSettingsImageDict [Audio_On_Key];
+		} else {
+			audioButton.image.sprite = audioSettingsImageDict [Audio_Off_Key];
+		}
+		settingsPanel.SetActive (true);
+	}
+
+	public void CloseSettingsClick() {
+		settingsPanel.SetActive (false);
+	}
+
+	public void MusicButtonClick() {
+		bool isMusicOn = PlayerPrefs.GetInt (Utils.Music_Key, 1) != 0;
+		if (isMusicOn) {
+			musicButton.image.sprite = this.audioSettingsImageDict [Music_Off_Key];
+			PlayerPrefs.SetInt (Utils.Music_Key, 0);
+			MusicController.instance.PlayBackgroundMusic (false);
+		} else {
+			musicButton.image.sprite = this.audioSettingsImageDict [Music_On_Key];
+			PlayerPrefs.SetInt (Utils.Music_Key, 1);
+			MusicController.instance.PlayBackgroundMusic (true);
+		}
+
+	}
+
+	public void AudioButtonClick() {
+		bool isAudioOn = PlayerPrefs.GetInt (Utils.Audio_Key, 1) != 0;
+		if (isAudioOn) {
+			audioButton.image.sprite = this.audioSettingsImageDict [Audio_Off_Key];
+			PlayerPrefs.SetInt (Utils.Audio_Key, 0);
+		} else {
+			audioButton.image.sprite = this.audioSettingsImageDict [Audio_On_Key];
+			PlayerPrefs.SetInt (Utils.Audio_Key, 1);
+		}
+	}
 
 	private void LoadActivityParamsForAndroid() {
 		if (Application.platform != RuntimePlatform.Android)

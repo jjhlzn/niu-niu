@@ -81,6 +81,19 @@ public class SetupCardGame : BaseStateController {
 	[SerializeField]
 	private GameOverPanel gameOverPanel;
 
+	[SerializeField]
+	private GameObject settingsPanel;
+	[SerializeField]
+	private Button musicButton;
+	[SerializeField]
+	private Button audioButton;
+
+	public static string Music_On_Key = "Music_On";
+	public static string Music_Off_Key = "Music_Off";
+	public static string Audio_On_Key = "Audio_On";
+	public static string Audio_Off_Key = "Audio_Off";
+	private Dictionary<string, Sprite> audioSettingsImageDict = new Dictionary<string, Sprite> ();
+
 	void Awake() {
 		CreateDeck ();
 		SeatSeatUIs ();
@@ -101,7 +114,14 @@ public class SetupCardGame : BaseStateController {
 		menuButton.transform.SetParent (canvas.transform);
 		menuButton.transform.SetAsLastSibling ();
 
+		SetSettingsPanel ();
+	}
 
+	private void SetSettingsPanel() {
+		audioSettingsImageDict[Music_On_Key] = Resources.Load<Sprite> ("sprites/gameplay/settings/btn_open@0.67x");
+		audioSettingsImageDict[Audio_On_Key] = Resources.Load<Sprite> ("sprites/gameplay/settings/btn_open@0.67x");
+		audioSettingsImageDict[Music_Off_Key] = Resources.Load<Sprite> ("sprites/gameplay/settings/btn_close@0.67x");
+		audioSettingsImageDict[Audio_Off_Key] = Resources.Load<Sprite> ("sprites/gameplay/settings/btn_close@0.67x");
 	}
 
 	private void SetGameOverPanel() {
@@ -672,6 +692,54 @@ public class SetupCardGame : BaseStateController {
 			betButtonPositionsFo3Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);
 			betLabelPositionsFo3Button [i] = new Vector3 (X / TransformConstant, YForLabel / TransformConstant, 0);
 			X += 88;
+		}
+	}
+
+	public void ShowSettingsClick() {
+		bool isMusicOn = PlayerPrefs.GetInt (Utils.Music_Key, 1) != 0;
+		bool isAudioOn = PlayerPrefs.GetInt (Utils.Audio_Key, 1) != 0;
+		if (isMusicOn) {
+			musicButton.image.sprite = this.audioSettingsImageDict [MainPageController.Music_On_Key];
+		} else {
+			musicButton.image.sprite = this.audioSettingsImageDict [MainPageController.Music_Off_Key];
+		}
+
+		if (isAudioOn) {
+			audioButton.image.sprite = audioSettingsImageDict [MainPageController.Audio_On_Key];
+		} else {
+			audioButton.image.sprite = audioSettingsImageDict [MainPageController.Audio_Off_Key];
+		}
+		settingsPanel.SetActive (true);
+		CloseMenuClick ();
+	}
+
+	public void CloseSettingsClick() {
+		settingsPanel.SetActive (false);
+
+	}
+
+	public void MusicButtonClick() {
+		bool isMusicOn = PlayerPrefs.GetInt (Utils.Music_Key, 1) != 0;
+		if (isMusicOn) {
+			musicButton.image.sprite = this.audioSettingsImageDict [MainPageController.Music_Off_Key];
+			PlayerPrefs.SetInt (Utils.Music_Key, 0);
+			MusicController.instance.PlayBackgroundMusic (false);
+		} else {
+			musicButton.image.sprite = this.audioSettingsImageDict [MainPageController.Music_On_Key];
+			PlayerPrefs.SetInt (Utils.Music_Key, 1);
+			MusicController.instance.PlayBackgroundMusic (true);
+		}
+
+	}
+
+	public void AudioButtonClick() {
+		bool isAudioOn = PlayerPrefs.GetInt (Utils.Audio_Key, 1) != 0;
+		if (isAudioOn) {
+			audioButton.image.sprite = this.audioSettingsImageDict [MainPageController.Audio_Off_Key];
+			PlayerPrefs.SetInt (Utils.Audio_Key, 0);
+		} else {
+			audioButton.image.sprite = this.audioSettingsImageDict [MainPageController.Audio_On_Key];
+			PlayerPrefs.SetInt (Utils.Audio_Key, 1);
 		}
 	}
 }

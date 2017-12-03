@@ -33,6 +33,11 @@ TagManager:
   - showCardPosition5
   - ReadyImage
   - chipLabelBackground
+  - gameproperty_jushu
+  - gameproperty_fangfei
+  - gameproperty_qz
+  - gameproperty_wanfa
+  - gameproperty_fengshu
   layers:
   - Default
   - TransparentFX
