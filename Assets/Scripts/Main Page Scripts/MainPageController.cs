@@ -92,6 +92,7 @@ public class MainPageController : MonoBehaviour {
 	}
 
 	private void ShowConfirmMessagePanel(string msg) {
+		HideMessagePanel ();
 		messageLabel.text = msg;
 		messageLabel.gameObject.SetActive (true);
 		confirmMessagePanel.SetActive (true);
@@ -133,7 +134,7 @@ public class MainPageController : MonoBehaviour {
 			userId = Player.Me.userId,
 			jushu = int.Parse(GetGameProperty("gameproperty_jushu")),
 			fangfei = GetGameProperty("gameproperty_fangfei"),
-			fengshu = GetGameProperty("gameproperty_fengshu"),
+			fengshu = GetGameProperty("gameproperty_fs"),
 			qz = GetGameProperty("gameproperty_qz"),
 			wanfa = GetGameProperty("gameproperty_wanfa")
 		};
@@ -295,23 +296,24 @@ public class MainPageController : MonoBehaviour {
 
 	public void GamePropertyClick() {
 		string name = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
-
+		Debug.Log ("name = " + name);
+		Debug.Log("name.StartsWith(\"fs_\")" + name.StartsWith("fs_"));
 		string tag = "";
 		if (name.StartsWith ("jushu_")) {
 			tag = "gameproperty_jushu";
-			
 		} else if (name.StartsWith("fangfei_")){
 			tag = "gameproperty_fangfei";
 		} else if (name.StartsWith("qz_")) {
 			tag = "gameproperty_qz";
 		} else if (name.StartsWith("wanfa_")) {
 			tag = "gameproperty_wanfa";
-		} else if (name.StartsWith("fengshu_")) {
-			tag = "gameproperty_fengshu";
+		} else if (name.StartsWith("fs_")) {
+			tag = "gameproperty_fs";
 		}
-
+		Debug.Log ("tag = " + tag);
 		if (!string.IsNullOrEmpty (tag)) {
 			GameObject[] objs = GameObject.FindGameObjectsWithTag (tag);
+			Debug.Log ("objs.length = " + objs.Length);
 			foreach (GameObject obj in objs) {
 				Button btn = obj.GetComponent<Button>();
 				string spriteName = "";

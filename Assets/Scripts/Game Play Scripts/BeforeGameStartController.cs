@@ -125,10 +125,13 @@ public class BeforeGameStartController : BaseStateController {
 	public int getMoveSeatIndex() {
 		var game = gamePlayerController.game;
 		int seatIndex = -1;
-		if (Player.Me.isPlaying && Player.Me.seat.seatIndex != 0) { 
+		Debug.Log ("game.seats = " + seats);
+		Debug.Log ("game.seats.length = " + seats.Length);
+		if (Player.Me.isPlaying && Player.Me.seat != null && Player.Me.seat.seatIndex != 0) { 
 			seatIndex = Player.Me.seat.seatIndex;
 		} else if (game.state != GameState.BeforeStart && !seats [0].hasPlayer ()) {
 			for (int i = 0; i < Game.SeatCount; i++) {
+				Debug.Log ("seats[" + i + "].hasPlayer() = " + seats [i].hasPlayer ());
 				if (seats [i].hasPlayer () && seats[i].player.isPlaying) {
 					seatIndex = i;
 					break;

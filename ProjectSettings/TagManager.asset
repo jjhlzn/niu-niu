@@ -37,7 +37,7 @@ TagManager:
   - gameproperty_fangfei
   - gameproperty_qz
   - gameproperty_wanfa
-  - gameproperty_fengshu
+  - gameproperty_fs
   layers:
   - Default
   - TransparentFX
