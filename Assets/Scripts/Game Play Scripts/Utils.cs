@@ -60,6 +60,10 @@ public class Utils
 			return "PC_Or_MAC";
 	}
 
+	public static string GetVersion() {
+		return Application.version;
+	}
+
 
 }
 

@@ -61,6 +61,7 @@ public class BeforeGameStartController : BaseStateController {
 
 		isMoveSeat = false;
 		//isSeat = false;
+
 	}
 
 	/**
@@ -508,6 +509,9 @@ public class BeforeGameStartController : BaseStateController {
 			return;
 
 		if (gamePlayerController.game.roomNo != notify.roomNo)
+			return;
+
+		if (gamePlayerController.game.creater == Player.Me.userId)
 			return;
 
 		Dictionary<string, string> parameters = new Dictionary<string, string> ();

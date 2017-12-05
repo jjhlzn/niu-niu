@@ -10,7 +10,7 @@ using System.Net;
 using System;
 using System.IO;
 
-public class LoginController : MonoBehaviour {
+public class LoginController : BaseMonoBehaviour {
 
 	public static bool isFromLogin = false;
 

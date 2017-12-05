@@ -98,22 +98,7 @@ public class RoomController : MonoBehaviour
 		setupGame.CloseMenuClick ();
 	}
 
-	public void HandleResponse(DismissRoomResponse notify) {
-		var game = gamePlayController.game;
-		if (Player.Me.userId == game.creater) {
-			return;
-		}
 
-		if (game.roomNo == notify.roomNo) {
-
-			Dictionary<string, string> parameters = new Dictionary<string, string> ();
-			parameters[Utils.Message_Key] = "该房间已经被解散了";
-
-			//处理
-			Scenes.Load ("MainPage", parameters);
-		}
-
-	}
 
 
 

@@ -5,7 +5,7 @@ using socket.io;
 using Newtonsoft.Json;
 using System;
 
-public class Connect : MonoBehaviour {
+public class Connect : BaseMonoBehaviour {
 	private const float retryTimeInterval = 5; //服务器中断，重连间隔时间
 
 	[SerializeField]

@@ -13,7 +13,7 @@ public class ServerUtils
 	{
 	}
 
-	public static string mainServer = "192.168.1.114";  //  "niu.yhkamani.com" ; //"192.168.1.114" ; //"localhost" ;  //"192.168.31.175";
+	public static string mainServer = "192.168.31.175";  //  "niu.yhkamani.com" ; //"192.168.1.114" ; //"localhost" ;  //"192.168.31.175";
 	public static string protocol = "http";
 	public static int port = 3001;
 	public static int socketIOPort = 3001;
@@ -36,6 +36,10 @@ public class ServerUtils
 
 	public static string CheckUpdateUrl() {
 		return protocol + "://" + mainServer + ":" + port + "/checkupdate";
+	}
+
+	public static string ReportErrorUrl() {
+		return protocol + "://" + mainServer + ":" + port + "/reporterror";
 	}
 
 	public static IEnumerator PostRequest(string url, string json, ResponseHandle handle, ResponseHandle errorHandle = null)
@@ -63,9 +67,12 @@ public class ServerUtils
 		else
 		{
 			Debug.Log("Received: " + req.downloadHandler.text);
-			handle (req.downloadHandler.text);
+			if (handle != null)
+				handle (req.downloadHandler.text);
 		}
 	}
+
+
 }
 
 

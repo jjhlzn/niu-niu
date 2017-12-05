@@ -4,9 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using System;
 using Newtonsoft.Json;
 
-public class MainPageController : MonoBehaviour {
+public class MainPageController : BaseMonoBehaviour {
 
 	[SerializeField]
 	private Text nickNameLabel;
@@ -49,6 +50,8 @@ public class MainPageController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		Debug.Log ("---------------------------------------------");
+		Debug.Log ("MainPageController.Start() called");
 		//Player.Me = LoginController.CreateMockPlayer ();
 		if (!LoginController.isFromLogin) {
 			Player.Me = LoginController.CreateMockPlayer ();
@@ -80,6 +83,9 @@ public class MainPageController : MonoBehaviour {
 		audioSettingsImageDict[Audio_Off_Key] = Resources.Load<Sprite> ("sprites/mainpage/settings/btn_close");
 
 		CheckPlayerInGame ();
+
+		//String a = null;
+		//a.ToString ();
 	}
 	
 	// Update is called once per frame
@@ -408,10 +414,24 @@ public class MainPageController : MonoBehaviour {
 	{
 		if (pauseStatus) {
 		} else {  //回到主界面
-			Debug.Log("");
 			LoadActivityParamsForAndroid();
 		}
 	}
+
+	void OnEnable()
+	{
+		//if (!IsLogCallbackRegistered (LogCallback)) {
+			Application.logMessageReceived += LogCallback;
+		//}
+	}
+
+	void OnDisable() {
+		//if (IsLogCallbackRegistered (LogCallback)) {
+			Application.logMessageReceived -= LogCallback;
+		//}
+
+	}
+
 
 }
 	

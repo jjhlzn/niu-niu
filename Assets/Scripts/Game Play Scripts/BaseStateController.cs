@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseStateController : MonoBehaviour {
+public abstract class BaseStateController : BaseMonoBehaviour {
 
 	public abstract void Reset ();
 
@@ -13,5 +13,4 @@ public abstract class BaseStateController : MonoBehaviour {
 			return;
 		}
 	}
-
 }

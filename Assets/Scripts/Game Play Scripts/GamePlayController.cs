@@ -1,15 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
 using UnityEngine.UI;
-using socket.io;
+using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
+using socket.io;
+using System;
 
 using cn.sharesdk.unity3d;
 
 
-public class GamePlayController : MonoBehaviour {
+public class GamePlayController : BaseMonoBehaviour {
 	[SerializeField]
 	private SetupCardGame setupCardGame;
 
@@ -79,7 +81,8 @@ public class GamePlayController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Debug.Log ("GamePlayController Start");
+		Debug.Log ("--------------------------------------------------------");
+		Debug.Log ("GamePlayController.Start() called");
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
 		CreateGame ();
@@ -471,4 +474,17 @@ public class GamePlayController : MonoBehaviour {
 			connectFailMessagePanel.gameObject.SetActive (true);
 		}
 	}
+
+	void OnEnable()
+	{
+		Application.logMessageReceived += LogCallback;
+	}
+
+	void OnDisable() {
+
+		Application.logMessageReceived -= LogCallback;
+	}
+
+
+
 }

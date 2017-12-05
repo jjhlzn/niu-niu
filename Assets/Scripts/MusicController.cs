@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MusicController : MonoBehaviour {
+public class MusicController : BaseMonoBehaviour {
 	public static MusicController instance;
 
 	private Dictionary<string, AudioSource> manAudios = new Dictionary<string, AudioSource>();

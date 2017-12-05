@@ -30,6 +30,7 @@ public class CheckCardController : BaseStateController {
 	}
 
 	private bool[] playerShowCardCompleted;
+	private bool[] isTurnCardArray;
 	private bool[] isMoveCardArray;
 	private bool[] hasPlayedNiu = new bool[Game.SeatCount];
 	//private bool hasShowCard = false;
@@ -37,12 +38,14 @@ public class CheckCardController : BaseStateController {
 
 	public void Awake() {
 		isMoveCardArray = new bool[Game.SeatCount];
+		isTurnCardArray = new bool[Game.SeatCount];
 		playerShowCardCompleted = new bool[Game.SeatCount];
 	}
 
 	public override void Reset() {
 	    // hasShowCard = false;
 		isMoveCardArray = new bool[Game.SeatCount];
+		isTurnCardArray = new bool[Game.SeatCount];
 		playerShowCardCompleted = new bool[Game.SeatCount];
 		stateTimeLeft = Constants.MaxStateTimeLeft;
 		for (int i = 0; i < Game.SeatCount; i++) {
@@ -147,6 +150,12 @@ public class CheckCardController : BaseStateController {
 	private void CheckCardAnimation() {
 		var round = gamePlayController.game.currentRound;
 		if (secondDealController.isSecondDealDone) {
+			for (int i = 0; i < isTurnCardArray.Length; i++) {
+				if (isTurnCardArray [i]) {
+					StartCoroutine (TurnUserCardsUp (i));
+				}
+			}
+
 			for (int i = 0; i < isMoveCardArray.Length; i++) {
 				if (isMoveCardArray [i]) {
 					Image[] cards = seats [i].player.cards;
@@ -219,6 +228,8 @@ public class CheckCardController : BaseStateController {
 	}
 
 	IEnumerator TurnUserCardsUp(int seatIndex) {
+		isTurnCardArray [seatIndex] = false;
+
 		var game = gamePlayController.game;
 		var round = game.currentRound;
 		string[] cardPoints = round.playerCardsDict [game.seats [seatIndex].player.userId];
@@ -317,7 +328,8 @@ public class CheckCardController : BaseStateController {
 		if (seatIndex == 0) {
 			HandleUser0ShowCardNotify (notify.niu, notify.cardSequences, notify.multiple);
 		} else {
-			StartCoroutine(TurnUserCardsUp (seatIndex));
+			//StartCoroutine(TurnUserCardsUp (seatIndex));
+			isTurnCardArray[seatIndex] = true;
 		}
 
 	}

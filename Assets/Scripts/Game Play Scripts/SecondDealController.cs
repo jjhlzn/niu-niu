@@ -120,6 +120,7 @@ public class SecondDealController : BaseStateController {
 				StartCoroutine (GoToNextState ());
 				isSecondDealing = false;
 				isSecondDealDone = true;
+				Debug.Log ("SecondDealAnimation done");
 			}
 		}
 	}

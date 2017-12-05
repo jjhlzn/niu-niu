@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using socket.io;
 
 //将图片进行缓存
-public class ImageLoader : MonoBehaviour
+public class ImageLoader : BaseMonoBehaviour
 {
 	private Dictionary<string, Sprite> dict = new Dictionary<string, Sprite> ();
 
