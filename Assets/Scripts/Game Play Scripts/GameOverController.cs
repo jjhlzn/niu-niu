@@ -80,7 +80,15 @@ public class GameOverController : BaseStateController {
 		ShareContent content = new ShareContent();
 		//content.SetText("房间【" + game.roomNo + "】");
 		content.SetTitle("");
-		content.SetImagePath(Application.temporaryCachePath.Replace("cache", "files") + "/zhanji.png");
+
+		if (Application.platform == RuntimePlatform.Android) {
+			string url = Application.temporaryCachePath.Replace ("cache", "files") + "/zhanji.png";
+			content.SetImagePath (url);
+		} else {
+			string url = Application.temporaryCachePath.Replace ("cache", "files") + "/zhanji.png";
+			Debug.Log ("share image url: " + url);
+			content.SetImagePath (url);
+		}
 		content.SetShareType(ContentType.Image);
 		ssdk.ShareContent (PlatformType.WeChat, content);
 	}

@@ -150,8 +150,9 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.jinjunhang.onlineclass
     iOS: com.jufang.jfzs
-  buildNumber: {}
-  AndroidBundleVersionCode: 1
+  buildNumber:
+    iOS: 3
+  AndroidBundleVersionCode: 2
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1

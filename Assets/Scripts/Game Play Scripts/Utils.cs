@@ -14,6 +14,28 @@ public class Utils
 	public Utils ()
 	{
 	}
+
+	public static void ShowConfirmMessagePanel(string msg, GameObject panel) {
+		
+		Text label = panel.GetComponentInChildren<Text> ();
+		if (label != null)
+			label.text = msg;
+		panel.SetActive (true);
+		
+	}
+
+	public static void ShowMessagePanel(string msg, GameObject panel) {
+		
+		Text label = panel.GetComponentInChildren<Text> ();
+		if (label != null)
+			label.text = msg;
+		panel.SetActive (true);
+		
+	}
+
+	public static void HideMessagePanel(GameObject panel) {
+		panel.SetActive (false);
+	}
 		
 	public static bool isTwoPositionIsEqual(Vector3 v1, Vector3 v2) {
 		
@@ -28,6 +50,17 @@ public class Utils
 			return "+" + number;
 		return "" + number;
 	}
+
+	public static string GetPlatform() {
+		if (Application.platform == RuntimePlatform.Android)
+			return "Android";
+		else if (Application.platform == RuntimePlatform.IPhonePlayer)
+			return "iOS";
+		else
+			return "PC_Or_MAC";
+	}
+
+
 }
 
 

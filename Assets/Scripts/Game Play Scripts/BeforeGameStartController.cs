@@ -175,7 +175,7 @@ public class BeforeGameStartController : BaseStateController {
 		if (game.state == GameState.BeforeStart) {
 			startButton.gameObject.SetActive (true);
 			shareButton.gameObject.SetActive (true);
-			if (Player.Me.isPlaying)
+			if (Player.Me.isPlaying && Player.Me.userId != game.creater)
 				standUpButton.interactable = true;
 			else
 				standUpButton.interactable = false;
@@ -267,7 +267,8 @@ public class BeforeGameStartController : BaseStateController {
 			//isSeat = true;
 			leaveRoomBtn.interactable = false;
 
-			standUpButton.interactable = true;
+			if (Player.Me.userId != game.creater)
+				standUpButton.interactable = true;
 			if (gamePlayerController.game.PlayerCount < 2) {
 				startButton.interactable = false;
 			} else {

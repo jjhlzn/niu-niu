@@ -58,13 +58,15 @@ public class MainPageController : MonoBehaviour {
 		coinLabel.text = "1000";
 
 		ImageLoader.Instance.Load (Player.Me.headimgurl, (Sprite sprite) => {
-			userImage.sprite = sprite;
-			Player.Me.userHeadImage = userImage.sprite; 
+			if (sprite != null && userImage != null) {
+				userImage.sprite = sprite;
+				Player.Me.userHeadImage = userImage.sprite; 
+			}
 		});
 
 		ResetNumberLabels ();
 
-		CheckPlayerInGame ();
+
 		ShowMessageIfNeed ();
 
 		Sprite[] sprites = Resources.LoadAll<Sprite>("sprites/mainpage/createroom");
@@ -76,11 +78,12 @@ public class MainPageController : MonoBehaviour {
 		audioSettingsImageDict[Audio_On_Key] = Resources.Load<Sprite> ("sprites/mainpage/settings/btn_open");
 		audioSettingsImageDict[Music_Off_Key] = Resources.Load<Sprite> ("sprites/mainpage/settings/btn_close");
 		audioSettingsImageDict[Audio_Off_Key] = Resources.Load<Sprite> ("sprites/mainpage/settings/btn_close");
+
+		CheckPlayerInGame ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
 	}
 
 	private void ShowMessageIfNeed() {
@@ -110,7 +113,6 @@ public class MainPageController : MonoBehaviour {
 
 	public void ShowCreateRoomClick() {
 		createRoomPanel.SetActive (true);
-
 	}
 
 	public void CreateRoomClick() {

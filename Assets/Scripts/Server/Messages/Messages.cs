@@ -210,3 +210,8 @@ public class SomePlayerNotDeleteNotify : BaseGameResponse {
 
 public class RoomHasDismissedNotify : BaseGameResponse {
 }
+
+public class CheckUpdateResponse : BaseGameResponse {
+	public bool isNeedUpdate;
+	public string updateUrl = "";
+}
