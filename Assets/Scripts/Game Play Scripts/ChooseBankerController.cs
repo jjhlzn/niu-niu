@@ -85,13 +85,7 @@ public class ChooseBankerController : BaseStateController {
 		ChooseBankerAnimation ();
 
 	}
-
-	public void SetUI() {
-		var game = gamePlayController.game;
-		int seatIndex = game.GetSeatIndex (game.currentRound.banker);
-		bankerSign.gameObject.transform.position = seats [seatIndex].bankerSignPosition;
-		bankerSign.gameObject.SetActive (true);
-	}
+		
 
 	IEnumerator SetRobingBorderImage() {
 		yield return new WaitForSeconds (.5f);
@@ -208,5 +202,11 @@ public class ChooseBankerController : BaseStateController {
 			chooseCompleted = true;
 	}
 		
+	public void SetUI() {
+		var game = gamePlayController.game;
+		int seatIndex = game.GetSeatIndex (game.currentRound.banker);
+		bankerSign.gameObject.transform.position = seats [seatIndex].bankerSignPosition;
+		bankerSign.gameObject.SetActive (true);
+	}
 		
 }

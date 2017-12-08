@@ -88,37 +88,37 @@ public class CompareCardController : BaseStateController {
 					playingPlayers [i].score = scoreDict [playingPlayers [i].userId];
 				}
 
-				List<string> moveToBankerPlayers = new List<string> ();
-				List<string> moveFromBankerToPlayers = new List<string> (); 
+				List<string> losers = new List<string> ();
+				List<string> winners = new List<string> (); 
 				foreach (var item in resultDict) {
 					if (item.Key != game.currentRound.banker) {
 						if (item.Value < 0) {
-							moveToBankerPlayers.Add (item.Key);
+							losers.Add (item.Key);
 						}
 						if (item.Value > 0) {
-							moveFromBankerToPlayers.Add (item.Key);
+							winners.Add (item.Key);
 						}
 					}
 				}
-				MoveChips (moveToBankerPlayers, moveFromBankerToPlayers);
+				MoveChips (losers, winners);
 			}
 		}
 	}
 
 
 
-	private void MoveChips(List<string> playerIdsLoseToBanker, List<string> playerIdsWinFromBanker) {
-		if (playerIdsLoseToBanker.Count != 0) {
+	private void MoveChips(List<string> loserIds, List<string> winnerIds) {
+		if (loserIds.Count != 0) {
 			var game = gamePlayController.game;
 			int to = game.GetSeatIndex (game.currentRound.banker);
 			Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
 
-			for(int i =0; i < playerIdsLoseToBanker.Count; i++) {
-				string id = playerIdsLoseToBanker [i];
+			for(int i =0; i < loserIds.Count; i++) {
+				string id = loserIds [i];
 				int from = game.GetSeatIndex (id);
-				if (i == playerIdsLoseToBanker.Count - 1) {
+				if (i == loserIds.Count - 1) {
 					MoveChips (from, to, () => {
-						MoveChipFromBankerToPlayers (playerIdsWinFromBanker);
+						MoveChipFromBankerToPlayers (winnerIds);
 					});
 				} else {
 					MoveChips (from, to);
@@ -126,7 +126,7 @@ public class CompareCardController : BaseStateController {
 			}
 			StartCoroutine (PlayMoveChipsAudio ());
 		} else {
-			MoveChipFromBankerToPlayers (playerIdsWinFromBanker);
+			MoveChipFromBankerToPlayers (winnerIds);
 		}
 	}
 		
@@ -134,19 +134,20 @@ public class CompareCardController : BaseStateController {
 		StartCoroutine (ExecMoveChipFromBankerToPlayers (ids));
 	}
 
-	private IEnumerator ExecMoveChipFromBankerToPlayers(List<string> ids) {
+	private IEnumerator ExecMoveChipFromBankerToPlayers(List<string> userIds) {
+		Debug.Log ("MoveChipFromBankerToPlayers() called");
 		yield return new WaitForSeconds (.3f);
 
 		var game = gamePlayController.game;
 		int from = game.GetSeatIndex (game.currentRound.banker);
 
-		if (ids.Count != 0) {
-			for(int i =0; i < ids.Count; i++) {
-				string id = ids [i];
+		if (userIds.Count != 0) {
+			for(int i =0; i < userIds.Count; i++) {
+				string id = userIds [i];
 				int to = game.GetSeatIndex (id);
 				Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
 
-				if (i == ids.Count - 1) {
+				if (i == userIds.Count - 1) {
 					MoveChips (from, to, () => {
 						ShowScoreLabels();
 					});
@@ -171,7 +172,7 @@ public class CompareCardController : BaseStateController {
 				image.gameObject.SetActive (true);
 
 			Tween t = image.transform.DOMove (targetPosition, 0.6f).SetDelay(0.1f + 0.1f * i);
-			if (i == 8) {
+			if (i == 7) {
 				if (calback != null) {
 					t.OnComplete (() => {
 						calback ();
@@ -188,7 +189,8 @@ public class CompareCardController : BaseStateController {
 
 
 	private void ShowScoreLabels() {
-		var playingPlayers = gamePlayController.game.PlayingPlayers;
+		Debug.Log ("ShowScoreLabels() called");
+		Debug.Log ("playingPlayers.Count = " + playingPlayers.Count);
 		for (int i = 0; i < playingPlayers.Count; i++) {
 			if (i == playingPlayers.Count - 1) {
 				ShowScoreLabel (playingPlayers[i].seat.seatIndex, () => {

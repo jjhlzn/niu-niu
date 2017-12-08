@@ -5,29 +5,20 @@ using UnityEngine.UI;
 using Newtonsoft.Json;
 
 public class RobBankerController : BaseStateController {
-
 	[SerializeField]
 	private GamePlayController gamePlayerController; 
 
 	[SerializeField]
 	private GameObject robRankerPanel;
 
-
 	private Sprite robSprite;
 	private Sprite notRobSprite;
 
-	private Seat[] seats {
-		get {
-			return gamePlayerController.game.seats;
-		}
-	}
 
 	private float stateTimeLeft; //这状态停留的时间
 	private bool hasPlayCountDown;
-	//private bool hasRobBanker = false; 
 
 	public override void Reset() {
-		//hasRobBanker = false;
 		stateTimeLeft = Constants.MaxStateTimeLeft;
 		hasPlayCountDown = false;
 	}
@@ -74,24 +65,6 @@ public class RobBankerController : BaseStateController {
 				return true;
 		}
 		return false;
-	}
-
-	public void SetUI() {
-		var game = gamePlayerController.game;
-
-		if (IsMeRobed()) {
-			Player.Me.hasRobBanker = true;
-			robRankerPanel.gameObject.SetActive (false);
-		} 
-
-		foreach (KeyValuePair<string, bool> pair in game.currentRound.robBankerDict) {
-			int seatIndex = game.GetSeatIndex (pair.Key);
-			if (seatIndex == 0) {
-				HandleSeat0RobBanker (pair.Value);
-			} else {
-				HandleOtherSeatRobBanker (seatIndex, pair.Value);
-			}
-		}
 	}
 
 	public void RobClick() {
@@ -157,6 +130,24 @@ public class RobBankerController : BaseStateController {
 				return;
 			} else {
 				HandleOtherSeatRobBanker (seatIndex, notify.isRob);
+			}
+		}
+	}
+
+	public void SetUI() {
+		var game = gamePlayerController.game;
+
+		if (IsMeRobed()) {
+			Player.Me.hasRobBanker = true;
+			robRankerPanel.gameObject.SetActive (false);
+		} 
+
+		foreach (KeyValuePair<string, bool> pair in game.currentRound.robBankerDict) {
+			int seatIndex = game.GetSeatIndex (pair.Key);
+			if (seatIndex == 0) {
+				HandleSeat0RobBanker (pair.Value);
+			} else {
+				HandleOtherSeatRobBanker (seatIndex, pair.Value);
 			}
 		}
 	}

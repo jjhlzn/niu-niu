@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
+
 public class FirstDealerController : BaseStateController {
 	public static float dealSpeed = 1000f; //发牌速度
 	public static float dealWaitTimeBetweenPlayer = 0.3f;
@@ -16,37 +17,13 @@ public class FirstDealerController : BaseStateController {
 	private GamePlayController gamePlayController;
 	[SerializeField]
 	private BeforeGameStartController beforeGameStartController;
-
 	[SerializeField]
 	private GameObject deckCardPosition; //发牌位置
-
 	[SerializeField]
 	private Button shareButton;
 
-
-
-	private Deck deck {
-		get {
-			return gamePlayController.game.deck;
-		}
-	}
-	private Seat[] seats {
-		get {
-			return gamePlayController.game.seats;
-		}
-	}
-
-	//private bool hasPauseBeforeAnimation;
-	//private bool hasPlayBeforeFirstDeal;
-
 	private bool isFirstDealing;
 	public bool isFirstDealDone;
-	private List<Player> playingPlayers;
-
-
-
-	void Start () {
-	}
 
 	public void Init() {
 		isFirstDealing = false;
@@ -71,9 +48,16 @@ public class FirstDealerController : BaseStateController {
 			gamePlayController.game.HideStateLabel ();
 		} 
 
-		FirstDealAnimation2 ();
+		FirstDealAnimation ();
 	}
-		
+
+	private void FirstDealAnimation() {
+		if (isFirstDealing && !beforeGameStartController.isMoveSeat) {
+			isFirstDealing = false;
+			MusicController.instance.Play (AudioItem.BeforeFirstDeal);
+			StartCoroutine (ExecuteFirstDealAnimation ());
+		}
+	}
 
 	private IEnumerator ExecuteFirstDealAnimation() {
 		var game = gamePlayController.game;
@@ -82,6 +66,7 @@ public class FirstDealerController : BaseStateController {
 
 		MusicController.instance.Play (AudioItem.Deal, isLoop: true);
 
+		List<Player> playingPlayers = game.PlayingPlayers;
 		for (int i = 0; i < playingPlayers.Count; i++) {
 			for (int j = 0; j < 4; j++) {
 
@@ -116,45 +101,6 @@ public class FirstDealerController : BaseStateController {
 			}
 		}
 	}
-
-	private void FirstDealAnimation2() {
-		
-		if (isFirstDealing && !beforeGameStartController.isMoveSeat) {
-			isFirstDealing = false;
-			MusicController.instance.Play (AudioItem.BeforeFirstDeal);
-			StartCoroutine (ExecuteFirstDealAnimation ());
-		}
-	}
-		
-
-	public void SetUI() {
-		var game = gamePlayController.game;
-		FirstDeal ();
-		for (int i = 0; i < playingPlayers.Count; i++) {
-			Player player = playingPlayers [i];
-			Image[] cards = player.seat.cards;
-			Vector3[] targetCardPositions = player.seat.cardPositions;
-			for (int j = 0; j < 4; j++) {
-				Vector3 targetCard = targetCardPositions [j];
-				cards [j].transform.position = new Vector3(targetCard.x / SetupCardGame.TransformConstant, targetCard.y/SetupCardGame.TransformConstant);
-				if (i == 0) {
-					Vector3 localScale = new Vector3 (user0CardScale, user0CardScale);
-					cards [j].transform.localScale = localScale;
-				}
-
-				if (i == 0 && player.userId == Player.Me.userId) {
-					Debug.Log ("game.currentRound.playerCardsDict.ContainsKey ("+player.userId+"): " + game.currentRound.playerCardsDict.ContainsKey (player.userId));
-					if (game.currentRound.playerCardsDict.ContainsKey (player.userId)) {
-						cards [j].sprite = deck.GetCardFaceImage (game.currentRound.playerCardsDict [player.userId] [j]);
-						Debug.Log ("Set My Card " + j + "th sprite, card is " + cards[j]);
-					}
-				}
-
-				cards [j].gameObject.SetActive (true);
-			}
-		}
-		isFirstDealDone = true;
-	}
 		
 	IEnumerator TurnCardUp(Image card, string cardValue) {
 		if (!string.IsNullOrEmpty (cardValue)) {
@@ -172,27 +118,6 @@ public class FirstDealerController : BaseStateController {
 		yield return new WaitForSeconds (.3f);
 		if (gamePlayController.state == GameState.FirstDeal)
 			gamePlayController.state = GameState.RobBanker;
-	}
-
-	private void FirstDeal() {
-		playingPlayers = gamePlayController.game.PlayingPlayers;
-		for (int i = 0; i < playingPlayers.Count; i++) {
-			FirstDeal (playingPlayers[i]);
-		}
-	}
-
-	private void FirstDeal(Player player) {
-		player.seat.cards [0] = deck.Deal ();
-		player.seat.cards [0].sprite = deck.cardBack;
-
-		player.seat.cards [1] = deck.Deal ();
-		player.seat.cards [1].sprite = deck.cardBack;
-
-		player.seat.cards [2] = deck.Deal ();
-		player.seat.cards [2].sprite = deck.cardBack;
-
-		player.seat.cards [3] = deck.Deal ();
-		player.seat.cards [3].sprite = deck.cardBack;
 	}
 
 	/******* 处理服务器的通知***************/
@@ -214,9 +139,7 @@ public class FirstDealerController : BaseStateController {
 
 	private void HandleResponse(Dictionary<string, string[]> cardsDict, Dictionary<string, int[]> betsDict) {
 		var game = gamePlayController.game;
-		//if (shareButton.gameObject.activeInHierarchy) {
-			beforeGameStartController.UpdateButtonStatusAfterStart ();
-		//}
+		beforeGameStartController.UpdateButtonStatusAfterStart ();
 
 		//更新位置UI
 		for (int i = 0; i < seats.Length; i++) {
@@ -258,7 +181,7 @@ public class FirstDealerController : BaseStateController {
 		deck.ShowNotDealCardsForFirstDeal (gamePlayController.game.PlayingPlayers.Count);
 
 		//先把数据结构设置好，再在Update()中执行发牌的动画。
-		FirstDeal ();
+		game.FirstDeal ();
 
 		gamePlayController.state = GameState.FirstDeal;
 		gamePlayController.game.UpdateGameInfos ();
@@ -269,5 +192,33 @@ public class FirstDealerController : BaseStateController {
 	}
 
 
+	public void SetUI() {
+		var game = gamePlayController.game;
+		game.FirstDeal ();
+		List<Player> playingPlayers = game.PlayingPlayers;
+		for (int i = 0; i < playingPlayers.Count; i++) {
+			Player player = playingPlayers [i];
+			Image[] cards = player.seat.cards;
+			Vector3[] targetCardPositions = player.seat.cardPositions;
+			for (int j = 0; j < 4; j++) {
+				Vector3 targetCard = targetCardPositions [j];
+				cards [j].transform.position = new Vector3(targetCard.x / SetupCardGame.TransformConstant, targetCard.y/SetupCardGame.TransformConstant);
+				if (i == 0) {
+					Vector3 localScale = new Vector3 (user0CardScale, user0CardScale);
+					cards [j].transform.localScale = localScale;
+				}
 
+				if (i == 0 && player.userId == Player.Me.userId) {
+					Debug.Log ("game.currentRound.playerCardsDict.ContainsKey ("+player.userId+"): " + game.currentRound.playerCardsDict.ContainsKey (player.userId));
+					if (game.currentRound.playerCardsDict.ContainsKey (player.userId)) {
+						cards [j].sprite = deck.GetCardFaceImage (game.currentRound.playerCardsDict [player.userId] [j]);
+						Debug.Log ("Set My Card " + j + "th sprite, card is " + cards[j]);
+					}
+				}
+
+				cards [j].gameObject.SetActive (true);
+			}
+		}
+		isFirstDealDone = true;
+	}
 }

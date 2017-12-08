@@ -6,30 +6,15 @@ using DG.Tweening;
 
 public class SecondDealController : BaseStateController {
 	private float waitTimeBeforeSecondDeal = 0.5f;
-
 	[SerializeField]
 	private GamePlayController gamePlayController;
-
 	[SerializeField]
 	private BetController betController;
-
 	[SerializeField]
 	private FirstDealerController firstDealController;
-
 	[SerializeField]
 	private GameObject deckCardPosition;
 
-	private Deck deck {
-		get {
-			return gamePlayController.game.deck;
-		}
-	}
-	private Seat[] seats {
-		get {
-			return gamePlayController.game.seats;
-		}
-	}
-		
 	private bool isSecondDealing;
 	public bool isSecondDealDone;
 
@@ -53,9 +38,7 @@ public class SecondDealController : BaseStateController {
 		base.Update ();
 		SecondDealAnimation ();
 	}
-
-
-
+		
 	private void SecondDealAnimation() {
 		if (isSecondDealing && firstDealController.isFirstDealDone && betController.IsAllBetCompleted) {
 			isSecondDealing = false;

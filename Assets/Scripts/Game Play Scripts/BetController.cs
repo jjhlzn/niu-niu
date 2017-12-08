@@ -95,25 +95,7 @@ public class BetController : BaseStateController {
 			
 		BetAnimation ();
 	}
-		
-	public void SetUI() {
-		var game = gamePlayController.game;
-		var round = game.currentRound;
-		for (int i = 0; i < round.playerBets.Length; i++) {
-			if (round.playerBets [i] != -1) {
-				seats [i].chipLabelBackground.gameObject.SetActive (true);
-				seats[i].chipImageForBet.gameObject.transform.position = seats [i].chipPositionWhenBet;
-				seats[i].chipImageForBet.gameObject.SetActive (true);
-				seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
-				seats[i].chipCountLabel.gameObject.SetActive (true);
-				isBetCompletedArray [i] = true;
 
-				if (Player.Me.isPlaying && Player.Me.seat.seatIndex == i) {
-					Player.Me.hasBet = true;
-				}
-			} 
-		}
-	}
 		
 
 	private void BetAnimation() {
@@ -198,6 +180,26 @@ public class BetController : BaseStateController {
 			game.currentRound.playerBets [index] = notify.bet;
 			isMoveChipArray [index] = true;
 			MusicController.instance.Play (AudioItem.Bet, seats [index].player.sex);
+		}
+	}
+
+
+	public void SetUI() {
+		var game = gamePlayController.game;
+		var round = game.currentRound;
+		for (int i = 0; i < round.playerBets.Length; i++) {
+			if (round.playerBets [i] != -1) {
+				seats [i].chipLabelBackground.gameObject.SetActive (true);
+				seats[i].chipImageForBet.gameObject.transform.position = seats [i].chipPositionWhenBet;
+				seats[i].chipImageForBet.gameObject.SetActive (true);
+				seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
+				seats[i].chipCountLabel.gameObject.SetActive (true);
+				isBetCompletedArray [i] = true;
+
+				if (Player.Me.isPlaying && Player.Me.seat.seatIndex == i) {
+					Player.Me.hasBet = true;
+				}
+			} 
 		}
 	}
 }

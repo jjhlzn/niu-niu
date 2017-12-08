@@ -13,4 +13,27 @@ public abstract class BaseStateController : BaseMonoBehaviour {
 			return;
 		}
 	}
+
+	public Game game {
+		get {
+			return GetGamePlayController().game;
+		}
+	}
+
+	public List<Player> playingPlayers {
+		get {
+			return GetGamePlayController().game.PlayingPlayers;
+		}
+	}
+
+	public Deck deck {
+		get {
+			return GetGamePlayController().game.deck;
+		}
+	}
+	public Seat[] seats {
+		get {
+			return GetGamePlayController().game.seats;
+		}
+	}
 }

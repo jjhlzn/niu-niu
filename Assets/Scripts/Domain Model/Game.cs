@@ -31,9 +31,7 @@ public class Game
 		rounds.Add(currentRound);
 		deck = new Deck ();
 	}  
-
-
-
+		
 	public bool isMeSeated {   //我是否已经坐下
 		get {
 			foreach (Seat seat in seats) {
@@ -252,6 +250,28 @@ public class Game
 		Debug.Log ("state = " + state.value);
 		Debug.Log ("this.currentRoundNo = " + this.currentRoundNo);
 		Debug.Log ("this.totalRoundCount = " + this.totalRoundCount);
+	}
+
+
+	public void FirstDeal() {
+		
+		for (int i = 0; i < PlayingPlayers.Count; i++) {
+			FirstDeal (PlayingPlayers[i]);
+		}
+	}
+
+	private void FirstDeal(Player player) {
+		player.seat.cards [0] = deck.Deal ();
+		player.seat.cards [0].sprite = deck.cardBack;
+
+		player.seat.cards [1] = deck.Deal ();
+		player.seat.cards [1].sprite = deck.cardBack;
+
+		player.seat.cards [2] = deck.Deal ();
+		player.seat.cards [2].sprite = deck.cardBack;
+
+		player.seat.cards [3] = deck.Deal ();
+		player.seat.cards [3].sprite = deck.cardBack;
 	}
 
 }

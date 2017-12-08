@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using socket.io;
 using cn.sharesdk.unity3d;
 using Newtonsoft.Json;
+using DG.Tweening;
 
 public class BeforeGameStartController : BaseStateController {
 
@@ -146,71 +147,7 @@ public class BeforeGameStartController : BaseStateController {
 	public bool IsNeedMoveSeat() {
 		return getMoveSeatIndex () != -1;
 	}
-
-
-	public void SetUI() {
-		var game = gamePlayerController.game;
-		Debug.Log ("game.roomNo = " + game.roomNo);
-		//需要循转座位
-		if ( IsNeedMoveSeat() ) {
-			//first has player seat index
-			int seatIndex = getMoveSeatIndex(); 
-			MoveSeats (seatIndex);
-			isMoveSeat = false;
-			for (int i = 0; i < Game.SeatCount; i++) {
-				if (seats[i].hasPlayer())
-					seats [i].player.seat = seats [i];
-			}
-		}
-
-		for (int i = 0; i < game.seats.Length; i++) {
-			game.seats [i].UpdateUI (game);
-		}
-			
-		if (gamePlayerController.game.PlayerCount < 2) {
-			startButton.interactable = false;
-		} else {
-			startButton.interactable = true;
-		} 
-
-		if (game.state == GameState.BeforeStart) {
-			startButton.gameObject.SetActive (true);
-			shareButton.gameObject.SetActive (true);
-			if (Player.Me.isPlaying && Player.Me.userId != game.creater)
-				standUpButton.interactable = true;
-			else
-				standUpButton.interactable = false;
-
-			//房主不能离开房间
-			if (game.creater == Player.Me.userId)
-				leaveRoomBtn.interactable = false;
-			else
-				leaveRoomBtn.interactable = true;
-
-			if (Player.Me.seat != null)
-				leaveRoomBtn.interactable = false;
-		} else {
-			startButton.gameObject.SetActive (false);
-			shareButton.gameObject.SetActive (false);
-			dismissRoomBtn.interactable = false;
-			leaveRoomBtn.interactable = false;
-			standUpButton.interactable = false;
-		}
-			
-
-		if (game.state == GameState.WaitForNextRound) {
-			readyButton.gameObject.SetActive (true);
-		} else {
-			readyButton.gameObject.SetActive (false);
-		}
-
-		if (Player.Me.userId != game.creater) {
-			startButton.gameObject.SetActive (false);
-			dismissRoomBtn.gameObject.SetActive (false);
-		}
-	}
-
-
+		
 	public void StartClick() {
 		Debug.Log ("start game click");
 
@@ -264,8 +201,7 @@ public class BeforeGameStartController : BaseStateController {
 				Debug.LogError("status = " + resp.status + ", message = " + resp.errorMessage);
 				return;
 			}
-
-			//isSeat = true;
+				
 			leaveRoomBtn.interactable = false;
 
 			if (Player.Me.userId != game.creater)
@@ -526,5 +462,68 @@ public class BeforeGameStartController : BaseStateController {
 		leaveRoomBtn.interactable = false;
 		dismissRoomBtn.interactable = false;
 		standUpButton.interactable = false;
+	}
+
+
+	public void SetUI() {
+		var game = gamePlayerController.game;
+		Debug.Log ("game.roomNo = " + game.roomNo);
+		//需要循转座位
+		if ( IsNeedMoveSeat() ) {
+			//first has player seat index
+			int seatIndex = getMoveSeatIndex(); 
+			MoveSeats (seatIndex);
+			isMoveSeat = false;
+			for (int i = 0; i < Game.SeatCount; i++) {
+				if (seats[i].hasPlayer())
+					seats [i].player.seat = seats [i];
+			}
+		}
+
+		for (int i = 0; i < game.seats.Length; i++) {
+			game.seats [i].UpdateUI (game);
+		}
+
+		if (gamePlayerController.game.PlayerCount < 2) {
+			startButton.interactable = false;
+		} else {
+			startButton.interactable = true;
+		} 
+
+		if (game.state == GameState.BeforeStart) {
+			startButton.gameObject.SetActive (true);
+			shareButton.gameObject.SetActive (true);
+			if (Player.Me.isPlaying && Player.Me.userId != game.creater)
+				standUpButton.interactable = true;
+			else
+				standUpButton.interactable = false;
+
+			//房主不能离开房间
+			if (game.creater == Player.Me.userId)
+				leaveRoomBtn.interactable = false;
+			else
+				leaveRoomBtn.interactable = true;
+
+			if (Player.Me.seat != null)
+				leaveRoomBtn.interactable = false;
+		} else {
+			startButton.gameObject.SetActive (false);
+			shareButton.gameObject.SetActive (false);
+			dismissRoomBtn.interactable = false;
+			leaveRoomBtn.interactable = false;
+			standUpButton.interactable = false;
+		}
+
+
+		if (game.state == GameState.WaitForNextRound) {
+			readyButton.gameObject.SetActive (true);
+		} else {
+			readyButton.gameObject.SetActive (false);
+		}
+
+		if (Player.Me.userId != game.creater) {
+			startButton.gameObject.SetActive (false);
+			dismissRoomBtn.gameObject.SetActive (false);
+		}
 	}
 }
