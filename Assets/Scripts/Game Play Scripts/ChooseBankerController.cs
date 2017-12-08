@@ -169,14 +169,15 @@ public class ChooseBankerController : BaseStateController {
 	IEnumerator ChooseBankerCompletedAnimation() {
 		var game = gamePlayController.game;
 
-		game.ShowStateLabel (game.currentRound.banker + "成为庄家");
+		int bankerSeatIndex = game.GetSeatIndex (game.currentRound.banker);
+		game.ShowStateLabel (game.seats[bankerSeatIndex].player.nickname + "成为庄家");
 
 		chooseCompleted = false;
 		bankerSign.gameObject.transform.position = new Vector3 (game.gameStateLabel.transform.position.x - (game.gameStateLabel.preferredWidth + 20) / SetupCardGame.TransformConstant / 2,
 			game.gameStateLabel.transform.position.y / SetupCardGame.TransformConstant, 0);
 		bankerSign.gameObject.SetActive (true);
 
-		yield return new WaitForSeconds (.4f);
+		yield return new WaitForSeconds (.8f);
 
 		movingBankerSign = true;
 	}

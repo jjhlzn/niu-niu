@@ -154,7 +154,7 @@ public class BeforeGameStartController : BaseStateController {
 		//需要循转座位
 		if ( IsNeedMoveSeat() ) {
 			//first has player seat index
-			int seatIndex = getMoveSeatIndex();
+			int seatIndex = getMoveSeatIndex(); 
 			MoveSeats (seatIndex);
 			isMoveSeat = false;
 			for (int i = 0; i < Game.SeatCount; i++) {

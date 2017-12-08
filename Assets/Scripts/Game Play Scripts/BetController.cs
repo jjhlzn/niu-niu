@@ -27,6 +27,8 @@ public class BetController : BaseStateController {
 	//private bool hasBet = false;
 	private float stateTimeLeft; //这状态停留的时间
 	private float animationTime = 1f;
+	private bool hasPlayBetTip;
+	private bool hasPlayCountDown;
 
 	public bool IsAllBetCompleted {
 		get {
@@ -56,6 +58,8 @@ public class BetController : BaseStateController {
 		isMoveChipArray = new bool[Game.SeatCount];
 		isBetCompletedArray = new bool[Game.SeatCount];
 		stateTimeLeft = Constants.MaxStateTimeLeft - animationTime;
+		hasPlayBetTip = false;
+		hasPlayCountDown = false;
 	}
 	
 	public override GamePlayController GetGamePlayController ()
@@ -67,13 +71,22 @@ public class BetController : BaseStateController {
 	public new void Update ()  {
 		base.Update ();
 		if (gamePlayController.state == GameState.Bet) {
+			if (!hasPlayBetTip) {
+				hasPlayBetTip = true;
+				MusicController.instance.Play (AudioItem.BetTip);
+			}
 
+			if (stateTimeLeft <=  3.5f && !hasPlayCountDown) {
+				hasPlayCountDown = true;
+				MusicController.instance.Play (AudioItem.CountDown);
+			}
+				
 			if (stateTimeLeft > 0) {
 				gamePlayController.game.ShowStateLabel ("请选择下注分数: " + Mathf.Round (stateTimeLeft));
 				stateTimeLeft -= Time.deltaTime;
 			}
 
-			if (   Player.Me.isPlaying
+			if (  Player.Me.isPlaying
 				&& !Player.Me.hasBet
 				&& gamePlayController.game.currentRound.banker != gamePlayController.game.PlayingPlayers [0].userId) {
 				gamePlayController.game.ShowBetButtons ();

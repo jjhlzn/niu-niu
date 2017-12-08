@@ -26,6 +26,7 @@ public class WaitForNextRoundController : BaseStateController {
 	}
 
 	private float stateTimeLeft; //这状态停留的时间
+	private bool hasPlayCountDown;
 	//public bool hasReady;
 
 	public void Init() {
@@ -38,6 +39,7 @@ public class WaitForNextRoundController : BaseStateController {
 	 * */
 	public override void Reset() {
 		stateTimeLeft = Constants.MaxStateTimeLeft;
+		hasPlayCountDown = false;
 		//hasReady = false;
 	}
 
@@ -49,6 +51,12 @@ public class WaitForNextRoundController : BaseStateController {
 	// Update is called once per frame
 	public new void Update() {
 		if (gamePlayerController.state == GameState.WaitForNextRound) {
+
+			if (stateTimeLeft <= 3.5f && !hasPlayCountDown) {
+				hasPlayCountDown = true;
+				MusicController.instance.Play (AudioItem.CountDown);
+			}
+
 			if (stateTimeLeft > 0) {
 				gamePlayerController.game.ShowStateLabel ("下一局游戏即将开始: " + Mathf.Round(stateTimeLeft));
 				stateTimeLeft -= Time.deltaTime;

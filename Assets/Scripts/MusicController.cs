@@ -101,45 +101,56 @@ public class AudioItem {
 
 	public static List<AudioItem> audioItems = new List<AudioItem>();
     static AudioItem() {
+		audioItems.Add(new AudioItem(CountDown, MAN, "sounds/count_down"));
+		audioItems.Add(new AudioItem(CountDown, WOMEN, "sounds/count_down"));
+
+		audioItems.Add(new AudioItem(BetTip, MAN, "sounds/please_bet"));
+		audioItems.Add(new AudioItem(BetTip, WOMEN, "sounds/please_bet"));
+
 		audioItems.Add(new AudioItem(Bet, MAN, "sounds/audio_raise"));
 		audioItems.Add(new AudioItem(Bet, WOMEN, "sounds/audio_raise"));
+	
 
-		audioItems.Add(new AudioItem(Banker, MAN, "sounds/banker2"));
-		audioItems.Add(new AudioItem(Banker, WOMEN, "sounds/banker2"));
+		audioItems.Add(new AudioItem(BeforeFirstDeal, MAN, "sounds/before_first_deal"));
+		audioItems.Add(new AudioItem(BeforeFirstDeal, WOMEN, "sounds/before_first_deal"));
 
-		audioItems.Add(new AudioItem(Deal, MAN, "sounds/dell"));
-		audioItems.Add(new AudioItem(Deal, WOMEN, "sounds/dell"));
-		//audioItems.Add(new AudioItem(Deal, MAN, "sounds/deal_card"));
-		//audioItems.Add(new AudioItem(Deal, WOMEN, "sounds/deal_card"));
+		audioItems.Add(new AudioItem(Deal, MAN, "sounds/first_deal"));
+		audioItems.Add(new AudioItem(Deal, WOMEN, "sounds/first_deal"));
 
-		/*
-		audioItems.Add(new AudioItem(Ready, MAN, "sounds/ready"));
-		audioItems.Add(new AudioItem(Ready, WOMEN, "sounds/ready"));
-		*/
+		audioItems.Add(new AudioItem(SecondDeal, MAN, "sounds/second_deal"));
+		audioItems.Add(new AudioItem(SecondDeal, WOMEN, "sounds/second_deal"));
+	
+		audioItems.Add(new AudioItem(Rob, MAN, "sounds/rob_m"));
+		audioItems.Add(new AudioItem(Rob, WOMEN, "sounds/rob_m"));
 
-		audioItems.Add(new AudioItem(Rob, MAN, "sounds/qiang"));
-		audioItems.Add(new AudioItem(Rob, WOMEN, "sounds/qiang"));
+		audioItems.Add(new AudioItem(NotRob, MAN, "sounds/not_rob_m"));
+		audioItems.Add(new AudioItem(NotRob, WOMEN, "sounds/not_rob_m"));
 
-		audioItems.Add(new AudioItem(NotRob, MAN, "sounds/buqiang"));
-		audioItems.Add(new AudioItem(NotRob, WOMEN, "sounds/buqiang"));
+		audioItems.Add(new AudioItem(ShowCardTip, MAN, "sounds/show_card_tip"));
+		audioItems.Add(new AudioItem(ShowCardTip, WOMEN, "sounds/show_card_tip"));
 
-		audioItems.Add(new AudioItem(TransmitCoin, MAN, "sounds/translate_coins"));
-		audioItems.Add(new AudioItem(TransmitCoin, WOMEN, "sounds/translate_coins"));
+		audioItems.Add(new AudioItem(TransmitCoin, MAN, "sounds/move_coins"));
+		audioItems.Add(new AudioItem(TransmitCoin, WOMEN, "sounds/move_coins"));
 
-		//audioItems.Add(new AudioItem(RandomSelectBanker, MAN, "sounds/random_banker"));
-		//audioItems.Add(new AudioItem(RandomSelectBanker, WOMEN, "sounds/random_banker"));
+		audioItems.Add(new AudioItem(RandomSelectBanker, MAN, "sounds/random_select_banker"));
+		audioItems.Add(new AudioItem(RandomSelectBanker, WOMEN, "sounds/random_select_banker"));
 
 		for (int i = 0; i < 13; i++) {
 			audioItems.Add(new AudioItem("niu"+i, MAN, "sounds/man/cow_"+i));
 		}
 	}
 
+	public static string CountDown = "CountDown";
+	public static string BeforeFirstDeal = "BeforeFirstDeal";
+	public static string BetTip = "BetTip";
 	public static string Bet = "Bet";
 	public static string Banker = "Banker";
 	public static string Deal = "Deal";
+	public static string SecondDeal = "SecondDeal";
 	public static string Ready = "Ready";
 	public static string Rob = "Rob";
 	public static string NotRob = "NotRob";
+	public static string ShowCardTip = "ShowCardTip";
 	public static string TransmitCoin = "TransmitCoin";
 	public static string RandomSelectBanker = "RandomSelectBanker";
 	public static string niu0 = "niu0";

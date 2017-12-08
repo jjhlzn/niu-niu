@@ -55,7 +55,18 @@
      <Compile Include="Assets\__Sample\Client\Src\Events.cs" />
      <Compile Include="Assets\__Sample\Client\Src\Namespace.cs" />
      <Compile Include="Assets\__Sample\Client\Src\SampleConnect.cs" />
+     <Compile Include="Assets\Demigiant\DOTweenPro\DOTweenAnimation.cs" />
      <Compile Include="Assets\Demo.cs" />
+     <Compile Include="Assets\DOTween Examples\Basics.cs" />
+     <Compile Include="Assets\DOTween Examples\CustomPlugin Example\CustomPluginExampleBrain.cs" />
+     <Compile Include="Assets\DOTween Examples\CustomPlugin Example\CustomRange.cs" />
+     <Compile Include="Assets\DOTween Examples\CustomPlugin Example\CustomRangePlugin.cs" />
+     <Compile Include="Assets\DOTween Examples\Example Assets\DragTarget.cs" />
+     <Compile Include="Assets\DOTween Examples\Follow.cs" />
+     <Compile Include="Assets\DOTween Examples\Materials.cs" />
+     <Compile Include="Assets\DOTween Examples\Paths.cs" />
+     <Compile Include="Assets\DOTween Examples\Sequences.cs" />
+     <Compile Include="Assets\DOTween Examples\UGUI.cs" />
      <Compile Include="Assets\LINQtoGameObject\Examples\SampleSceneScript.cs" />
      <Compile Include="Assets\LINQtoGameObject\Scripts\GameObjectExtensions.Enumerable.cs" />
      <Compile Include="Assets\LINQtoGameObject\Scripts\GameObjectExtensions.Operate.cs" />
@@ -70,6 +81,7 @@
      <Compile Include="Assets\Scripts\Domain Model\Player.cs" />
      <Compile Include="Assets\Scripts\Domain Model\Round.cs" />
      <Compile Include="Assets\Scripts\Domain Model\Seat.cs" />
+     <Compile Include="Assets\Scripts\Experiment\Experiment.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\BaseStateController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\BeforeGameStartController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\BetController.cs" />
@@ -100,20 +112,28 @@
      <Compile Include="Assets\ShareSDKiOSAutoPackage\ManagePlatforms.cs" />
      <Compile Include="Assets\UnityPackages\JsonNetSample\JsonNetSample.cs" />
      <None Include="Assets\Plugins\Android\ShareSDK\res\values\ssdk_oks_strings.xml" />
+     <None Include="Assets\Demigiant\DOTweenPro\readme.txt" />
      <None Include="Assets\PlayingCards\ReadMe.txt" />
+     <None Include="Assets\Demigiant\DemiLib\Core\DemiLib.xml" />
+     <None Include="Assets\Demigiant\DOTween\DOTween50.xml" />
      <None Include="Assets\Plugins\Android\ShareSDK\AndroidManifest.xml" />
      <None Include="Assets\Plugins\Android\ShareSDK\res\drawable\ssdk_oks_classic_progressbar.xml" />
      <None Include="Assets\Plugins\Android\ShareSDK\res\drawable\ssdk_oks_classic_platform_cell_back.xml" />
      <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
      <None Include="Assets\Plugins\Android\ShareSDK\res\values\ssdk_oks_color_drawables.xml" />
+     <None Include="Assets\Demigiant\DOTween\DOTween46.xml" />
      <None Include="Assets\Plugins\Android\ShareSDK\res\values-en\ssdk_strings.xml" />
      <None Include="Assets\Plugins\Android\ShareSDK\res\drawable\ssdk_weibo_retry_btn_selector.xml" />
      <None Include="Assets\Plugins\Android\ShareSDK\res\values\ssdk_instapaper_strings.xml" />
+     <None Include="Assets\Demigiant\DOTween\readme.txt" />
      <None Include="Assets\Plugins\UniRx\ReadMe.txt" />
+     <None Include="Assets\Demigiant\DOTween\DOTween43.xml" />
      <None Include="Assets\Plugins\Android\ShareSDK\res\values\ssdk_strings.xml" />
      <None Include="Assets\link.xml" />
      <None Include="Assets\Plugins\Android\ShareSDK\res\drawable\ssdk_weibo_retry_btn_default.xml" />
+     <None Include="Assets\Demigiant\DemiLib\Core\Editor\DemiEditor.xml" />
      <None Include="Assets\Plugins\Android\ShareSDK\res\drawable\ssdk_weibo_retry_btn_press.xml" />
+     <None Include="Assets\Demigiant\readme_DOTweenPro.txt" />
      <None Include="Assets\Plugins\Android\ShareSDK\res\values-en\ssdk_oks_strings.xml" />
      <None Include="Assets\Activity Indicators\ReadMe_txt.txt" />
  <Reference Include="UnityEngine.UIAutomation">
@@ -151,6 +171,24 @@
  </Reference>
  <Reference Include="UnityEngine.Purchasing">
  <HintPath>/Users/jinjunhang/Library/Unity/cache/packages/packages.unity.com/com.unity.purchasing@1.0.1/UnityEngine.Purchasing.dll</HintPath>
+ </Reference>
+ <Reference Include="DemiLib">
+ <HintPath>/Users/jinjunhang/niu niu/Assets/Demigiant/DemiLib/Core/DemiLib.dll</HintPath>
+ </Reference>
+ <Reference Include="DOTween43">
+ <HintPath>/Users/jinjunhang/niu niu/Assets/Demigiant/DOTween/DOTween43.dll</HintPath>
+ </Reference>
+ <Reference Include="DOTween50">
+ <HintPath>/Users/jinjunhang/niu niu/Assets/Demigiant/DOTween/DOTween50.dll</HintPath>
+ </Reference>
+ <Reference Include="DOTween">
+ <HintPath>/Users/jinjunhang/niu niu/Assets/Demigiant/DOTween/DOTween.dll</HintPath>
+ </Reference>
+ <Reference Include="DOTweenPro">
+ <HintPath>/Users/jinjunhang/niu niu/Assets/Demigiant/DOTweenPro/DOTweenPro.dll</HintPath>
+ </Reference>
+ <Reference Include="DOTween46">
+ <HintPath>/Users/jinjunhang/niu niu/Assets/Demigiant/DOTween/DOTween46.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>

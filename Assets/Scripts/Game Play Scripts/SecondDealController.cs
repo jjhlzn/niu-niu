@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class SecondDealController : BaseStateController {
 	private float waitTimeBeforeSecondDeal = 0.5f;
@@ -28,30 +29,18 @@ public class SecondDealController : BaseStateController {
 			return gamePlayController.game.seats;
 		}
 	}
-
-	private float timeLeft;
+		
 	private bool isSecondDealing;
-	private bool isShowCardBeforeDeal;
 	public bool isSecondDealDone;
-	private bool isPlayDealAudio;
-	//public bool canSecondDeal;
 
 	public override void Reset() {
 		isSecondDealing = false;
-		//canSecondDeal = false;
-		isShowCardBeforeDeal = false;
 		isSecondDealDone = false;
-		timeLeft = waitTimeBeforeSecondDeal;
-		isPlayDealAudio = false;
 	}
 
 	public void Init() {
-
 		isSecondDealing = false;
-		//canSecondDeal = false;
-		isShowCardBeforeDeal = false;
 		isSecondDealDone = false;
-		timeLeft = waitTimeBeforeSecondDeal;
 	}
 		
 	public override GamePlayController GetGamePlayController ()
@@ -62,107 +51,58 @@ public class SecondDealController : BaseStateController {
 	// Update is called once per frame
 	public new void Update ()  {
 		base.Update ();
-		
 		SecondDealAnimation ();
 	}
 
-	public void SetUI() {
-		SecondDeal ();
-		List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
-		for (int i = 0; i < playingPlayers.Count; i++) {
-			var player = playingPlayers [i];
-			player.cards[4].transform.position = player.seat.cardPositions[4];
-			if (player.seat.seatIndex == 0) {
-				Vector3 localScale = new Vector3 ();
-				localScale.x = FirstDealerController.user0CardScale;
-				localScale.y = FirstDealerController.user0CardScale;
-				player.cards[4].transform.localScale = localScale;
-			}
-			player.cards [4].gameObject.SetActive (true);
-		}
-		isSecondDealDone = true;
-	}
+
 
 	private void SecondDealAnimation() {
 		if (isSecondDealing && firstDealController.isFirstDealDone && betController.IsAllBetCompleted) {
-			
-			timeLeft -= Time.deltaTime;
-
-			if (timeLeft > 0) {
-				return;
-			} 
-
-			if (!isShowCardBeforeDeal) {
-				isShowCardBeforeDeal = true;
-				deck.ShowNotDealCardsForSecondDeal(gamePlayController.game.PlayingPlayers.Count);
-			}
-
-			if(!isPlayDealAudio) {
-				isPlayDealAudio = true;
-				MusicController.instance.Play (AudioItem.Deal, isLoop: true);
-			}
-
-			float waitTime = 0;
-			int playerCount = gamePlayController.game.PlayingPlayers.Count;
-			List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
-			for (int i = 0; i < playingPlayers.Count; i++) {
-				Player player = playingPlayers [i];
-				SecondDealCardsAnimation (player, waitTime);
-
-				//每个成员之间加入一个延时
-				waitTime += FirstDealerController.dealWaitTimeBetweenPlayerForSecondDeal;
-			}
-
-			//判断最后一张牌是否已经发好
-			if (Utils.isTwoPositionIsEqual (playingPlayers [playingPlayers.Count - 1].seat.cards [4].transform.position, 
-					playingPlayers [playingPlayers.Count - 1].seat.cardPositions [4])) {
-				MusicController.instance.Stop (AudioItem.Deal);
-				StartCoroutine (GoToNextState ());
-				isSecondDealing = false;
-				isSecondDealDone = true;
-				Debug.Log ("SecondDealAnimation done");
-			}
+			isSecondDealing = false;
+			StartCoroutine (ExecuteSecondDealAnimation ());
 		}
 	}
 
-	private void SecondDealCardsAnimation(Player player,  float waitTime) {
-		float step = FirstDealerController.dealSpeed * Time.deltaTime;
-		Image[] cards = player.seat.cards;
-		Vector3[] targetCardPositions = player.seat.cardPositions;
+	private IEnumerator ExecuteSecondDealAnimation() {
+		yield return new WaitForSeconds (waitTimeBeforeSecondDeal);
 
-		Vector3 targetCard = targetCardPositions [4];
-		StartCoroutine(GiveCardAnimation(player, cards[4], targetCard, step, waitTime));
-		waitTime += FirstDealerController.waitTimeDeltaBetweenCard;
-	}
+		deck.ShowNotDealCardsForSecondDeal(gamePlayController.game.PlayingPlayers.Count);
+		MusicController.instance.Play (AudioItem.Deal, isLoop: true);
 
-	IEnumerator GiveCardAnimation(Player player, Image card, Vector3 targetCard, float step, float waitTime) {
-		yield return new WaitForSeconds (waitTime);
-		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
-		if (player.seat.seatIndex == 0) {
-			Vector3 localScale = new Vector3 ();
-			localScale.x = FirstDealerController.user0CardScale;
-			localScale.y = FirstDealerController.user0CardScale;
-			card.transform.localScale = localScale;
+		List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
+		for (int i = 0; i < playingPlayers.Count; i++) {
+			Player player = playingPlayers [i];
+
+			Tween t = player.cards[4].transform
+				.DOLocalMove(player.seat.cardPositions[4], FirstDealerController.dealSpeed)
+				.SetSpeedBased()
+				.SetDelay (i * FirstDealerController.waitTimeDeltaBetweenCard);
+
+			if (i == 0)
+				player.cards[4].transform
+					.DOScale (1.3f, 0.04f)
+					.SetDelay (FirstDealerController.waitTimeDeltaBetweenCard + 0.02f);
+
+			if (i == playingPlayers.Count - 1) {
+				t.OnComplete (() => {
+					MusicController.instance.Stop (AudioItem.Deal);
+					if (gamePlayController.state == GameState.SecondDeal)
+						gamePlayController.state = GameState.CheckCard;
+					isSecondDealing = false;
+					isSecondDealDone = true;
+					Debug.Log ("SecondDealAnimation done");
+				});
+			}
 		}
 	}
-
-
-	IEnumerator GoToNextState() {
-		yield return new WaitForSeconds (.4f);
-		if (gamePlayController.state == GameState.SecondDeal)
-			gamePlayController.state = GameState.CheckCard;
-	}
-
+		
 	private void SecondDeal() {
 		List<Player> players = gamePlayController.game.PlayingPlayers;
 		for (int i = 0; i < players.Count; i++) {
-			SecondDeal (players[i]);
+			players[i].seat.cards [4] = deck.Deal ();
 		}
 	}
-
-	private void SecondDeal(Player player) {
-		player.seat.cards [4] = deck.Deal ();
-	}
+		
 		
 	public void HandleResponse(GoToSecondDealNotify notify) {
 		var game = gamePlayController.game;
@@ -176,7 +116,25 @@ public class SecondDealController : BaseStateController {
 			
 		SecondDeal ();
 		gamePlayController.state = GameState.SecondDeal;
-
 		isSecondDealing = true;
+	}
+
+
+	public void SetUI() {
+		SecondDeal ();
+		List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
+		for (int i = 0; i < playingPlayers.Count; i++) {
+			var player = playingPlayers [i];
+			Vector3 position = player.seat.cardPositions [4];
+			player.cards[4].transform.position = new Vector3(position.x / SetupCardGame.TransformConstant, position.y / SetupCardGame.TransformConstant) ;
+			if (player.seat.seatIndex == 0) {
+				Vector3 localScale = new Vector3 ();
+				localScale.x = FirstDealerController.user0CardScale;
+				localScale.y = FirstDealerController.user0CardScale;
+				player.cards[4].transform.localScale = localScale;
+			}
+			player.cards [4].gameObject.SetActive (true);
+		}
+		isSecondDealDone = true;
 	}
 }

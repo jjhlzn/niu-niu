@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class FirstDealerController : BaseStateController {
-	public static float dealSpeed = 320f; //发牌速度
+	public static float dealSpeed = 1000f; //发牌速度
 	public static float dealWaitTimeBetweenPlayer = 0.3f;
 	public static float dealWaitTimeBetweenPlayerForSecondDeal = 0.1f;
-	public static float waitTimeDeltaBetweenCard = 0.1f;
+	public static float waitTimeDeltaBetweenCard = 0.07f;
 	public static float turnUpTime = 0.5f;
 	public static float user0CardScale = 1.32f;
 
@@ -23,6 +24,7 @@ public class FirstDealerController : BaseStateController {
 	private Button shareButton;
 
 
+
 	private Deck deck {
 		get {
 			return gamePlayController.game.deck;
@@ -34,9 +36,11 @@ public class FirstDealerController : BaseStateController {
 		}
 	}
 
+	//private bool hasPauseBeforeAnimation;
+	//private bool hasPlayBeforeFirstDeal;
+
 	private bool isFirstDealing;
 	public bool isFirstDealDone;
-	private bool isPlayDealAudio;
 	private List<Player> playingPlayers;
 
 
@@ -52,7 +56,6 @@ public class FirstDealerController : BaseStateController {
 	public override void Reset() {
 		isFirstDealing = false;
 		isFirstDealDone = false;
-		isPlayDealAudio = false;
 	}
 		
 	public override GamePlayController GetGamePlayController ()
@@ -68,44 +71,61 @@ public class FirstDealerController : BaseStateController {
 			gamePlayController.game.HideStateLabel ();
 		} 
 
-		FirstDealAnimation ();
+		FirstDealAnimation2 ();
 	}
+		
 
-	private void FirstDealAnimation() {
+	private IEnumerator ExecuteFirstDealAnimation() {
 		var game = gamePlayController.game;
 		var round = game.currentRound;
-		if (isFirstDealing && !beforeGameStartController.isMoveSeat) {
-			float waitTime = 0;
+		yield return new WaitForSeconds(.6f);
 
-	
-			MusicController.instance.Play (AudioItem.Deal, isLoop: true);
+		MusicController.instance.Play (AudioItem.Deal, isLoop: true);
 
+		for (int i = 0; i < playingPlayers.Count; i++) {
+			for (int j = 0; j < 4; j++) {
 
-			for (int i = 0; i < playingPlayers.Count; i++) {
-				Player player = playingPlayers [i];
-				FirstGiveCardsAnimation (player, waitTime);
-			
-				//每个成员之间加入一个延时
-				waitTime += dealWaitTimeBetweenPlayer;
-			}
+				Vector3 targetCard = playingPlayers[i].seat.cardPositions [j];
+				Image[] cards = playingPlayers [i].cards;
 
-			int playerCount = gamePlayController.game.PlayerCount;
-			//判断最后一张牌是否已经发好
-			if (Utils.isTwoPositionIsEqual(playingPlayers[playingPlayers.Count - 1].seat.cards[3].transform.position, 
-				playingPlayers[playingPlayers.Count - 1].seat.cardPositions[3])) {
-				if (Player.Me.isPlaying) {
-					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [0], round.playerCardsDict[Player.Me.userId] [0]));
-					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [1], round.playerCardsDict[Player.Me.userId] [1]));
-					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [2], round.playerCardsDict[Player.Me.userId] [2]));
-					StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [3], round.playerCardsDict[Player.Me.userId] [3]));
+				int index = i * 4 + j;
+
+				Tween t = cards [j].transform.DOLocalMove (targetCard, dealSpeed, false)
+					.SetSpeedBased ()
+					.SetDelay (index * waitTimeDeltaBetweenCard);
+
+				if (i == playingPlayers.Count - 1 & j == 3) {
+					t.OnComplete (() => {
+						MusicController.instance.Stop (AudioItem.Deal);
+						if (Player.Me.isPlaying) {
+							StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [0], round.playerCardsDict[Player.Me.userId] [0]));
+							StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [1], round.playerCardsDict[Player.Me.userId] [1]));
+							StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [2], round.playerCardsDict[Player.Me.userId] [2]));
+							StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [3], round.playerCardsDict[Player.Me.userId] [3]));
+						}
+						isFirstDealing = false;
+						isFirstDealDone = true;
+						StartCoroutine (GoToNextState ());
+					});
 				}
-				MusicController.instance.Stop (AudioItem.Deal);
-				isFirstDealing = false;
-				isFirstDealDone = true;
-				StartCoroutine (GoToNextState ());
+
+				if (i == 0)
+					cards [j].transform
+						.DOScale (1.3f, 0.04f)
+						.SetDelay (index * waitTimeDeltaBetweenCard + 0.02f);
 			}
 		}
 	}
+
+	private void FirstDealAnimation2() {
+		
+		if (isFirstDealing && !beforeGameStartController.isMoveSeat) {
+			isFirstDealing = false;
+			MusicController.instance.Play (AudioItem.BeforeFirstDeal);
+			StartCoroutine (ExecuteFirstDealAnimation ());
+		}
+	}
+		
 
 	public void SetUI() {
 		var game = gamePlayController.game;
@@ -116,7 +136,7 @@ public class FirstDealerController : BaseStateController {
 			Vector3[] targetCardPositions = player.seat.cardPositions;
 			for (int j = 0; j < 4; j++) {
 				Vector3 targetCard = targetCardPositions [j];
-				cards [j].transform.position = targetCard;
+				cards [j].transform.position = new Vector3(targetCard.x / SetupCardGame.TransformConstant, targetCard.y/SetupCardGame.TransformConstant);
 				if (i == 0) {
 					Vector3 localScale = new Vector3 (user0CardScale, user0CardScale);
 					cards [j].transform.localScale = localScale;
@@ -136,29 +156,6 @@ public class FirstDealerController : BaseStateController {
 		isFirstDealDone = true;
 	}
 		
-	private void FirstGiveCardsAnimation(Player player, float waitTime) {
-		float step = dealSpeed * Time.deltaTime;
-		Image[] cards = player.seat.cards;
-		Vector3[] targetCardPositions = player.seat.cardPositions;
-		for (int i = 0; i < 4; i++) {
-
-			Vector3 targetCard = targetCardPositions [i];
-			StartCoroutine(GiveCardAnimation(player, cards[i], targetCard, step, waitTime));
-			waitTime += waitTimeDeltaBetweenCard;
-		}
-	}
-
-	IEnumerator GiveCardAnimation(Player player, Image card, Vector3 targetCard, float step, float waitTime) {
-		yield return new WaitForSeconds (waitTime);
-		card.transform.position = Vector3.MoveTowards(card.gameObject.transform.position, targetCard, step);
-		if (player.seat.seatIndex == 0) {
-			Vector3 localScale = new Vector3 ();
-			localScale.x = user0CardScale;
-			localScale.y = user0CardScale;
-			card.transform.localScale = localScale;
-		}
-	}
-		
 	IEnumerator TurnCardUp(Image card, string cardValue) {
 		if (!string.IsNullOrEmpty (cardValue)) {
 			Animator anim = card.GetComponent<Animator> ();
@@ -166,6 +163,7 @@ public class FirstDealerController : BaseStateController {
 			yield return new WaitForSeconds (turnUpTime);
 			card.sprite = deck.GetCardFaceImage (cardValue);
 			anim.Play ("TurnBackNow2");
+
 		}
 	    yield return new WaitForSeconds (turnUpTime);
 	}

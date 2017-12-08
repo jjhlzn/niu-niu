@@ -388,7 +388,7 @@ public class SetupCardGame : BaseStateController {
 			break;
 		}
 		for (int i = 0; i < 5; i++) {
-			result[i] = new Vector3 ((initialX + i * stepX) / TransformConstant, initialY / TransformConstant,  0);
+			result[i] = new Vector3 ((initialX + i * stepX) , initialY ,  0);
 		}
 		return result;
 	}
@@ -405,7 +405,7 @@ public class SetupCardGame : BaseStateController {
 	private Vector3[] SetShowCardPositions(int index) {
 		Vector3[] result = new Vector3[5];
 		int initialX = 0, initialY = 0;
-		int stepX = 30;
+		int stepX = 25;
 		switch (index) {
 		case 0:
 			initialX = -100;
@@ -434,7 +434,7 @@ public class SetupCardGame : BaseStateController {
 			break;
 		}
 		for (int i = 0; i < 5; i++) {
-			result[i] = new Vector3 ((initialX + i * stepX) / TransformConstant, initialY / TransformConstant,  0);
+			result[i] = new Vector3 ((initialX + i * stepX) , initialY ,  0);
 		}
 		return result;
 	}

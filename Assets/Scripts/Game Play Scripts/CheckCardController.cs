@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 using socket.io;
 using Newtonsoft.Json;
 
@@ -31,26 +32,21 @@ public class CheckCardController : BaseStateController {
 
 	private bool[] playerShowCardCompleted;
 	private bool[] isTurnCardArray;
-	private bool[] isMoveCardArray;
-	private bool[] hasPlayedNiu = new bool[Game.SeatCount];
 	//private bool hasShowCard = false;
 	private float stateTimeLeft; //这状态停留的时间
+	private bool hasPlayCountDown;
 
 	public void Awake() {
-		isMoveCardArray = new bool[Game.SeatCount];
 		isTurnCardArray = new bool[Game.SeatCount];
 		playerShowCardCompleted = new bool[Game.SeatCount];
 	}
 
 	public override void Reset() {
 	    // hasShowCard = false;
-		isMoveCardArray = new bool[Game.SeatCount];
 		isTurnCardArray = new bool[Game.SeatCount];
 		playerShowCardCompleted = new bool[Game.SeatCount];
 		stateTimeLeft = Constants.MaxStateTimeLeft;
-		for (int i = 0; i < Game.SeatCount; i++) {
-			hasPlayedNiu [i] = false;
-		}
+		hasPlayCountDown = false;
 	}
 
 	public void Init() {
@@ -84,7 +80,11 @@ public class CheckCardController : BaseStateController {
 	public new void Update ()  {
 		base.Update ();
 		if (gamePlayController.state == GameState.CheckCard) {
-			
+			if (stateTimeLeft <=  3.5f && !hasPlayCountDown) {
+				hasPlayCountDown = true;
+				MusicController.instance.Play (AudioItem.CountDown);
+			}
+
 			if (stateTimeLeft >= 0) {
 				gamePlayController.game.ShowStateLabel ("查看手牌: " + Mathf.Round(stateTimeLeft));
 				stateTimeLeft -= Time.deltaTime;
@@ -96,7 +96,7 @@ public class CheckCardController : BaseStateController {
 			}
 		}
 	
-		CheckCardAnimation ();
+		CheckCardAnimation2 ();
 	}
 
 	public bool isMeShowCard() {
@@ -130,8 +130,10 @@ public class CheckCardController : BaseStateController {
 					Vector3 targetV = showcardPositions [sequences[j]];
 					//有牛的话，第4张牌和第6张牌要有点距离
 					if (round.HasNiu (seatIndex) && sequences [j] >= 3) {
-						targetV = new Vector3 (targetV.x + 0.3f, targetV.y, targetV.z);
-					} 
+						targetV = new Vector3 (targetV.x / SetupCardGame.TransformConstant + 0.3f, targetV.y / SetupCardGame.TransformConstant, targetV.z);
+					} else {
+						targetV = new Vector3 (targetV.x / SetupCardGame.TransformConstant, targetV.y / SetupCardGame.TransformConstant, targetV.z);
+					}
 					player.cards[j].gameObject.transform.position = targetV;
 					player.cards[j].transform.SetSiblingIndex (seatIndex * 5 + sequences [j]);
 				}
@@ -147,67 +149,17 @@ public class CheckCardController : BaseStateController {
 		}
 	}
 
-	private void CheckCardAnimation() {
+	private void CheckCardAnimation2() {
 		var round = gamePlayController.game.currentRound;
 		if (secondDealController.isSecondDealDone) {
 			for (int i = 0; i < isTurnCardArray.Length; i++) {
 				if (isTurnCardArray [i]) {
+					isTurnCardArray [i] = false;
 					StartCoroutine (TurnUserCardsUp (i));
 				}
 			}
-
-			for (int i = 0; i < isMoveCardArray.Length; i++) {
-				if (isMoveCardArray [i]) {
-					Image[] cards = seats [i].player.cards;
-					Vector3[] showcardPositions = seats [i].showCardPositions;
-					int[] sequences = gamePlayController.game.currentRound.cardSequenceArray [i];
-
-					float step;
-					if (i == 0) {
-						step = user0MoveCardSpeedWhenShowCard * Time.deltaTime;
-					} else {
-						step = moveCardSpeedWhenShowCard * Time.deltaTime;
-					}
-
-					bool moveCompleted = true;
-					for (int j = 0; j < 5; j++) {
-						//Debug.Log ("card " + j + " move to position " + sequences [j]);
-						Vector3 targetV = showcardPositions [sequences [j]];
-						//有牛的话，第4张牌和第6张牌要有点距离
-						if (gamePlayController.game.currentRound.HasNiu (i) && sequences [j] >= 3) {
-							targetV = new Vector3 (targetV.x + 0.3f, targetV.y, targetV.z);
-						} 
-						cards [j].gameObject.transform.position = Vector3.MoveTowards (cards [j].gameObject.transform.position, targetV, step);
-						cards [j].transform.SetSiblingIndex (i * 5 + sequences [j]);
-
-						if (!Utils.isTwoPositionIsEqual (cards [j].gameObject.transform.position, targetV)) {
-							moveCompleted = false;
-						} 
-					}
-
-					if (moveCompleted) {
-						if (!hasPlayedNiu [i]) {
-							hasPlayedNiu [i] = true;
-							MusicController.instance.Play ("niu" + round.niuArray [i], seats [i].player.sex);
-						}
-
-						//gamePlayController.game.HideStateLabel ();
-						isMoveCardArray [i] = false;
-
-						var game = gamePlayController.game;
-						seats [i].niuImage.sprite = game.getNiuSprite (game.currentRound.niuArray [i]);
-						seats [i].niuImage.gameObject.SetActive (true);
-
-						if (game.currentRound.niuArray [i] > 6) {
-							seats [i].mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [i]);
-							seats [i].mutipleImage.gameObject.SetActive (true);
-						}
-						Debug.Log ("seat " + i + " show card anim completed");
-						StartCoroutine (SetPlayerShowCardCompleted (i));
-					} 
-				} 
-			}
 		}
+
 	}
 
 	IEnumerator SetPlayerShowCardCompleted(int index) {
@@ -215,17 +167,7 @@ public class CheckCardController : BaseStateController {
 		playerShowCardCompleted [index] = true;
 	}
 
-	IEnumerator TurnCardUp(Image card) {
-		Animator anim = card.GetComponent<Animator> ();
-		anim.Play ("TurnUp");
-		yield return new WaitForSeconds (FirstDealerController.turnUpTime);
 
-		card.sprite = deck.GetCardFaceImage(gamePlayController.game.currentRound.playerCardsDict[Player.Me.userId][4]);
-		anim.Play ("TurnBackNow2");
-		yield return new WaitForSeconds (.2f);
-
-		isMoveCardArray [0] = true;
-	}
 
 	IEnumerator TurnUserCardsUp(int seatIndex) {
 		isTurnCardArray [seatIndex] = false;
@@ -242,7 +184,8 @@ public class CheckCardController : BaseStateController {
 			card.sprite = deck.GetCardFaceImage (cardPoints [4]); 
 			anim.Play ("TurnBackNow2");
 			yield return new WaitForSeconds (.2f);
-			isMoveCardArray [seatIndex] = true;
+
+			MoveCards (seats [seatIndex].player);
 
 		} else {
 
@@ -254,7 +197,6 @@ public class CheckCardController : BaseStateController {
 			}
 
 			yield return new WaitForSeconds (FirstDealerController.turnUpTime);
-
 
 			for (int i = 0; i < 5; i++) {
 				Image card = cards [i];
@@ -268,8 +210,55 @@ public class CheckCardController : BaseStateController {
 			}
 
 			yield return new WaitForSeconds (.2f);
-			isMoveCardArray [seatIndex] = true;
+			MoveCards (seats [seatIndex].player);
 		}
+	}
+
+	private void MoveCards(Player player) {
+		var round = gamePlayController.game.currentRound;
+		Image[] cards = player.cards;
+		Vector3[] showcardPositions = player.seat.showCardPositions;
+
+		int index = player.seat.seatIndex;
+		int[] sequences = gamePlayController.game.currentRound.cardSequenceArray [index];
+
+		float step;
+		if (index == 0) {
+			step = user0MoveCardSpeedWhenShowCard * Time.deltaTime;
+		} else {
+			step = moveCardSpeedWhenShowCard * Time.deltaTime;
+		}
+
+		for (int j = 0; j < 5; j++) {
+			Vector3 targetV = showcardPositions [sequences [j]];
+			//有牛的话，第4张牌和第6张牌要有点距离
+			if (gamePlayController.game.currentRound.HasNiu (index) && sequences [j] >= 3) {
+				targetV = new Vector3 (targetV.x + 30f, targetV.y, targetV.z);
+			} 
+				
+			Tween t = cards [j].transform.DOLocalMove (targetV, 0.3f);
+			cards [j].transform.SetSiblingIndex (sequences [j]);
+
+			if (j == 4) {
+				t.OnComplete (() => {
+
+					MusicController.instance.Play ("niu" + round.niuArray [index], player.sex);
+
+
+					var game = gamePlayController.game;
+					seats [index].niuImage.sprite = game.getNiuSprite (game.currentRound.niuArray [index]);
+					seats [index].niuImage.gameObject.SetActive (true);
+
+					if (game.currentRound.niuArray [index] > 6) {
+						seats [index].mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [index]);
+						seats [index].mutipleImage.gameObject.SetActive (true);
+					}
+					Debug.Log ("seat " + index + " show card anim completed");
+					StartCoroutine (SetPlayerShowCardCompleted (index));
+				});
+			}
+		} 
+		
 	}
 
 	public void CuoCardClick() {
@@ -289,7 +278,7 @@ public class CheckCardController : BaseStateController {
 		round.multipleArray[0] = mutiple;
 
 		Player.Me.hasShowCard = true;
-
+		MusicController.instance.Play (AudioItem.ShowCardTip, Player.Me.sex);
 		//user1 亮牌
 		StartCoroutine(TurnUserCardsUp(0));
 	}
@@ -328,10 +317,8 @@ public class CheckCardController : BaseStateController {
 		if (seatIndex == 0) {
 			HandleUser0ShowCardNotify (notify.niu, notify.cardSequences, notify.multiple);
 		} else {
-			//StartCoroutine(TurnUserCardsUp (seatIndex));
 			isTurnCardArray[seatIndex] = true;
 		}
-
 	}
 
 }

@@ -23,11 +23,13 @@ public class RobBankerController : BaseStateController {
 	}
 
 	private float stateTimeLeft; //这状态停留的时间
+	private bool hasPlayCountDown;
 	//private bool hasRobBanker = false; 
 
 	public override void Reset() {
 		//hasRobBanker = false;
 		stateTimeLeft = Constants.MaxStateTimeLeft;
+		hasPlayCountDown = false;
 	}
 
 	void Start() {
@@ -48,6 +50,11 @@ public class RobBankerController : BaseStateController {
 	public new void Update ()  {
 		base.Update ();
 		if (gamePlayerController.state == GameState.RobBanker) {
+			if (stateTimeLeft <=  3.5f && !hasPlayCountDown) {
+				hasPlayCountDown = true;
+				MusicController.instance.Play (AudioItem.CountDown);
+			}
+
 			if (stateTimeLeft >= 0) {
 				gamePlayerController.game.ShowStateLabel ("抢庄: " + Mathf.Round (stateTimeLeft));
 				stateTimeLeft -= Time.deltaTime;

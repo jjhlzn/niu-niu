@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class CompareCardController : BaseStateController {
 	private float chipMoveSpeed = 20f;
@@ -28,28 +29,20 @@ public class CompareCardController : BaseStateController {
 			return gamePlayController.game.seats;
 		}
 	}
-
-	public int[] moveChipFromOtheToBankerArray;
-	public int[] moveChipFromBankerToOtherArray;
+		
 	private bool moveToBanker;
-	private bool moveFromBanker;
-	private bool showScoreLabel;
-	private bool moveScoreLabel;
 	private bool hasSetAfterAllAnimCompleted;
 	public bool allAnimCompleted;
 	private bool[] hasPlayedTransmitCoin = new bool[Game.SeatCount];
 	private float moveTimeLeft;
+	Dictionary<string, int>  resultDict;
+	Dictionary<string, int> scoreDict;
 
 	public void Init() {
 	}
 
 	public override void Reset() {
-		moveChipFromOtheToBankerArray = null;
-		moveChipFromBankerToOtherArray = null;
 		moveToBanker = false;
-		moveFromBanker = false;
-		showScoreLabel = false;
-		moveScoreLabel = false;
 		allAnimCompleted = false;
 		hasSetAfterAllAnimCompleted = false;
 		for (int i = 0; i < Game.SeatCount; i++) {
@@ -86,103 +79,128 @@ public class CompareCardController : BaseStateController {
 
 	private void CompareCardAnimation() {
 		if (checkCardController.isAllPlayerShowCardAnimCompleted) {
-			//Debug.Log ("CompareCardAnimation Start");
 			if (moveToBanker) {
-				
-				if (moveChipFromOtheToBankerArray.Length == 0) {
-					//moveToBanker结束
-					moveTimeLeft = MoveTime;
-					moveToBanker = false;
-					moveFromBanker = true;
-					HideChips ();
-				} else {
-					for (int i = 0; i < moveChipFromOtheToBankerArray.Length; i++) {
-						int seatIndex = moveChipFromOtheToBankerArray [i];
-						MoveChipsFromSeat (seatIndex);
-						if (!hasPlayedTransmitCoin[seatIndex]) {
-							hasPlayedTransmitCoin [seatIndex] = true;
-							MusicController.instance.Play (AudioItem.TransmitCoin, seats [seatIndex].player.sex);
+				moveToBanker = false;
+				var game = gamePlayController.game;
+
+				var playingPlayers = game.PlayingPlayers;
+				for (int i = 0; i < playingPlayers.Count; i++) {
+					playingPlayers [i].score = scoreDict [playingPlayers [i].userId];
+				}
+
+				List<string> moveToBankerPlayers = new List<string> ();
+				List<string> moveFromBankerToPlayers = new List<string> (); 
+				foreach (var item in resultDict) {
+					if (item.Key != game.currentRound.banker) {
+						if (item.Value < 0) {
+							moveToBankerPlayers.Add (item.Key);
+						}
+						if (item.Value > 0) {
+							moveFromBankerToPlayers.Add (item.Key);
 						}
 					}
-					moveTimeLeft -= Time.deltaTime;
-					if (moveTimeLeft <= 0) {
-						//moveToBanker结束
-						moveTimeLeft = MoveTime;
-						moveToBanker = false;
-						moveFromBanker = true;
-						HideChips ();
-					}
 				}
-
-			} 
-
-			if (moveFromBanker) {
-				if (moveChipFromBankerToOtherArray.Length == 0) {
-					//moveFromBanker结束
-					moveTimeLeft = MoveTime;
-					moveFromBanker = false;
-					showScoreLabel = true;
-					HideChips ();
-				} else {
-
-					for (int i = 0; i < moveChipFromBankerToOtherArray.Length; i++) {
-						int seatIndex = moveChipFromBankerToOtherArray [i];
-						MoveChipsToSeat (seatIndex);
-						if (!hasPlayedTransmitCoin[seatIndex]) {
-							hasPlayedTransmitCoin [seatIndex] = true;
-							MusicController.instance.Play (AudioItem.TransmitCoin, seats [seatIndex].player.sex);
-						}
-					}
-					moveTimeLeft -= Time.deltaTime;
-					if (moveTimeLeft <= 0) {
-						//moveFromBanker结束
-						moveTimeLeft = MoveTime;
-						moveFromBanker = false;
-						showScoreLabel = true;
-						HideChips ();
-					}
-				}
-			}
-
-
-			if (showScoreLabel) {
-				showScoreLabel = false;
-				ShowScoreLabels ();
-			}
-
-			if (moveScoreLabel) {
-				MoveScoreLabels ();
-			}
-
-			if (allAnimCompleted && !hasSetAfterAllAnimCompleted) {
-				hasSetAfterAllAnimCompleted = true;
-				if (gamePlayController.game.HasNextRound ()) {
-					if (gamePlayController.state == GameState.CompareCard) {
-						gamePlayController.state = GameState.WaitForNextRound;
-						waitForNextRoundController.Reset ();
-					}
-				} else {
-					gamePlayController.state = GameState.GameOver;
-					if (gameOverController.isGetGameOverNotify) {
-						gameOverController.HandleGameOverResponse ();
-					}
-				}
-				gamePlayController.game.HideStateLabel ();
-				Debug.Log ("Go to " + gamePlayController.state.value);
-			}
-			//Debug.Log ("CompareCardAnimation End");
-		} 
-	}
-
-	private void ShowScoreLabels() {
-		for (int i = 0; i < seats.Length; i++) {
-			if (seats [i].hasPlayer() && seats[i].player.isPlaying) {
-				ShowScoreLabel (i);
+				MoveChips (moveToBankerPlayers, moveFromBankerToPlayers);
 			}
 		}
 	}
 
-	private void ShowScoreLabel(int index) {
+
+
+	private void MoveChips(List<string> playerIdsLoseToBanker, List<string> playerIdsWinFromBanker) {
+		if (playerIdsLoseToBanker.Count != 0) {
+			var game = gamePlayController.game;
+			int to = game.GetSeatIndex (game.currentRound.banker);
+			Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
+
+			for(int i =0; i < playerIdsLoseToBanker.Count; i++) {
+				string id = playerIdsLoseToBanker [i];
+				int from = game.GetSeatIndex (id);
+				if (i == playerIdsLoseToBanker.Count - 1) {
+					MoveChips (from, to, () => {
+						MoveChipFromBankerToPlayers (playerIdsWinFromBanker);
+					});
+				} else {
+					MoveChips (from, to);
+				}
+			}
+			StartCoroutine (PlayMoveChipsAudio ());
+		} else {
+			MoveChipFromBankerToPlayers (playerIdsWinFromBanker);
+		}
+	}
+		
+	private void MoveChipFromBankerToPlayers(List<string> ids) {
+		StartCoroutine (ExecMoveChipFromBankerToPlayers (ids));
+	}
+
+	private IEnumerator ExecMoveChipFromBankerToPlayers(List<string> ids) {
+		yield return new WaitForSeconds (.3f);
+
+		var game = gamePlayController.game;
+		int from = game.GetSeatIndex (game.currentRound.banker);
+
+		if (ids.Count != 0) {
+			for(int i =0; i < ids.Count; i++) {
+				string id = ids [i];
+				int to = game.GetSeatIndex (id);
+				Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
+
+				if (i == ids.Count - 1) {
+					MoveChips (from, to, () => {
+						ShowScoreLabels();
+					});
+				} else {
+					MoveChips (from, to);
+				}
+			}
+			StartCoroutine (PlayMoveChipsAudio ());
+		} else {
+			ShowScoreLabels();
+		}
+	}
+
+	private delegate void Callback();
+
+	private void MoveChips( int from,  int to, Callback calback = null) {
+		Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
+		int startIndex = to * 8;
+		for (int i = 0; i < 8; i++) {
+			Image image = seats [from].chipImages [startIndex + i];
+			if (!image.gameObject.activeInHierarchy)
+				image.gameObject.SetActive (true);
+
+			Tween t = image.transform.DOMove (targetPosition, 0.6f).SetDelay(0.1f + 0.1f * i);
+			if (i == 8) {
+				if (calback != null) {
+					t.OnComplete (() => {
+						calback ();
+					});
+				}
+			}
+		}
+	}
+
+	private IEnumerator PlayMoveChipsAudio() {
+		yield return new WaitForSeconds (0.1f);
+		MusicController.instance.Play (AudioItem.TransmitCoin);
+	}
+
+
+	private void ShowScoreLabels() {
+		var playingPlayers = gamePlayController.game.PlayingPlayers;
+		for (int i = 0; i < playingPlayers.Count; i++) {
+			if (i == playingPlayers.Count - 1) {
+				ShowScoreLabel (playingPlayers[i].seat.seatIndex, () => {
+					MoveScoreLabels();
+				});
+			} else {
+				ShowScoreLabel (playingPlayers[i].seat.seatIndex);
+			}
+		}
+	}
+
+	private void ShowScoreLabel(int index, Callback callback = null) {
 		Text scoreLabel = seats [index].scoreLabel;
 		//Debug.Log ("userId: " + seats [index].player.userId);
 		int thisRoundScore = gamePlayController.game.currentRound.resultDict [seats [index].player.userId];
@@ -191,78 +209,58 @@ public class CompareCardController : BaseStateController {
 		seats [index].playerScoreLabel.text = Utils.GetNumberSring (score);
 		scoreLabel.gameObject.SetActive (true);
 		Animator anim = scoreLabel.GetComponent<Animator> ();
-		StartCoroutine(ShowScoreLabel(scoreLabel, anim));
+		StartCoroutine(ShowScoreLabel(scoreLabel, anim, callback));
 	}
 
-	IEnumerator ShowScoreLabel(Text text, Animator anim) {
+
+	IEnumerator ShowScoreLabel(Text text, Animator anim, Callback callback = null) {
 		anim.Play("ShowUp");
 		yield return new WaitForSeconds (.4f);
-		showScoreLabel = false;	
-		moveScoreLabel = true;
+		if (callback != null)
+			callback ();
 	}
 
 	private void MoveScoreLabels () {
-		
 		Seat[] seats = gamePlayController.game.seats;
-		for (int i = 0; i < seats.Length; i++) {
-			if (seats [i].hasPlayer()) {
-				MoveScoreLabel (i);
+		var playingPlayers = gamePlayController.game.PlayingPlayers;
+		for (int i = 0; i < playingPlayers.Count; i++) {
+			if (i == playingPlayers.Count - 1) {
+				MoveScoreLabel (playingPlayers[i].seat.seatIndex, () => {
+					readyButton.gameObject.SetActive (true);
+					allAnimCompleted = true;
+
+					hasSetAfterAllAnimCompleted = true;
+					if (gamePlayController.game.HasNextRound ()) {
+						if (gamePlayController.state == GameState.CompareCard) {
+							gamePlayController.state = GameState.WaitForNextRound;
+							waitForNextRoundController.Reset ();
+						}
+					} else {
+						gamePlayController.state = GameState.GameOver;
+						if (gameOverController.isGetGameOverNotify) {
+							gameOverController.HandleGameOverResponse ();
+						}
+					}
+					Debug.Log ("Go to " + gamePlayController.state.value);
+				});
+			} else {
+				MoveScoreLabel (playingPlayers[i].seat.seatIndex);
 			}
+
 		}
 	}
 
-	private void MoveScoreLabel(int index) {
+	private void MoveScoreLabel(int index, Callback callback = null) {
 		Text text = seats [index].scoreLabel;
-		text.transform.position = Vector3.MoveTowards (text.transform.position, seats[index].targetScoreLabelPosition, scoreLabelMoveSpeed * Time.deltaTime);
-
-		if (Utils.isTwoPositionIsEqual(text.transform.position, seats[index].targetScoreLabelPosition)) {
-			//text.gameObject.SetActive (false);
-			readyButton.gameObject.SetActive (true);
-			moveScoreLabel = false;
-			allAnimCompleted = true;
+		Tween t = text.transform.DOMove (seats [index].targetScoreLabelPosition, 0.5f);
+		if (callback != null) {
+			t.OnComplete (() => {
+				callback ();
+			});
 		}
 	}
 
-	private void MoveChipsFromSeat(int seat) {
-		Game game = gamePlayController.game;
-		int toSeat = game.GetSeatIndex (game.currentRound.banker);
 
-		MoveChips (seat, toSeat);
-	}
-
-	private void MoveChipsToSeat(int seat) {
-		Game game = gamePlayController.game;
-		int fromSeat = game.GetSeatIndex (game.currentRound.banker);
-
-		MoveChips (fromSeat, seat);
-	}
-		
-	private void MoveChips( int from,  int to) {
-		
-		float step = chipMoveSpeed * Time.deltaTime;
-
-		float waitTime = 0;
-	
-		Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
-
-		//bool moveCompleted = true;
-		  
-		int startIndex = to * 8;
-		for (int i = 0; i < 8; i++) {
-			Image image = seats [from].chipImages [startIndex + i];
-			if (!image.gameObject.activeInHierarchy)
-				image.gameObject.SetActive (true);
-	
-			StartCoroutine (moveChip (image, targetPosition, waitTime, step));
-
-			waitTime += 0.1f;
-
-			if (!Utils.isTwoPositionIsEqual(image.transform.position, targetPosition)) {
-				//moveCompleted = false;
-			} 
-		}
-	}
-		
 	IEnumerator moveChip(Image image, Vector3 to, float waitTime, float step) {
 		yield return new WaitForSeconds (waitTime);
 		//Debug.Log ("waitTime = " + waitTime);
@@ -283,40 +281,9 @@ public class CompareCardController : BaseStateController {
 		var game = gamePlayController.game;
 		int count = 0;
 		game.currentRound.resultDict = resultDict;
-		foreach(var item in resultDict) {
-			if (item.Value < 0 && item.Key != game.currentRound.banker) {
-				count++;
-			}
-		}
-
-		moveChipFromOtheToBankerArray = new int[count];
-		int index = 0;
-		foreach(var item in resultDict) {
-			if (item.Value < 0 && item.Key != game.currentRound.banker) {
-				moveChipFromOtheToBankerArray[index++] =  game.GetSeatIndex(item.Key);
-			}
-		}
-
-		count = 0;
-		foreach(var item in resultDict) {
-			if (item.Value > 0 && item.Key != game.currentRound.banker) {
-				count++;
-			}
-		}
-
-		moveChipFromBankerToOtherArray = new int[count];
-		index = 0;
-		foreach(var item in resultDict) {
-			if (item.Value > 0 && item.Key != game.currentRound.banker) {
-				moveChipFromBankerToOtherArray[index++] = game.GetSeatIndex(item.Key);
-			}
-		}
-
-		var playingPlayers = game.PlayingPlayers;
-		for (int i = 0; i < playingPlayers.Count; i++) {
-			playingPlayers [i].score = scoreDict [playingPlayers [i].userId];
-		}
-
+		this.resultDict = resultDict;
+		this.scoreDict = scoreDict;
+			
 		//game.HideStateLabel();
 		gamePlayController.state = GameState.CompareCard;
 		moveToBanker = true;
