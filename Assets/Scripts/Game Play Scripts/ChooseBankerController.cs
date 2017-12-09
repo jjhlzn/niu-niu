@@ -7,7 +7,7 @@ using DG.Tweening;
 public class ChooseBankerController : BaseStateController {
 	public static int ChooseTotalCount = 50;
 	private float BankerSignMoveTimeInterval = .002f;
-	private static float Move_Banker_Sign_Duration = 0.7f;
+	private static float Move_Banker_Sign_Duration = 0.5f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
