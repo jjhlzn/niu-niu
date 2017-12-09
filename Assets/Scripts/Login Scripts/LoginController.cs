@@ -22,11 +22,16 @@ public class LoginController : BaseMonoBehaviour {
 	private GameObject messagePanel;
 	[SerializeField]
 	private GameObject confirmMessagePanel;
+	[SerializeField]
+	private Text versionLabel;
 
 	private WWW www;
 	private bool isDonwloading;
+	private string newVersion;
 
 	void Start() {
+		versionLabel.text = "版本号: " + Utils.GetVersion ();
+
 		ssdk.authHandler = AuthResultHandler;
 		ssdk.showUserHandler = GetUserInfoResultHandler;
 
@@ -35,13 +40,13 @@ public class LoginController : BaseMonoBehaviour {
 
 	void Update() {
 		if (isDonwloading && www != null) {
-			Debug.Log ("progress = " + www.progress);
-			Utils.ShowMessagePanel ("发现新版本，已下载" + (int)(www.progress * 100) + '%', messagePanel);
+			//Debug.Log ("progress = " + www.progress);
+			Utils.ShowMessagePanel ("发现新版本:" + newVersion  + ", 已下载" + (int)(www.progress * 100) + '%', messagePanel);
 		}
 	}
 
 	private void CheckUpdate() {
-		if (Application.platform != RuntimePlatform.Android || Application.platform != RuntimePlatform.IPhonePlayer)
+		if (Application.platform != RuntimePlatform.Android && Application.platform != RuntimePlatform.IPhonePlayer)
 			return;
 
 		Utils.ShowMessagePanel ("正在检查新版本...", messagePanel);
@@ -52,6 +57,7 @@ public class LoginController : BaseMonoBehaviour {
 			CheckUpdateResponse resp = JsonConvert.DeserializeObject<CheckUpdateResponse>(jsonString);
 			if (resp.isNeedUpdate) {
 				if (Application.platform == RuntimePlatform.Android) {
+					newVersion = resp.newVersion;
 					StartCoroutine(DownloadApk(resp.updateUrl));
 				} else if (Application.platform == RuntimePlatform.IPhonePlayer) {
 					Utils.ShowConfirmMessagePanel("发现新版本，请使用TestFlight下载最新版本！", confirmMessagePanel); 

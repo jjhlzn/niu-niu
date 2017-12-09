@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SetupCardGame : BaseStateController {
-	private int MaxMoveChipCount = 8 * 6;
+	public static int Chip_Count_When_Transimit = 50;
+	private int MaxMoveChipCount = Chip_Count_When_Transimit * 6;
 	public static float TransformConstant = 71.98f;
 	private int cardCount = 30; //生成多少张牌的图片，6 * 5 = 30
 	public static float ChipScale = 0.6f;
-	public static int Chip_Count_When_Transimit = 8;
+
 
 	[SerializeField]
 	private CheckCardController checkCardController;
@@ -208,6 +209,7 @@ public class SetupCardGame : BaseStateController {
 			betChip.transform.SetParent (betChipContainer.transform);
 			betChip.transform.localScale = new Vector3 (1f, 1f);
 			seats[i].chipCountLabel = betChip.GetComponentInChildren<Text> ();
+			seats [i].chipCountLabel.gameObject.SetActive (false);
 			Image[] imgs = betChip.GetComponentsInChildren<Image> ();
 
 			foreach (Image img in imgs) {
@@ -332,11 +334,11 @@ public class SetupCardGame : BaseStateController {
 			switch (text.name) {
 			case "Player Name Label":
 				seat.playerNameLabel = text;
-				text.fontSize = 32;
+				//text.fontSize = 36;
 				break;
 			case "Player Score Label":
 				seat.playerScoreLabel = text;
-				text.fontSize = 32;
+				//text.fontSize = 32;
 				break;
 			case "Seat Number Label":
 				seat.seatNumberLabel = text;

@@ -59,15 +59,16 @@ public class MusicController : BaseMonoBehaviour {
 		}
 	}
 
-	public void Play(string audioName, int sex = 1, bool isLoop = false ) {
+	public void Play(string audioName, int sex = 1, bool allowRepeat = false, bool isLoop = false ) {
+		//是否配置关掉了音乐
 		if (!IsAudioOn()) {
 			return;
 		}
 
 		if (manAudios.ContainsKey (audioName)) {
 			manAudios [audioName].loop = isLoop;
-			if (!manAudios [audioName].isPlaying) {
-				manAudios [audioName].Play ();
+			if (!manAudios [audioName].isPlaying || allowRepeat) {
+				manAudios [audioName].Play ();  
 			}
 		}
 	}

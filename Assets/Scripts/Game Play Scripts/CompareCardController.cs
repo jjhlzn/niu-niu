@@ -27,6 +27,19 @@ public class CompareCardController : BaseStateController {
 	private bool moveToBanker;
 	Dictionary<string, int>  resultDict;
 	Dictionary<string, int> scoreDict;
+	public Vector2[] deltaVectorArray;
+
+    void Start() {
+		deltaVectorArray = new Vector2[8];
+		deltaVectorArray [0] =	new Vector2 (-17, 0);
+		deltaVectorArray [1] = new Vector2 (17, 8);
+		deltaVectorArray [2] = new Vector2 (-19, -11);
+		deltaVectorArray [3] = new Vector2 (-8, 17);
+		deltaVectorArray [4] = new Vector2 (-23, 2);
+		deltaVectorArray [5] = new Vector2 (-2, 8);
+		deltaVectorArray [6] = new Vector2 (3, -13);
+		deltaVectorArray [7] = new Vector2 (18, -3);
+	}
 
 	public void Init() {}
 
@@ -63,43 +76,38 @@ public class CompareCardController : BaseStateController {
 						}
 					}
 				}
-				MoveChips (losers, winners);
+				ShowChips (losers, winners);
 			}
 		}
 	}
 		
-	private void MoveChips(List<string> loserIds, List<string> winnerIds) {
+	private void ShowChips(List<string> loserIds, List<string> winnerIds) {
 		if (loserIds.Count != 0) {
-			int to = game.GetSeatIndex (game.currentRound.banker);
-			Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
-
+			int toSeatIndex = game.GetSeatIndex (game.currentRound.banker);
 			for(int i =0; i < loserIds.Count; i++) {
 				string id = loserIds [i];
-				int from = game.GetSeatIndex (id);
+				int fromSeatIndex = game.GetSeatIndex (id);
 				if (i == loserIds.Count - 1) {
-					MoveChips (from, to, () => {
-						MoveChipFromBankerToPlayers (winnerIds);
+					ShowChips (fromSeatIndex, toSeatIndex, () => {
+						MoveChipsForWinners (winnerIds);
 					});
 				} else {
-					MoveChips (from, to);
+					ShowChips (fromSeatIndex, toSeatIndex);
 				}
 			}
-			StartCoroutine (PlayMoveChipsAudio ());
 		} else {
-			MoveChipFromBankerToPlayers (winnerIds);
+			MoveChipsForWinners (winnerIds);
 		}
 	}
 		
-	private void MoveChipFromBankerToPlayers(List<string> ids) {
-		StartCoroutine (ExecMoveChipFromBankerToPlayers (ids));
+	private void MoveChipsForWinners(List<string> ids) {
+		StartCoroutine (ExecMoveChipsForWinners (ids));
 	}
 
-	private IEnumerator ExecMoveChipFromBankerToPlayers(List<string> userIds) {
-		Debug.Log ("MoveChipFromBankerToPlayers() called");
+	private IEnumerator ExecMoveChipsForWinners(List<string> userIds) {
 		yield return new WaitForSeconds (.3f);
 
 		int from = game.GetSeatIndex (game.currentRound.banker);
-
 		if (userIds.Count != 0) {
 			for(int i =0; i < userIds.Count; i++) {
 				string id = userIds [i];
@@ -107,15 +115,13 @@ public class CompareCardController : BaseStateController {
 				Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
 
 				if (i == userIds.Count - 1) {
-					MoveChips (from, to, () => {
+					ShowChips (from, to, () => {
 						ShowScoreLabels();
 					});
 				} else {
-					MoveChips (from, to);
+					ShowChips (from, to);
 				}
 			}
-			MusicController.instance.Stop(AudioItem.TransmitCoin);
-			StartCoroutine (PlayMoveChipsAudio ());
 		} else {
 			ShowScoreLabels();
 		}
@@ -123,29 +129,71 @@ public class CompareCardController : BaseStateController {
 
 	private delegate void Callback();
 
-	private void MoveChips( int from,  int to, Callback calback = null) {
-		Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
-		int startIndex = to * SetupCardGame.Chip_Count_When_Transimit;
-
+	private static float ChipShowInterval = 0.002f;
+	public static float Move_Chip_Disapear_Interval = 0.2f;
+	private void ShowChips( int fromSeatIndex,  int toSeatIndex, Callback callback = null) {
+		Sequence s = DOTween.Sequence ();
+		Vector3 targetPosition = seats [toSeatIndex].chipImages [0].transform.position; 
+		int startIndex = toSeatIndex * SetupCardGame.Chip_Count_When_Transimit;
 		for (int i = 0; i < SetupCardGame.Chip_Count_When_Transimit; i++) {
-			Image image = seats [from].chipImages [startIndex + i];
-			if (!image.gameObject.activeInHierarchy)
-				image.gameObject.SetActive (true);
+			Image chip = seats [fromSeatIndex].chipImages [startIndex + i];
+			int chipIndex = i;
+			s.Append(chip.DOFade(1, 0.01f).OnComplete( () => {
+				chip.gameObject.SetActive(true);
+	
+				float max = 20f;
+				chip.transform.position = new Vector3 (
+					chip.transform.position.x + Random.Range(-1 * max, max) / SetupCardGame.TransformConstant,
+					chip.transform.position.y + Random.Range(-1 * max, max) / SetupCardGame.TransformConstant);
+			}));
 
-			Tween t = image.transform.DOMove (targetPosition, 0.5f).SetDelay(0.1f + 0.1f * i);
-			if (i == SetupCardGame.Chip_Count_When_Transimit - 1) {
-				if (calback != null) {
-					t.OnComplete (() => {
-						HideChips ();
-						calback ();
-					});
-				}
-			}
+			s.AppendInterval (ChipShowInterval);
 		}
+
+		s.OnComplete (() => {
+			MoveChips(fromSeatIndex, toSeatIndex, callback);
+		});
 	}
 
+	public static float Move_Chip_Move_Duration = 0.3f;
+	public static float Move_Chip_Move_Interval = 0.04f;
+
+	private void MoveChips(int fromSeatIndex,  int toSeatIndex, Callback callback = null) {
+
+		int startIndex = toSeatIndex * SetupCardGame.Chip_Count_When_Transimit;
+		Vector3 position = seats [toSeatIndex].chipImages [0].transform.position; 
+
+		float delayBeforeMove = 0.15f;
+		float delay = delayBeforeMove;
+
+		for (int i = SetupCardGame.Chip_Count_When_Transimit - 1; i >= 0; i--) {
+			float max = 18f;
+			//随机生成移动的目标位置
+			Vector3 target = new Vector3 (position.x + Random.Range (-1 * max, max) / SetupCardGame.TransformConstant,
+				position.y + Random.Range (-1 * max, max) / SetupCardGame.TransformConstant);
+			
+			MusicController.instance.Play (AudioItem.TransmitCoin, allowRepeat: true);
+
+			Image chip = seats [fromSeatIndex].chipImages [startIndex + i];
+			delay += Random.Range (0, Move_Chip_Move_Interval * 1.5f);
+			Tween t = chip.transform.DOMove (target, Move_Chip_Move_Duration).SetDelay(delay);
+			int index = i;
+			t.OnComplete (() => {
+				chip.DOFade(1, 0.001f).SetDelay(Move_Chip_Disapear_Interval).OnComplete( () => {
+					chip.gameObject.SetActive(false);
+					if (index == SetupCardGame.Chip_Count_When_Transimit - 1) {
+						if (callback != null)
+							callback();
+					}
+				});
+			});
+
+		} 
+	}
+
+
 	private IEnumerator PlayMoveChipsAudio() {
-		yield return new WaitForSeconds (0.1f);
+		yield return new WaitForSeconds (0f);
 		MusicController.instance.Play (AudioItem.TransmitCoin);
 	}
 
@@ -165,17 +213,19 @@ public class CompareCardController : BaseStateController {
 
 	private void ShowScoreLabel(int index, Callback callback = null) {
 		Text scoreLabel = seats [index].scoreLabel;
-		//Debug.Log ("userId: " + seats [index].player.userId);
 		int thisRoundScore = gamePlayController.game.currentRound.resultDict [seats [index].player.userId];
 		scoreLabel.text = Utils.GetNumberSring (thisRoundScore);
-
-		int score = seats [index].player.score;
-		Debug.Log ("score = " + score);
-		seats [index].playerScoreLabel.DOText (Utils.GetNumberSring (score), .8f, true, ScrambleMode.Numerals);  
-
+		if (thisRoundScore >= 0) {
+			scoreLabel.color = new Color(253f / 255, 207f / 255, 15f / 255);
+		} else {
+			scoreLabel.color = new Color(63f / 255, 162f / 255, 211f / 255);
+		}
 		scoreLabel.gameObject.SetActive (true);
 		Animator anim = scoreLabel.GetComponent<Animator> ();
 		StartCoroutine(ShowScoreLabel(scoreLabel, anim, callback));
+
+		int score = seats [index].player.score;
+		seats [index].playerScoreLabel.DOText (Utils.GetNumberSring (score), .8f, true, ScrambleMode.Numerals);  
 	}
 
 
@@ -222,13 +272,6 @@ public class CompareCardController : BaseStateController {
 			});
 		}
 	}
-		
-	IEnumerator moveChip(Image image, Vector3 to, float waitTime, float step) {
-		yield return new WaitForSeconds (waitTime);
-		//Debug.Log ("waitTime = " + waitTime);
-		image.transform.position = Vector3.MoveTowards (image.transform.position, to, step);
-	} 
-
 
 	/******************************  Hanle Response   *********************************/
 	public void HandleResponse(GoToCompareCardNotify notify) {

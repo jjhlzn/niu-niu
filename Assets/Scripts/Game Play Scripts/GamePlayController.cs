@@ -307,15 +307,16 @@ public class GamePlayController : BaseMonoBehaviour {
 			Player player = new Player ();
 			if (userId == Player.Me.userId) {
 				player = Player.Me;
-				player.score = resp.scores [userId];
 			} else {
 				player.userId = userId;
 				player.sex = userInfo.sex;
 				player.nickname = userInfo.nickname;
 				player.headimgurl = userInfo.headimgurl;
 				player.ip = userInfo.ip;
-				player.score = resp.scores [userId];
+
 			}
+			if (resp.scores.ContainsKey(userId))
+				player.score = resp.scores [userId];
 			seat.player = player;
 			player.seat = seat;
 			//player.isPlaying = true;

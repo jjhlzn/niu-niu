@@ -15,6 +15,8 @@ public class Experiment : MonoBehaviour {
 	private Text text;
 	[SerializeField]
 	private Image readyImage;
+	[SerializeField]
+	private Image[] chips;
 
 	private Image[] cards;
 
@@ -32,7 +34,22 @@ public class Experiment : MonoBehaviour {
 		
 	}
 
+	void ShowChips() {
+		Sequence s = DOTween.Sequence ();
+		for (int i = 0; i < chips.Length; i++) {
+			Image chip = chips [i];
+			s.Append(chips[i].DOFade(1, 0.01f).OnComplete( () => {
+				chip.gameObject.SetActive(true);
+			}));
+			s.AppendInterval (0.05f);
+		}
+	}
+
 	public void MoveCard() {
+		
+		ShowChips ();
+
+		/*
 		text.DOText ("9000", 1, true, ScrambleMode.Numerals);  
 		Sequence s = DOTween.Sequence ();
 		s.SetDelay (0.1f);
@@ -52,9 +69,7 @@ public class Experiment : MonoBehaviour {
 						.DOScale (1.3f, 0.04f)
 						.SetDelay (index * 0.07f + 0.02f);
 			}
-		}
-
-
+		} */
 
 	}
 
@@ -71,8 +86,6 @@ public class Experiment : MonoBehaviour {
 		cards = new Image[24];
 
 		positions = new Vector3[24];
-
-
 		for(int i = 0; i < cards.Length; i++) {
 			cards[i] = Instantiate (card);
 			cards [i].transform.position = card.transform.position;

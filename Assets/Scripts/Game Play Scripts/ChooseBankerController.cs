@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class ChooseBankerController : BaseStateController {
 	public static int ChooseTotalCount = 50;
@@ -31,12 +32,6 @@ public class ChooseBankerController : BaseStateController {
 	private bool movingBankerSign;
 	private bool isShowStateLabel;
 
-	void Awake() {
-		//bankerSignOriginPosition = bankerSign.gameObject.transform.position;
-	}
-
-	void Start() {
-	}
 
 	public void Init() {
 		bankerSign.gameObject.SetActive (false);
@@ -64,10 +59,7 @@ public class ChooseBankerController : BaseStateController {
 		return false;
 	}
 
-	public override GamePlayController GetGamePlayController ()
-	{
-		return gamePlayController;
-	}
+
 
 	// Update is called once per frame
 	public new void Update ()  {
@@ -199,6 +191,11 @@ public class ChooseBankerController : BaseStateController {
 			isChoosingBanker = true;
 		else
 			chooseCompleted = true;
+	}
+
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayController;
 	}
 		
 	public void SetUI() {
