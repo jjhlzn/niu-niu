@@ -7,45 +7,31 @@ using DG.Tweening;
 public class ChooseBankerController : BaseStateController {
 	public static int ChooseTotalCount = 50;
 	private float BankerSignMoveTimeInterval = .002f;
-	private float moveBankerSignSpeed = 13f;
+	private static float Move_Banker_Sign_Duration = 0.7f;
 
 	[SerializeField]
 	private GamePlayController gamePlayController;
 
 	[SerializeField]
 	private Image bankerSign;
-	//private Vector3 bankerSignOriginPosition;
 
-	private Seat[] seats {
-		get {
-			return gamePlayController.game.seats;
-		}
-	}
 
-	private bool chooseCompleted;
-	private string[] userIds;
+	private string[] randomSelectBankerUserIds;
 	private bool isChoosingBanker;
 	private int chooseIndex;
 	private int chooseCount;
-	private float waitTime;
 	private float timeLeft;
-	private bool movingBankerSign;
-	private bool isShowStateLabel;
-
 
 	public void Init() {
 		bankerSign.gameObject.SetActive (false);
 	}
 
 	public override void Reset() {
-		chooseCompleted = false;
-		userIds = null;
+		randomSelectBankerUserIds = new string[0];
 		isChoosingBanker = false;
-		chooseIndex = -1;
-		chooseCount = -1;
+		chooseIndex = 0;
+		chooseCount = 0;
 		timeLeft = BankerSignMoveTimeInterval;
-		waitTime = 0f;
-		movingBankerSign = false;
 	}
 
 	bool isPlayerRobBanker(string[] robBankerPlayers, string playerId) {
@@ -58,13 +44,9 @@ public class ChooseBankerController : BaseStateController {
 		}
 		return false;
 	}
-
-
-
-	// Update is called once per frame
+		
 	public new void Update ()  {
 		base.Update ();
-
 		var game = gamePlayController.game;
 		if (game.state == GameState.ChooseBanker && isChoosingBanker) {
 			if (game.currentRound.robBankerPlayers.Length >= 2) {
@@ -73,124 +55,111 @@ public class ChooseBankerController : BaseStateController {
 				game.ShowStateLabel ("无人抢庄，随机选择一个庄家");
 			}
 		}
-
 		ChooseBankerAnimation ();
-
 	}
-		
-
-	IEnumerator SetRobingBorderImage() {
-		yield return new WaitForSeconds (.5f);
-		foreach (Seat seat in seats) {
-			seat.robingSeatBorderImage.gameObject.SetActive (false);
-		}
-	}
-
 
 	private void ChooseBankerAnimation() {
 		var game = gamePlayController.game;
 		if (isChoosingBanker) {
-			timeLeft -= Time.deltaTime;
-
-
-			if (timeLeft < 0) {
-				List<Player> playingPlayers = gamePlayController.game.PlayingPlayers;
-				for (int i = 0; i < playingPlayers.Count; i++) {
-					Player player = playingPlayers [i];
-					if (player.userId == userIds [chooseIndex] && isPlayerRobBanker(game.currentRound.robBankerPlayers, player.userId)) {
-						MusicController.instance.Play (AudioItem.RandomSelectBanker);
-						player.seat.robingSeatBorderImage.gameObject.SetActive (true);
-					} else {
-						player.seat.robingSeatBorderImage.gameObject.SetActive (false);
-					}
-				}
-
-				if (chooseCount > ChooseTotalCount
-					&& seats [game.GetSeatIndex (userIds [chooseIndex])].player.userId == game.currentRound.banker) {
-					Debug.Log ("choose banker compeleted");
-					/*
-					foreach (Seat seat in seats) {
-						seat.robingSeatBorderImage.gameObject.SetActive (false);
-					}*/
-					StartCoroutine (SetRobingBorderImage ());
-					isChoosingBanker = false;
-					chooseCompleted = true;
-
-				} else {
-					timeLeft = BankerSignMoveTimeInterval;
-					chooseIndex = ++chooseIndex % userIds.Length;
-					chooseCount++;
-				}
-			} 
+			isChoosingBanker = false;
+			MusicController.instance.Play (AudioItem.RandomSelectBanker);
+			ShowRobingBorder ();
 		}
+	}
 
-		if (chooseCompleted) {
-			Debug.Log ("show banker choose completed animation");
+	private bool IsStopRandomSelect() {
+		if (randomSelectBankerUserIds.Length < 2)
+			return true;
+
+		int lastChooseIndex = (chooseIndex - 1 + randomSelectBankerUserIds.Length) % randomSelectBankerUserIds.Length;
+		if (seats [game.GetSeatIndex (randomSelectBankerUserIds [lastChooseIndex])].player.userId == game.currentRound.banker
+		    && chooseCount >= ChooseTotalCount)
+			return true;
+
+		return false;
+	}
+
+	private void ShowRobingBorder(float delay = 0f) {
+		if ( !IsStopRandomSelect() ) {
+			int seatIndex = game.GetSeatIndex (randomSelectBankerUserIds [chooseIndex]);
+			//Debug.Log ("seatIndex = " + seatIndex);
+			Seat seat = seats [seatIndex];
+			Sequence s = DOTween.Sequence ();
+			s.AppendInterval(delay)
+				.OnComplete (() => {
+					for (int i = 0; i < playingPlayers.Count; i++) {
+						Player player = playingPlayers [i];
+						if (player.userId == randomSelectBankerUserIds [chooseIndex]) {
+							player.seat.robingSeatBorderImage.gameObject.SetActive (true);
+						} else {
+							player.seat.robingSeatBorderImage.gameObject.SetActive (false);
+						}
+					}
+					chooseIndex = ++chooseIndex % randomSelectBankerUserIds.Length;
+					chooseCount++;
+					ShowRobingBorder(BankerSignMoveTimeInterval);
+				});
+		} else {
+			MusicController.instance.Stop (AudioItem.RandomSelectBanker);
 			StartCoroutine (ChooseBankerCompletedAnimation ());
 		}
+	}
+		
+	private void MoveBankerSign() {
+		int bankerSeatIndex = game.GetSeatIndex (gamePlayController.game.currentRound.banker);
+		Vector3 targetPosition = seats[bankerSeatIndex].bankerSignPosition;
 
-		if (movingBankerSign) {
-
-			int bankerSeatIndex = gamePlayController.game.GetSeatIndex (gamePlayController.game.currentRound.banker);
-			Vector3 targetPosition = seats[bankerSeatIndex].bankerSignPosition;
-			float step = moveBankerSignSpeed * Time.deltaTime;
-			bankerSign.gameObject.transform.position = Vector3.MoveTowards(bankerSign.transform.position, targetPosition, step);
-
-			if (Utils.isTwoPositionIsEqual(bankerSign.gameObject.transform.position , targetPosition)) {
-				foreach (Seat seat in seats) {
-					seat.isRobImage.gameObject.SetActive (false);
+		bankerSign.gameObject.transform
+			.DOMove (targetPosition, Move_Banker_Sign_Duration)
+			.OnComplete (() => {
+				foreach(Player player in playingPlayers) {
+					player.seat.isRobImage.gameObject.SetActive(false);
 				}
-				movingBankerSign = false;
 
+				Sequence s = DOTween.Sequence();
+				s.AppendInterval(0.3f)
+					.OnComplete( () => {
+						seats [bankerSeatIndex].robingSeatBorderImage.gameObject.SetActive (false);
+				});
+				
 				//动画执行玩了，看看状态还需要切换，因为动画可能以前落后游戏进度
 				if (game.state == GameState.ChooseBanker) {
-					//game.HideStateLabel ();
 					game.state = GameState.Bet;
 				}
-			}
-		} 
+			});
 	}
 
 	IEnumerator ChooseBankerCompletedAnimation() {
-		var game = gamePlayController.game;
 
 		int bankerSeatIndex = game.GetSeatIndex (game.currentRound.banker);
 		game.ShowStateLabel (game.seats[bankerSeatIndex].player.nickname + "成为庄家");
 
-		chooseCompleted = false;
 		bankerSign.gameObject.transform.position = new Vector3 (game.gameStateLabel.transform.position.x - (game.gameStateLabel.preferredWidth + 20) / SetupCardGame.TransformConstant / 2,
 			game.gameStateLabel.transform.position.y / SetupCardGame.TransformConstant, 0);
 		bankerSign.gameObject.SetActive (true);
 
 		yield return new WaitForSeconds (.5f);
-
-		movingBankerSign = true;
+		MoveBankerSign ();
 	}
 		
 	public void HandleResponse(GoToChooseBankerNotity resp) {
-		var game = gamePlayController.game;
 
 		gamePlayController.state = GameState.ChooseBanker;
 		game.currentRound.banker = resp.banker;
 		game.currentRound.robBankerPlayers = resp.robBankerPlayers;
 
 
-		userIds = new string[game.PlayerCount];
-
-		int index = 0;
-		for (int i = 0; i < Game.SeatCount; i++) {
-			if (seats [i].hasPlayer ()) {
-				userIds [index++] = seats[i].player.userId;
+		randomSelectBankerUserIds = game.currentRound.robBankerPlayers;
+		if (randomSelectBankerUserIds.Length == 0) {
+			randomSelectBankerUserIds = new string[game.PlayingPlayers.Count];
+			for (int i = 0; i < playingPlayers.Count; i++) {
+				randomSelectBankerUserIds [i] = playingPlayers [i].userId;
 			}
-			seats [i].HideIsRobImage ();
 		}
+			
+		Debug.Log ("randomSelectBankerUserIds.Length = " + randomSelectBankerUserIds.Length);
+		isChoosingBanker = true;
 		game.HideStateLabel ();
-		chooseIndex = 0;
-
-		if (game.currentRound.robBankerPlayers.Length >= 2 || game.currentRound.robBankerPlayers.Length == 0)
-			isChoosingBanker = true;
-		else
-			chooseCompleted = true;
 	}
 
 	public override GamePlayController GetGamePlayController ()
