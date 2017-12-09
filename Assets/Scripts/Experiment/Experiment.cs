@@ -11,6 +11,10 @@ public class Experiment : MonoBehaviour {
 	private Image card;
 	[SerializeField]
 	private Canvas canvas;
+	[SerializeField]
+	private Text text;
+	[SerializeField]
+	private Image readyImage;
 
 	private Image[] cards;
 
@@ -18,6 +22,7 @@ public class Experiment : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		
 		Setup ();
 		//MoveCard ();
 	}
@@ -28,6 +33,12 @@ public class Experiment : MonoBehaviour {
 	}
 
 	public void MoveCard() {
+		text.DOText ("9000", 1, true, ScrambleMode.Numerals);  
+		Sequence s = DOTween.Sequence ();
+		s.SetDelay (0.1f);
+		s.Append(readyImage.transform.DOScale (3f, 0.2f));
+		s.SetDelay (0.1f);
+		s.Append(readyImage.transform.DOScale (1f, 0.2f));
 
 		for(int i = 0; i < cards.Length / 4; i++) {
 			for (int j = 0; j < 4; j++) {
@@ -48,6 +59,8 @@ public class Experiment : MonoBehaviour {
 	}
 
 	public void Reset() {
+		text.text = "1000";
+		readyImage.transform.localScale = new Vector3 (1f, 1f);
 		for(int i = 0; i < cards.Length; i++) {
 			cards [i].transform.position = card.transform.position;
 			cards [i].transform.localScale = new Vector3 (1.1f, 1.1f, 0);

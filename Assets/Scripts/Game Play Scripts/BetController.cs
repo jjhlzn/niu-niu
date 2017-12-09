@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using socket.io;
 using Newtonsoft.Json;
+using DG.Tweening;
 
 public class BetController : BaseStateController {
 
@@ -101,34 +102,28 @@ public class BetController : BaseStateController {
 	private void BetAnimation() {
 		for (int i = 0; i < Game.SeatCount; i++) {
 			if (isMoveChipArray [i]) {
+				isMoveChipArray [i] = false;
+
+				Seat seat = seats [i];
+				int bet = gamePlayController.game.currentRound.playerBets [i];
 				if (!seats[i].chipImageForBet.gameObject.activeInHierarchy)
 					seats[i].chipImageForBet.gameObject.SetActive (true);
 
 				Vector3 targetPosition = seats[i].chipPositionWhenBet;
-				float step = 0;
-				if (i == 0) {
-					step = user0ChipMoveSpeed * Time.deltaTime;
-				} else {
-					step = chipMoveSpeed * Time.deltaTime;
-				}
 
-				seats[i].chipImageForBet.gameObject.transform.position = Vector3.MoveTowards (seats[i].chipImageForBet.gameObject.transform.position,
-					targetPosition, step);
+			
+				int index = i;
+				seats [i].chipImageForBet.transform
+					.DOMove (targetPosition, 0.5f)
+					.SetDelay(0.3f)
+					.OnComplete (() => {
+					seat.chipCountLabel.text = bet + "";
+					seat.chipCountLabel.gameObject.SetActive (true);
+					seat.chipLabelBackground.gameObject.SetActive (true);
+					Debug.Log ("index = " + index);
+					isBetCompletedArray [index] = true;
 
-				if (Utils.isTwoPositionIsEqual (seats[i].chipImageForBet.gameObject.transform.position, targetPosition)) {
-					isMoveChipArray [i] = false;
-					seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
-					seats[i].chipCountLabel.gameObject.SetActive (true);
-					seats [i].chipLabelBackground.gameObject.SetActive (true);
-					isBetCompletedArray [i] = true;
-
-					if (gamePlayController.state == GameState.Bet) {
-						if (IsAllBetCompleted) {
-							Debug.Log ("In BetControoler: change to SecondSeal state");
-							//gamePlayController.game.HideStateLabel ();
-						}
-					}
-				}
+				});
 			}
 		}
 	}

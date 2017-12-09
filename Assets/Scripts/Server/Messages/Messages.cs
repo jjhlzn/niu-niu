@@ -154,7 +154,7 @@ public class JoinRoomResponse : BaseGameResponse {
 
 	public Dictionary<string, string[]> playerCards = new Dictionary<string, string[]>();
 	public Dictionary<string, int[]> playerBets = new Dictionary<string, int[]>();
-	public Dictionary<string, string> scores = new Dictionary<string, string>();
+	public Dictionary<string, int> scores = new Dictionary<string, int>();
 
 	public Dictionary<string, JoinRoomResponsePlayerInfo> sitdownPlayers = new Dictionary<string, JoinRoomResponsePlayerInfo>();
 	public Dictionary<string, bool> robBankerPlayers = new Dictionary<string, bool>();

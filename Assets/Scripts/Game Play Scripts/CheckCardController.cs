@@ -129,11 +129,14 @@ public class CheckCardController : BaseStateController {
 					player.cards[j].sprite = deck.GetCardFaceImage(round.playerCardsDict [player.userId][j]); 
 					Vector3 targetV = showcardPositions [sequences[j]];
 					//有牛的话，第4张牌和第6张牌要有点距离
+					float interval = 0f;
 					if (round.HasNiu (seatIndex) && sequences [j] >= 3) {
-						targetV = new Vector3 (targetV.x / SetupCardGame.TransformConstant + 0.3f, targetV.y / SetupCardGame.TransformConstant, targetV.z);
-					} else {
-						targetV = new Vector3 (targetV.x / SetupCardGame.TransformConstant, targetV.y / SetupCardGame.TransformConstant, targetV.z);
-					}
+						interval = 0.3f;
+						if (seatIndex != 0) {
+							interval = 0.22f;
+						}
+					} 
+					targetV = new Vector3 (targetV.x / SetupCardGame.TransformConstant + interval , targetV.y / SetupCardGame.TransformConstant, targetV.z);
 					player.cards[j].gameObject.transform.position = targetV;
 					player.cards[j].transform.SetSiblingIndex (seatIndex * 5 + sequences [j]);
 				}

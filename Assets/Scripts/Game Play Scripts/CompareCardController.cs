@@ -86,6 +86,7 @@ public class CompareCardController : BaseStateController {
 				var playingPlayers = game.PlayingPlayers;
 				for (int i = 0; i < playingPlayers.Count; i++) {
 					playingPlayers [i].score = scoreDict [playingPlayers [i].userId];
+					Debug.Log (playingPlayers [i].userId + ": " + scoreDict [playingPlayers [i].userId]);
 				}
 
 				List<string> losers = new List<string> ();
@@ -155,6 +156,7 @@ public class CompareCardController : BaseStateController {
 					MoveChips (from, to);
 				}
 			}
+			MusicController.instance.Stop(AudioItem.TransmitCoin);
 			StartCoroutine (PlayMoveChipsAudio ());
 		} else {
 			ShowScoreLabels();
@@ -171,10 +173,12 @@ public class CompareCardController : BaseStateController {
 			if (!image.gameObject.activeInHierarchy)
 				image.gameObject.SetActive (true);
 
-			Tween t = image.transform.DOMove (targetPosition, 0.6f).SetDelay(0.1f + 0.1f * i);
+			Tween t = image.transform.DOMove (targetPosition, 0.5f).SetDelay(0.1f + 0.1f * i);
 			if (i == 7) {
 				if (calback != null) {
+					
 					t.OnComplete (() => {
+						HideChips ();
 						calback ();
 					});
 				}
@@ -192,6 +196,9 @@ public class CompareCardController : BaseStateController {
 		Debug.Log ("ShowScoreLabels() called");
 		Debug.Log ("playingPlayers.Count = " + playingPlayers.Count);
 		for (int i = 0; i < playingPlayers.Count; i++) {
+			
+
+
 			if (i == playingPlayers.Count - 1) {
 				ShowScoreLabel (playingPlayers[i].seat.seatIndex, () => {
 					MoveScoreLabels();
@@ -207,8 +214,11 @@ public class CompareCardController : BaseStateController {
 		//Debug.Log ("userId: " + seats [index].player.userId);
 		int thisRoundScore = gamePlayController.game.currentRound.resultDict [seats [index].player.userId];
 		scoreLabel.text = Utils.GetNumberSring (thisRoundScore);
+
 		int score = seats [index].player.score;
-		seats [index].playerScoreLabel.text = Utils.GetNumberSring (score);
+		Debug.Log ("score = " + score);
+		seats [index].playerScoreLabel.DOText (Utils.GetNumberSring (score), .8f, true, ScrambleMode.Numerals);  
+
 		scoreLabel.gameObject.SetActive (true);
 		Animator anim = scoreLabel.GetComponent<Animator> ();
 		StartCoroutine(ShowScoreLabel(scoreLabel, anim, callback));

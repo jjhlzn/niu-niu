@@ -88,6 +88,12 @@ public class SetupCardGame : BaseStateController {
 	[SerializeField]
 	private Button audioButton;
 
+	[SerializeField]
+	private GameObject playerBetChipSample;
+	[SerializeField]
+	private GameObject betChipContainer;
+
+
 	public static string Music_On_Key = "Music_On";
 	public static string Music_Off_Key = "Music_Off";
 	public static string Audio_On_Key = "Audio_On";
@@ -172,28 +178,50 @@ public class SetupCardGame : BaseStateController {
 		} 
 			
 		//玩家下注的时候，筹码移动到的最终位置
-		GameObject[] chipPositionObjs = GameObject.FindGameObjectsWithTag ("chipPosition");
-		chipPositionObjs = SortUserSeatUIObjects (chipPositionObjs);
-		for (int i = 0; i < chipPositionObjs.Length; i++) {
-			Image positionImage = chipPositionObjs [i].GetComponent<Image> ();
-			positionImage.gameObject.SetActive (false);
-			seats [i].chipPositionWhenBet = positionImage.transform.position;
-		}
+		for (int i = 0; i < Game.SeatCount; i++) {
+			GameObject betChip = Instantiate (playerBetChipSample);
 
-		//展示玩家下注的时候的文本，例如4
-		GameObject[] chipCountObjs = GameObject.FindGameObjectsWithTag ("chipCountLabel");
-		chipCountObjs = SortUserSeatUIObjects (chipCountObjs);
-		for (int i = 0; i < chipCountObjs.Length; i++) {
-			seats [i].chipCountLabel = chipCountObjs [i].GetComponent<Text> ();
-			seats [i].chipCountLabel.gameObject.SetActive (false);
-		}
+			int x = 0;
+			int y = 0;
+			switch (i) {
+			case 0:
+				x = 11; y  = -147;
+				break;
+			case 1:
+				x = -400; y  = 35;
+				break;
+			case 2:
+				x = -193; y  = 205;
+				break;
+			case 3:
+				x = 162; y  = 279;
+				break;
+			case 4:
+				x = 225; y  = 183;
+				break;
+			case 5:
+				x = 433; y  = 10;
+				break;
+			}
+			betChip.transform.position = new Vector3 (x / TransformConstant, y / TransformConstant);
+			betChip.transform.SetParent (betChipContainer.transform);
+			betChip.transform.localScale = new Vector3 (1f, 1f);
+			seats[i].chipCountLabel = betChip.GetComponentInChildren<Text> ();
+			Image[] imgs = betChip.GetComponentsInChildren<Image> ();
 
-		//展示文本的背景图片
-		GameObject[] chipLabelBackgroundObjs = GameObject.FindGameObjectsWithTag ("chipLabelBackground");
-		chipLabelBackgroundObjs = SortUserSeatUIObjects (chipLabelBackgroundObjs);
-		for (int i = 0; i < chipLabelBackgroundObjs.Length; i++) {
-			seats [i].chipLabelBackground = chipLabelBackgroundObjs [i].GetComponent<Image> ();
-			seats [i].chipLabelBackground.gameObject.SetActive (false);
+			foreach (Image img in imgs) {
+				img.transform.SetParent (betChipContainer.transform);
+				switch (img.name) {
+				case "cpBackground":
+					seats [i].chipLabelBackground = img;
+					break;
+				case "chipPosition":
+					seats [i].chipPositionWhenBet = img.transform.position;
+					break;
+				}
+				img.gameObject.SetActive (false);
+
+			}
 		}
 
 		SetChips ();
@@ -359,7 +387,7 @@ public class SetupCardGame : BaseStateController {
 	private Vector3[] SetPlayerCardPositions(int index) {
 		Vector3[] result = new Vector3[5];
 		int initialX = 0, initialY = 0;
-		int stepX = 25;
+		int stepX = 26;
 		switch (index) {
 		case 0:
 			initialX = -230;
@@ -405,12 +433,12 @@ public class SetupCardGame : BaseStateController {
 	private Vector3[] SetShowCardPositions(int index) {
 		Vector3[] result = new Vector3[5];
 		int initialX = 0, initialY = 0;
-		int stepX = 25;
+		int stepX = 26;
 		switch (index) {
 		case 0:
 			initialX = -100;
 			initialY = -260;
-			stepX = 40;
+			stepX = 45;
 			break;
 		case 1:
 			initialX = -408;
@@ -456,7 +484,7 @@ public class SetupCardGame : BaseStateController {
 		Image image = Instantiate (niuImage);
 		switch (index) {
 		case 0:
-			initialX = -100;
+			initialX = -50;
 			initialY = -260;
 
 			break;
@@ -486,8 +514,8 @@ public class SetupCardGame : BaseStateController {
 
 
 		Vector3 localScale = new Vector3 ();
-		localScale.x = 0.64f;
-		localScale.y = 0.64f;
+		localScale.x = 0.55f;
+		localScale.y = 0.55f;
 		image.transform.localScale = localScale;
 
 		image.transform.position = new Vector3 ( (initialX + 20) / TransformConstant, (initialY - 40) / TransformConstant, 0);
@@ -499,7 +527,7 @@ public class SetupCardGame : BaseStateController {
 		Image image = Instantiate (mutipleImage);
 		switch (index) {
 		case 0:
-			initialX = -100;
+			initialX = -50;
 			initialY = -260;
 
 			break;

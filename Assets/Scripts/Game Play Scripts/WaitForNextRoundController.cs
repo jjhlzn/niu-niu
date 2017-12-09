@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
 using socket.io;
+using DG.Tweening;
 
 public class WaitForNextRoundController : BaseStateController {
 
@@ -125,11 +126,14 @@ public class WaitForNextRoundController : BaseStateController {
 			gamePlayerController.game.UpdateGameInfos ();
 			gamePlayerController.game.seats[0].player.isReady = true;
 			gamePlayerController.game.seats[0].UpdateUI(gamePlayerController.game);
-			MusicController.instance.Play (AudioItem.Ready, seats [0].player.sex);
 		} else {
 			gamePlayerController.game.seats[seatIndex].player.isReady = true;
 			gamePlayerController.game.seats[seatIndex].UpdateUI(gamePlayerController.game);
-			MusicController.instance.Play (AudioItem.Ready, seats [seatIndex].player.sex);
 		}
+		Sequence s = DOTween.Sequence ();
+		s.SetDelay (0.1f);
+		s.Append(seats [seatIndex].readyImage.transform.DOScale (3f, 0.2f));
+		s.SetDelay (0.1f);
+		s.Append(seats [seatIndex].readyImage.transform.DOScale (1f, 0.2f));
 	}
 }
