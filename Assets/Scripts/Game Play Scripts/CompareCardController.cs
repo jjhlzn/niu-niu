@@ -9,67 +9,31 @@ public class CompareCardController : BaseStateController {
 	private float scoreLabelMoveSpeed = 5f;
 	private float MoveTime = 2f;
 
+	[Header("Controller")]
 	[SerializeField]
 	private GamePlayController gamePlayController;
-
 	[SerializeField]
 	private CheckCardController checkCardController;
-
 	[SerializeField]
 	private WaitForNextRoundController waitForNextRoundController;
-
 	[SerializeField]
 	private GameOverController gameOverController;
 
+	[Header("UI")]
 	[SerializeField]
 	private Button readyButton;
 
-	private Seat[] seats {
-		get {
-			return gamePlayController.game.seats;
-		}
-	}
 		
 	private bool moveToBanker;
-	private bool hasSetAfterAllAnimCompleted;
-	public bool allAnimCompleted;
-	private bool[] hasPlayedTransmitCoin = new bool[Game.SeatCount];
-	private float moveTimeLeft;
 	Dictionary<string, int>  resultDict;
 	Dictionary<string, int> scoreDict;
 
-	public void Init() {
-	}
+	public void Init() {}
 
-	public override void Reset() {
-		moveToBanker = false;
-		allAnimCompleted = false;
-		hasSetAfterAllAnimCompleted = false;
-		for (int i = 0; i < Game.SeatCount; i++) {
-			hasPlayedTransmitCoin [i] = false;
-		}
-	}
+	public override void Reset() {}
 		
-	void Awake () {
-		moveTimeLeft = MoveTime;
-	}
-		
-	private void HideChips() {
-		for (int i = 0; i < Game.SeatCount; i++) {
-			for (int j = 0; j < seats[i].chipImages.Length; j++) {
-				seats[i].chipImages[j].gameObject.SetActive (false);
-			}
-		}
-	}
-		
-	public override GamePlayController GetGamePlayController ()
-	{
-		return gamePlayController;
-	}
-
 	// Update is called once per frame
 	public new void Update ()  {
-		
 		base.Update ();
 		if (gamePlayController.state == GameState.CompareCard) {
 			gamePlayController.game.ShowStateLabel ("比牌中...");
@@ -81,9 +45,7 @@ public class CompareCardController : BaseStateController {
 		if (checkCardController.isAllPlayerShowCardAnimCompleted) {
 			if (moveToBanker) {
 				moveToBanker = false;
-				var game = gamePlayController.game;
 
-				var playingPlayers = game.PlayingPlayers;
 				for (int i = 0; i < playingPlayers.Count; i++) {
 					playingPlayers [i].score = scoreDict [playingPlayers [i].userId];
 					Debug.Log (playingPlayers [i].userId + ": " + scoreDict [playingPlayers [i].userId]);
@@ -105,12 +67,9 @@ public class CompareCardController : BaseStateController {
 			}
 		}
 	}
-
-
-
+		
 	private void MoveChips(List<string> loserIds, List<string> winnerIds) {
 		if (loserIds.Count != 0) {
-			var game = gamePlayController.game;
 			int to = game.GetSeatIndex (game.currentRound.banker);
 			Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
 
@@ -139,7 +98,6 @@ public class CompareCardController : BaseStateController {
 		Debug.Log ("MoveChipFromBankerToPlayers() called");
 		yield return new WaitForSeconds (.3f);
 
-		var game = gamePlayController.game;
 		int from = game.GetSeatIndex (game.currentRound.banker);
 
 		if (userIds.Count != 0) {
@@ -167,16 +125,16 @@ public class CompareCardController : BaseStateController {
 
 	private void MoveChips( int from,  int to, Callback calback = null) {
 		Vector3 targetPosition = seats [to].chipImages [0].transform.position; //TODO: 总是到同一个位置
-		int startIndex = to * 8;
-		for (int i = 0; i < 8; i++) {
+		int startIndex = to * SetupCardGame.Chip_Count_When_Transimit;
+
+		for (int i = 0; i < SetupCardGame.Chip_Count_When_Transimit; i++) {
 			Image image = seats [from].chipImages [startIndex + i];
 			if (!image.gameObject.activeInHierarchy)
 				image.gameObject.SetActive (true);
 
 			Tween t = image.transform.DOMove (targetPosition, 0.5f).SetDelay(0.1f + 0.1f * i);
-			if (i == 7) {
+			if (i == SetupCardGame.Chip_Count_When_Transimit - 1) {
 				if (calback != null) {
-					
 					t.OnComplete (() => {
 						HideChips ();
 						calback ();
@@ -191,14 +149,10 @@ public class CompareCardController : BaseStateController {
 		MusicController.instance.Play (AudioItem.TransmitCoin);
 	}
 
-
 	private void ShowScoreLabels() {
 		Debug.Log ("ShowScoreLabels() called");
 		Debug.Log ("playingPlayers.Count = " + playingPlayers.Count);
 		for (int i = 0; i < playingPlayers.Count; i++) {
-			
-
-
 			if (i == playingPlayers.Count - 1) {
 				ShowScoreLabel (playingPlayers[i].seat.seatIndex, () => {
 					MoveScoreLabels();
@@ -239,9 +193,7 @@ public class CompareCardController : BaseStateController {
 			if (i == playingPlayers.Count - 1) {
 				MoveScoreLabel (playingPlayers[i].seat.seatIndex, () => {
 					readyButton.gameObject.SetActive (true);
-					allAnimCompleted = true;
 
-					hasSetAfterAllAnimCompleted = true;
 					if (gamePlayController.game.HasNextRound ()) {
 						if (gamePlayController.state == GameState.CompareCard) {
 							gamePlayController.state = GameState.WaitForNextRound;
@@ -258,7 +210,6 @@ public class CompareCardController : BaseStateController {
 			} else {
 				MoveScoreLabel (playingPlayers[i].seat.seatIndex);
 			}
-
 		}
 	}
 
@@ -271,14 +222,15 @@ public class CompareCardController : BaseStateController {
 			});
 		}
 	}
-
-
+		
 	IEnumerator moveChip(Image image, Vector3 to, float waitTime, float step) {
 		yield return new WaitForSeconds (waitTime);
 		//Debug.Log ("waitTime = " + waitTime);
 		image.transform.position = Vector3.MoveTowards (image.transform.position, to, step);
 	} 
 
+
+	/******************************  Hanle Response   *********************************/
 	public void HandleResponse(GoToCompareCardNotify notify) {
 		Game game = gamePlayController.game;
 
@@ -299,6 +251,19 @@ public class CompareCardController : BaseStateController {
 		//game.HideStateLabel();
 		gamePlayController.state = GameState.CompareCard;
 		moveToBanker = true;
+	}
+
+	private void HideChips() {
+		for (int i = 0; i < Game.SeatCount; i++) {
+			for (int j = 0; j < seats[i].chipImages.Length; j++) {
+				seats[i].chipImages[j].gameObject.SetActive (false);
+			}
+		}
+	}
+
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayController;
 	}
 
 }

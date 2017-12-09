@@ -8,6 +8,7 @@ public class SetupCardGame : BaseStateController {
 	public static float TransformConstant = 71.98f;
 	private int cardCount = 30; //生成多少张牌的图片，6 * 5 = 30
 	public static float ChipScale = 0.6f;
+	public static int Chip_Count_When_Transimit = 8;
 
 	[SerializeField]
 	private CheckCardController checkCardController;
@@ -210,7 +211,7 @@ public class SetupCardGame : BaseStateController {
 			Image[] imgs = betChip.GetComponentsInChildren<Image> ();
 
 			foreach (Image img in imgs) {
-				img.transform.SetParent (betChipContainer.transform);
+				//img.transform.SetParent (betChipContainer.transform);
 				switch (img.name) {
 				case "cpBackground":
 					seats [i].chipLabelBackground = img;

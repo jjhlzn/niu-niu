@@ -235,16 +235,18 @@ public class CheckCardController : BaseStateController {
 		for (int j = 0; j < 5; j++) {
 			Vector3 targetV = showcardPositions [sequences [j]];
 			//有牛的话，第4张牌和第6张牌要有点距离
-			if (gamePlayController.game.currentRound.HasNiu (index) && sequences [j] >= 3) {
+			if (game.currentRound.HasNiu (index) && sequences [j] >= 3) {
 				targetV = new Vector3 (targetV.x + 30f, targetV.y, targetV.z);
 			} 
 				
-			Tween t = cards [j].transform.DOLocalMove (targetV, 0.3f);
-			cards [j].transform.SetSiblingIndex (sequences [j]);
+			Tween t = cards [j].transform.DOLocalMove (targetV, 0.25f);
 
+			int cardIndex = j;
+			cards [cardIndex].transform.SetSiblingIndex (index * 5 + sequences [cardIndex]);
 			if (j == 4) {
 				t.OnComplete (() => {
-
+					
+					cards [cardIndex].transform.SetSiblingIndex (index * 5 + sequences [cardIndex]);
 					MusicController.instance.Play ("niu" + round.niuArray [index], player.sex);
 
 
@@ -258,6 +260,10 @@ public class CheckCardController : BaseStateController {
 					}
 					Debug.Log ("seat " + index + " show card anim completed");
 					StartCoroutine (SetPlayerShowCardCompleted (index));
+				});
+			} else {
+				t.OnComplete (() => {
+					cards [cardIndex].transform.SetSiblingIndex (index * 5 + sequences [cardIndex]);
 				});
 			}
 		} 

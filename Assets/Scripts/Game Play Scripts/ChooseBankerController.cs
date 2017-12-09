@@ -145,7 +145,6 @@ public class ChooseBankerController : BaseStateController {
 			bankerSign.gameObject.transform.position = Vector3.MoveTowards(bankerSign.transform.position, targetPosition, step);
 
 			if (Utils.isTwoPositionIsEqual(bankerSign.gameObject.transform.position , targetPosition)) {
-				Debug.Log ("banker sing move over");
 				foreach (Seat seat in seats) {
 					seat.isRobImage.gameObject.SetActive (false);
 				}
@@ -171,7 +170,7 @@ public class ChooseBankerController : BaseStateController {
 			game.gameStateLabel.transform.position.y / SetupCardGame.TransformConstant, 0);
 		bankerSign.gameObject.SetActive (true);
 
-		yield return new WaitForSeconds (.8f);
+		yield return new WaitForSeconds (.5f);
 
 		movingBankerSign = true;
 	}
