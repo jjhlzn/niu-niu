@@ -12,44 +12,35 @@ using cn.sharesdk.unity3d;
 
 
 public class GamePlayController : BaseMonoBehaviour {
+	[Header("Controller")]
 	[SerializeField]
 	private SetupCardGame setupCardGame;
-
 	[SerializeField]
 	private BeforeGameStartController beforeGameStartController;
-
 	[SerializeField]
 	private WaitForNextRoundController waitForNextRoundController;
-
 	[SerializeField]
 	private FirstDealerController firstDealerController;
-
 	[SerializeField]
 	private RobBankerController robBankerController;
-
 	[SerializeField]
 	private ChooseBankerController chooseBankerController;
-
 	[SerializeField]
 	private SecondDealController secondDealController;
-
 	[SerializeField]
 	private CheckCardController checkCardController;
-
 	[SerializeField]
 	private BetController betController;
-
 	[SerializeField]
 	private CompareCardController compareController;
-
 	[SerializeField]
 	private GameOverController gameOverController;
 
+	[Header("UI")]
 	[SerializeField]
 	private GameObject messagePanel;
 	[SerializeField]
 	private GameObject connectFailMessagePanel;
-
 	[SerializeField]
 	private Text roomLabel;
 	[SerializeField]
@@ -57,15 +48,8 @@ public class GamePlayController : BaseMonoBehaviour {
 	[SerializeField]
 	private Button menuButton;
 
-
-	public GameState state {
-		get {
-			return game.state;
-		}
-		set {
-			game.state = value;
-		}
-	}
+	[SerializeField]
+	private ShareSDK ssdk;
 
 	public bool isInited; //是否初始化好
 	public bool isConnected; //是否已经连接到网络
@@ -73,10 +57,6 @@ public class GamePlayController : BaseMonoBehaviour {
 	public GameState pauseState;
 	public Socket gameSocket;
 	public Game game;
-
-	[SerializeField]
-	private ShareSDK ssdk;
-
 
 
 	// Use this for initialization
@@ -86,8 +66,6 @@ public class GamePlayController : BaseMonoBehaviour {
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
 		CreateGame ();
-
-
 	}
 
 	private void CreateGame() {
@@ -489,5 +467,12 @@ public class GamePlayController : BaseMonoBehaviour {
 	}
 
 
-
+	public GameState state {
+		get {
+			return game.state;
+		}
+		set {
+			game.state = value;
+		}
+	}
 }

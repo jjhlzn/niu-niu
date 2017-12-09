@@ -22,24 +22,10 @@ public class CompareCardController : BaseStateController {
 	[Header("UI")]
 	[SerializeField]
 	private Button readyButton;
-
 		
 	private bool moveToBanker;
 	Dictionary<string, int>  resultDict;
 	Dictionary<string, int> scoreDict;
-	public Vector2[] deltaVectorArray;
-
-    void Start() {
-		deltaVectorArray = new Vector2[8];
-		deltaVectorArray [0] =	new Vector2 (-17, 0);
-		deltaVectorArray [1] = new Vector2 (17, 8);
-		deltaVectorArray [2] = new Vector2 (-19, -11);
-		deltaVectorArray [3] = new Vector2 (-8, 17);
-		deltaVectorArray [4] = new Vector2 (-23, 2);
-		deltaVectorArray [5] = new Vector2 (-2, 8);
-		deltaVectorArray [6] = new Vector2 (3, -13);
-		deltaVectorArray [7] = new Vector2 (18, -3);
-	}
 
 	public void Init() {}
 
@@ -190,16 +176,13 @@ public class CompareCardController : BaseStateController {
 
 		} 
 	}
-
-
+		
 	private IEnumerator PlayMoveChipsAudio() {
 		yield return new WaitForSeconds (0f);
 		MusicController.instance.Play (AudioItem.TransmitCoin);
 	}
 
 	private void ShowScoreLabels() {
-		Debug.Log ("ShowScoreLabels() called");
-		Debug.Log ("playingPlayers.Count = " + playingPlayers.Count);
 		for (int i = 0; i < playingPlayers.Count; i++) {
 			if (i == playingPlayers.Count - 1) {
 				ShowScoreLabel (playingPlayers[i].seat.seatIndex, () => {
@@ -237,8 +220,6 @@ public class CompareCardController : BaseStateController {
 	}
 
 	private void MoveScoreLabels () {
-		Seat[] seats = gamePlayController.game.seats;
-		var playingPlayers = gamePlayController.game.PlayingPlayers;
 		for (int i = 0; i < playingPlayers.Count; i++) {
 			if (i == playingPlayers.Count - 1) {
 				MoveScoreLabel (playingPlayers[i].seat.seatIndex, () => {
@@ -285,23 +266,13 @@ public class CompareCardController : BaseStateController {
 	}
 
 	public void HandleCurrentRoundOver(Dictionary<string, int>  resultDict, Dictionary<string, int> scoreDict) {
-		var game = gamePlayController.game;
 		int count = 0;
 		game.currentRound.resultDict = resultDict;
 		this.resultDict = resultDict;
 		this.scoreDict = scoreDict;
-			
-		//game.HideStateLabel();
+
 		gamePlayController.state = GameState.CompareCard;
 		moveToBanker = true;
-	}
-
-	private void HideChips() {
-		for (int i = 0; i < Game.SeatCount; i++) {
-			for (int j = 0; j < seats[i].chipImages.Length; j++) {
-				seats[i].chipImages[j].gameObject.SetActive (false);
-			}
-		}
 	}
 
 	public override GamePlayController GetGamePlayController ()

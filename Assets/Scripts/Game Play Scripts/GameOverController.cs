@@ -38,7 +38,6 @@ public class GameOverController : BaseStateController {
 	}
 
 	public void HandleResponse(GameOverResponse notify) {
-		var game = gamePlayController.game;
 		isGetGameOverNotify = true;
 		this.notify = notify;
 
@@ -54,8 +53,6 @@ public class GameOverController : BaseStateController {
 		
 
 	public void HandleGameOverResponse() {
-		var game = gamePlayController.game;
-		
 		if (notify.isPlayed) {
 			//展示游戏的成绩单
 			gameOverPanel.Show (game, notify);

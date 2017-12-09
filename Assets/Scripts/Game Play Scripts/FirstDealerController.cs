@@ -35,11 +35,6 @@ public class FirstDealerController : BaseStateController {
 		isFirstDealDone = false;
 	}
 		
-	public override GamePlayController GetGamePlayController ()
-	{
-		return gamePlayController;
-	}
-
 	// Update is called once per frame
 	public new void Update ()  {
 		base.Update ();
@@ -191,6 +186,10 @@ public class FirstDealerController : BaseStateController {
 		isFirstDealing = true;
 	}
 
+	public override GamePlayController GetGamePlayController ()
+	{
+		return gamePlayController;
+	}
 
 	public void SetUI() {
 		var game = gamePlayController.game;
