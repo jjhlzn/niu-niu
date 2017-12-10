@@ -64,7 +64,13 @@ public class Utils
 		return Application.version;
 	}
 
+	public static string GetShareGameResultUrl() {
+		return System.IO.Path.Combine (Application.persistentDataPath, GetShareGameResultFileName());
+	}
 
+	public static string GetShareGameResultFileName() {
+		return  "zhanji.png";;
+	}
 }
 
 

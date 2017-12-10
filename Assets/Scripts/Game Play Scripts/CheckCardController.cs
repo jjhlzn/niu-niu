@@ -19,20 +19,9 @@ public class CheckCardController : BaseStateController {
 	[SerializeField]
 	private GameObject checkCardPanel;
 
-	private Deck deck {
-		get {
-			return gamePlayController.game.deck;
-		}
-	}
-	private Seat[] seats {
-		get {
-			return gamePlayController.game.seats;
-		}
-	}
 
 	private bool[] playerShowCardCompleted;
 	private bool[] isTurnCardArray;
-	//private bool hasShowCard = false;
 	private float stateTimeLeft; //这状态停留的时间
 	private bool hasPlayCountDown;
 
@@ -47,6 +36,7 @@ public class CheckCardController : BaseStateController {
 		playerShowCardCompleted = new bool[Game.SeatCount];
 		stateTimeLeft = Constants.MaxStateTimeLeft;
 		hasPlayCountDown = false;
+		checkCardPanel.gameObject.SetActive (false);
 	}
 
 	public void Init() {
@@ -112,6 +102,7 @@ public class CheckCardController : BaseStateController {
 	public void SetUI() {
 		if (isMeShowCard ()) {
 			Player.Me.hasShowCard = true;
+			checkCardPanel.gameObject.SetActive (false);
 		}
 		
 		var game = gamePlayController.game;
@@ -150,6 +141,8 @@ public class CheckCardController : BaseStateController {
 
 			}
 		}
+
+
 	}
 
 	private void CheckCardAnimation2() {
@@ -224,19 +217,17 @@ public class CheckCardController : BaseStateController {
 
 		int index = player.seat.seatIndex;
 		int[] sequences = gamePlayController.game.currentRound.cardSequenceArray [index];
-
-		float step;
-		if (index == 0) {
-			step = user0MoveCardSpeedWhenShowCard * Time.deltaTime;
-		} else {
-			step = moveCardSpeedWhenShowCard * Time.deltaTime;
-		}
+	
 
 		for (int j = 0; j < 5; j++) {
 			Vector3 targetV = showcardPositions [sequences [j]];
 			//有牛的话，第4张牌和第6张牌要有点距离
 			if (game.currentRound.HasNiu (index) && sequences [j] >= 3) {
-				targetV = new Vector3 (targetV.x + 30f, targetV.y, targetV.z);
+				int interval = 30;
+				if (player.seat.seatIndex != 0) {
+					interval = 22;	
+				}
+				targetV = new Vector3 (targetV.x + interval, targetV.y, targetV.z);
 			} 
 				
 			Tween t = cards [j].transform.DOLocalMove (targetV, 0.25f);
@@ -311,7 +302,6 @@ public class CheckCardController : BaseStateController {
 		string[] cards = gamePlayController.game.currentRound.playerCardsDict[Player.Me.userId];
 		cards [4] = notify.card;
 
-		//gamePlayController.game.HideStateLabel ();
 		gamePlayController.state = GameState.CheckCard;
 	}
 

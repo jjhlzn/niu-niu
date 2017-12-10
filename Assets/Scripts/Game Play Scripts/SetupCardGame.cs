@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SetupCardGame : BaseStateController {
-	public static int Chip_Count_When_Transimit = 50;
+	public static int Chip_Count_When_Transimit = 40;
 	private int MaxMoveChipCount = Chip_Count_When_Transimit * 6;
 	public static float TransformConstant = 71.98f;
 	private int cardCount = 30; //生成多少张牌的图片，6 * 5 = 30
@@ -703,11 +703,12 @@ public class SetupCardGame : BaseStateController {
 	void Create4BetsButtonPositions() {
 		betButtonPositionsFor4Button = new Vector3[4];
 		betLabelPositionsFor4Button = new Vector3[4];
-		int X = -132, Y = -125, YForLabel = -168;
+		int X = -132, Y = -125, YForLabel = -170;
 		for (int i = 0; i < betButtonPositionsFor4Button.Length; i++) {
 			
 			betButtonPositionsFor4Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);
 			betButtons [i].transform.position = betButtonPositionsFor4Button [i];
+
 			betLabelPositionsFor4Button [i] = new Vector3 (X / TransformConstant, YForLabel / TransformConstant, 0);
 			betLabels [i].transform.position = betLabelPositionsFor4Button [i];
 			X += 88;

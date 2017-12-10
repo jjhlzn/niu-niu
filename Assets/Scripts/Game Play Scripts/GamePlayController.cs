@@ -172,15 +172,29 @@ public class GamePlayController : BaseMonoBehaviour {
 		//根据resp设置Game的状态，设置Game的状态。
 		if (resp.status != 0) {
 			Debug.LogError ("status = " + resp.status + ", message = " + resp.errorMessage);
-			throw new UnityException (resp.errorMessage);
+			Dictionary<string, string> parameters = new Dictionary<string, string> ();
+			parameters[Utils.Message_Key] = "加入房间失败";
+			Scenes.Load ("MainPage", parameters);
+			return;
 		}
 
+		if (string.IsNullOrEmpty (resp.roomNo)) {
+			Dictionary<string, string> parameters = new Dictionary<string, string> ();
+			parameters[Utils.Message_Key] = "加入房间失败";
+			Scenes.Load ("MainPage", parameters);
+			return;
+		}
 
 		if (game == null) {
 			Debug.Log ("game is null, CreatGame() is called");
 			CreateGame ();
 
 		}
+		if (System.IO.File.Exists(Utils.GetShareGameResultUrl())) {
+			System.IO.File.Delete(Utils.GetShareGameResultUrl());
+			Debug.Log ("delete file: " + Utils.GetShareGameResultUrl ());
+		}
+
 		Reset ();
 
 		game.roomNo = resp.roomNo;
@@ -392,7 +406,6 @@ public class GamePlayController : BaseMonoBehaviour {
 			}
 		}
 	}
-
 
 
 	private void SetReadyPlayers(JoinRoomResponse resp, Game game) {

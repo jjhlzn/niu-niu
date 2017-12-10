@@ -5,9 +5,12 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 public class CompareCardController : BaseStateController {
-	private float chipMoveSpeed = 20f;
-	private float scoreLabelMoveSpeed = 5f;
-	private float MoveTime = 2f;
+	private static float ChipShowInterval = 0.002f;
+	public static float Move_Chip_Disapear_Interval = 0.2f;
+	public static float Move_Chip_Move_Duration = 0.3f;
+	public static float Move_Chip_Move_Interval = 0.04f;
+	public static float Move_Score_Label_Duration = 0.8f;
+	private delegate void Callback();
 
 	[Header("Controller")]
 	[SerializeField]
@@ -28,7 +31,6 @@ public class CompareCardController : BaseStateController {
 	Dictionary<string, int> scoreDict;
 
 	public void Init() {}
-
 	public override void Reset() {}
 		
 	// Update is called once per frame
@@ -112,11 +114,7 @@ public class CompareCardController : BaseStateController {
 			ShowScoreLabels();
 		}
 	}
-
-	private delegate void Callback();
-
-	private static float ChipShowInterval = 0.002f;
-	public static float Move_Chip_Disapear_Interval = 0.2f;
+		
 	private void ShowChips( int fromSeatIndex,  int toSeatIndex, Callback callback = null) {
 		Sequence s = DOTween.Sequence ();
 		Vector3 targetPosition = seats [toSeatIndex].chipImages [0].transform.position; 
@@ -140,12 +138,8 @@ public class CompareCardController : BaseStateController {
 			MoveChips(fromSeatIndex, toSeatIndex, callback);
 		});
 	}
-
-	public static float Move_Chip_Move_Duration = 0.3f;
-	public static float Move_Chip_Move_Interval = 0.04f;
-
+		
 	private void MoveChips(int fromSeatIndex,  int toSeatIndex, Callback callback = null) {
-
 		int startIndex = toSeatIndex * SetupCardGame.Chip_Count_When_Transimit;
 		Vector3 position = seats [toSeatIndex].chipImages [0].transform.position; 
 
@@ -165,15 +159,16 @@ public class CompareCardController : BaseStateController {
 			Tween t = chip.transform.DOMove (target, Move_Chip_Move_Duration).SetDelay(delay);
 			int index = i;
 			t.OnComplete (() => {
-				chip.DOFade(1, 0.001f).SetDelay(Move_Chip_Disapear_Interval).OnComplete( () => {
-					chip.gameObject.SetActive(false);
-					if (index == SetupCardGame.Chip_Count_When_Transimit - 1) {
-						if (callback != null)
-							callback();
-					}
-				});
+				Sequence s = DOTween.Sequence();
+				s.AppendInterval(Move_Chip_Disapear_Interval)
+					.OnComplete( () => {
+						chip.gameObject.SetActive(false);
+						if (index == 0) {
+							if (callback != null)
+								callback();
+						}
+					});
 			});
-
 		} 
 	}
 		
@@ -185,9 +180,7 @@ public class CompareCardController : BaseStateController {
 	private void ShowScoreLabels() {
 		for (int i = 0; i < playingPlayers.Count; i++) {
 			if (i == playingPlayers.Count - 1) {
-				ShowScoreLabel (playingPlayers[i].seat.seatIndex, () => {
-					MoveScoreLabels();
-				});
+				ShowScoreLabel (playingPlayers[i].seat.seatIndex, MoveScoreLabels);
 			} else {
 				ShowScoreLabel (playingPlayers[i].seat.seatIndex);
 			}
@@ -222,35 +215,33 @@ public class CompareCardController : BaseStateController {
 	private void MoveScoreLabels () {
 		for (int i = 0; i < playingPlayers.Count; i++) {
 			if (i == playingPlayers.Count - 1) {
-				MoveScoreLabel (playingPlayers[i].seat.seatIndex, () => {
-					readyButton.gameObject.SetActive (true);
-
-					if (gamePlayController.game.HasNextRound ()) {
-						if (gamePlayController.state == GameState.CompareCard) {
-							gamePlayController.state = GameState.WaitForNextRound;
-							waitForNextRoundController.Reset ();
-						}
-					} else {
-						gamePlayController.state = GameState.GameOver;
-						if (gameOverController.isGetGameOverNotify) {
-							gameOverController.HandleGameOverResponse ();
-						}
-					}
-					Debug.Log ("Go to " + gamePlayController.state.value);
-				});
+				MoveScoreLabel (playingPlayers[i].seat.seatIndex, SetCompareCardCompleted);
 			} else {
 				MoveScoreLabel (playingPlayers[i].seat.seatIndex);
 			}
 		}
 	}
 
+	private void SetCompareCardCompleted() {
+		readyButton.gameObject.SetActive (true);
+		if (game.HasNextRound ()) {
+			if (game.state == GameState.CompareCard) {
+				game.state = GameState.WaitForNextRound;
+				waitForNextRoundController.Reset ();
+			}
+		} else {
+			game.state = GameState.GameOver;
+			if (gameOverController.isGetGameOverNotify) {
+				gameOverController.HandleGameOverResponse ();
+			}
+		}
+	}
+
 	private void MoveScoreLabel(int index, Callback callback = null) {
 		Text text = seats [index].scoreLabel;
-		Tween t = text.transform.DOMove (seats [index].targetScoreLabelPosition, 0.5f);
+		Tween t = text.transform.DOMove (seats [index].targetScoreLabelPosition, Move_Score_Label_Duration);
 		if (callback != null) {
-			t.OnComplete (() => {
-				callback ();
-			});
+			t.OnComplete (() => {callback();});
 		}
 	}
 

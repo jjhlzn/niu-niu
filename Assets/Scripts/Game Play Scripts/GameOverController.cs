@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using cn.sharesdk.unity3d;
+using System.IO;
 
 public class GameOverController : BaseStateController {
 
@@ -70,25 +71,28 @@ public class GameOverController : BaseStateController {
 		Scenes.Load ("MainPage");
 	}
 
+
+
 	public void ShareClick() {
 		Debug.Log ("Share Click");
-		ScreenCapture.CaptureScreenshot("zhanji.png");
-		var game = gamePlayController.game;
-		ShareContent content = new ShareContent();
-		//content.SetText("房间【" + game.roomNo + "】");
-		content.SetTitle("");
+		ScreenCapture.CaptureScreenshot(Utils.GetShareGameResultFileName());
 
-		if (Application.platform == RuntimePlatform.Android) {
-			string url = Application.temporaryCachePath.Replace ("cache", "files") + "/zhanji.png";
-			content.SetImagePath (url);
-		} else {
-			string url = Application.temporaryCachePath.Replace ("cache", "files") + "/zhanji.png";
-			Debug.Log ("share image url: " + url);
-			content.SetImagePath (url);
-		}
+		ShareContent content = new ShareContent();
+		content.SetTitle("");
+		string url = Utils.GetShareGameResultUrl ();
+		Debug.Log ("share image url: " + url);
+
+		content.SetImagePath (url);
 		content.SetShareType(ContentType.Image);
-		ssdk.ShareContent (PlatformType.WeChat, content);
+
+		StartCoroutine(Share(content));
 	}
 
+	private IEnumerator Share(ShareContent content) {
+		yield return new WaitForSeconds (.3f);
+		if (File.Exists(Utils.GetShareGameResultUrl())) {
+			ssdk.ShareContent (PlatformType.WeChat, content);
+		}
+	}
 
 }
