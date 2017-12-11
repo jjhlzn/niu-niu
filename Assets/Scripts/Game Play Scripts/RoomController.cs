@@ -44,9 +44,8 @@ public class RoomController : MonoBehaviour
 			userId = Player.Me.userId,
 			roomNo = game.roomNo
 		};
-
-		socket.EmitJson (Messages.DismissRoom, JsonConvert.SerializeObject (req), (string msg) => {
-
+		socket.Emit(Messages.DismissRoom, (s, packet, args) => {
+			string msg = packet.ToString();
 			Debug.Log("DismissRoomAck: " + msg);
 			DismissRoomResponse resp = JsonConvert.DeserializeObject<DismissRoomResponse[]>(msg)[0];
 			if (resp.status != 0)
@@ -56,7 +55,7 @@ public class RoomController : MonoBehaviour
 			Dictionary<string, string> parameters = new Dictionary<string, string> ();
 			//parameters[Utils.Message_Key] = "该房间已经被解散了";
 			Scenes.Load ("MainPage", parameters);
-		});
+			}, JsonConvert.SerializeObject (req));
 	}
 
 	public void DismissRoomCancelClick() {
@@ -86,14 +85,15 @@ public class RoomController : MonoBehaviour
 			roomNo = game.roomNo
 		};
 
-		socket.EmitJson (Messages.LeaveRoom, JsonConvert.SerializeObject (req), (string msg) => {
+		socket.Emit (Messages.LeaveRoom, (s, packet, args) => {
+			string msg = packet.ToString();
 			Debug.Log("LeaveRoomResponse: " + msg);
 			LeaveRoomResponse resp = JsonConvert.DeserializeObject<LeaveRoomResponse[]>(msg)[0];
 			if (resp.status != 0)
 				return;
 
 			Scenes.Load("MainPage");
-		});
+		}, JsonConvert.SerializeObject (req) );
 
 		setupGame.CloseMenuClick ();
 	}

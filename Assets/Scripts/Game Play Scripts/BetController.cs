@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using socket.io;
+//using socket.io;
+using BestHTTP.SocketIO;
 using Newtonsoft.Json;
 using DG.Tweening;
 
@@ -17,11 +18,6 @@ public class BetController : BaseStateController {
 	private float user0ChipMoveSpeed = 220f;
 	private float chipMoveSpeed = 220f;
 
-	private Seat[] seats {
-		get {
-			return gamePlayController.game.seats;
-		}
-	}
 
 	private bool[] isMoveChipArray;
 	private bool[] isBetCompletedArray;
@@ -160,8 +156,7 @@ public class BetController : BaseStateController {
 			bet = mybet
 		};
 
-		socket.EmitJson (Messages.Bet, JsonConvert.SerializeObject(req), (string msg) => {
-		}); 
+		socket.Emit (Messages.Bet, JsonConvert.SerializeObject(req)); 
 
 	}
 

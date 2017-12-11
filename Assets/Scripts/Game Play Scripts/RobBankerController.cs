@@ -112,8 +112,7 @@ public class RobBankerController : BaseStateController {
 			userId = Player.Me.userId
 		};
 
-		gamePlayerController.gameSocket.EmitJson (Messages.RobBanker, JsonConvert.SerializeObject (robReq), (string msg) => {
-		});
+		gamePlayerController.gameSocket.Emit (Messages.RobBanker, JsonConvert.SerializeObject (robReq));
 	}
 		
 

@@ -13,10 +13,14 @@ public class ServerUtils
 	{
 	}
 
-	public static string mainServer = "niu.yhkamani.com"; //  "niu.yhkamani.com" ; //"192.168.1.114" ; //"localhost" ;  //"192.168.31.175";
+	public static string mainServer = "192.168.31.175"; //  "niu.yhkamani.com" ; //"192.168.1.117" ; //"localhost" ;  //"192.168.31.175";
 	public static string protocol = "http";
-	public static int port = 80;
+	public static int port = 3001;
 	public static int socketIOPort = 3001;
+
+	public static string GetSocketIOUrl() {
+		return protocol + "://" + mainServer + ":" + socketIOPort + "/socket.io/";
+	}
 
 	public static string GetCheckUserInGameUrl() {
 		return protocol + "://" + mainServer + ":" + port + "/checkuseringame";

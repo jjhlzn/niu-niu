@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using socket.io;
+using BestHTTP.SocketIO;
 using Newtonsoft.Json;
 
 public class CheckCardController : BaseStateController {
@@ -294,8 +294,7 @@ public class CheckCardController : BaseStateController {
 			roomNo = gamePlayController.game.roomNo
 		};
 
-		gameSocket.EmitJson (Messages.ShowCard, JsonConvert.SerializeObject (request), (string msg) => {
-		});
+		gameSocket.Emit (Messages.ShowCard, JsonConvert.SerializeObject (request));
 	}
 
 	public void HandleResponse(GoToCheckCardNotify notify) {

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using socket.io;
+//using socket.io;
+using BestHTTP.SocketIO;
 using cn.sharesdk.unity3d;
 using Newtonsoft.Json;
 using DG.Tweening;
@@ -159,13 +160,20 @@ public class BeforeGameStartController : BaseStateController {
 			userId = Player.Me.userId
 		};
 
-		gameSocket.EmitJson (Messages.StartGame, JsonConvert.SerializeObject(request), (string msg) => {
+		gameSocket.Emit (Messages.StartGame, (s, packet, args) => {
+			string msg = packet.ToString();
+			Debug.Log("Receive Start Game Response: " + msg);
+			BaseGameResponse resp = JsonConvert.DeserializeObject<BaseGameResponse[]>(msg)[0];
+			if (resp.status != 0) {
+				return;
+			}
+
 			foreach(Seat seat in seats) {
 				seat.readyImage.gameObject.SetActive(false);
 			}
 
 			UpdateButtonStatusAfterStart();
-		}); 
+		}, JsonConvert.SerializeObject(request)); 
 	}
 
 
@@ -193,7 +201,8 @@ public class BeforeGameStartController : BaseStateController {
 			userId = Player.Me.userId,
 		};
 			
-		socket.EmitJson (Messages.SitDown, JsonConvert.SerializeObject (seatReq), (msg) => {
+		socket.Emit (Messages.SitDown, (s, packet, args) => {
+			string msg = packet.ToString();
 			Debug.Log("msg: " + msg);
 			BaseGameResponse resp = JsonConvert.DeserializeObject<BaseGameResponse[]>(msg)[0];
 
@@ -201,7 +210,7 @@ public class BeforeGameStartController : BaseStateController {
 				Debug.LogError("status = " + resp.status + ", message = " + resp.errorMessage);
 				return;
 			}
-				
+
 			leaveRoomBtn.interactable = false;
 
 			if (Player.Me.userId != game.creater)
@@ -234,11 +243,11 @@ public class BeforeGameStartController : BaseStateController {
 					startButton.interactable = false;
 				} 
 			} 
-				
+
 			if (game.state == GameState.WaitForNextRound) {
 				readyButton.gameObject.SetActive(true);
 			}
-		});
+		}, JsonConvert.SerializeObject (seatReq));
 	}
 
 	//移动玩家
@@ -293,8 +302,8 @@ public class BeforeGameStartController : BaseStateController {
 			userId = Player.Me.userId,
 		};
 
-		socket.EmitJson (Messages.StandUp, JsonConvert.SerializeObject (standUpReq), (msg) => {
-			
+		socket.Emit (Messages.StandUp, (s, packet, args) => {
+			string msg = packet.ToString();
 			BaseGameResponse resp = JsonConvert.DeserializeObject<BaseGameResponse[]>(msg)[0];
 
 			if (resp.status != 0) {
@@ -315,7 +324,7 @@ public class BeforeGameStartController : BaseStateController {
 			foreach(Seat seat in seats) {
 				seat.UpdateUI(gamePlayerController.game);
 			}
-		});
+		},  JsonConvert.SerializeObject (standUpReq));
 
 		setUpGameController.CloseMenuClick ();
 	}

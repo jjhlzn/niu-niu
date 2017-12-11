@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
-using socket.io;
+using BestHTTP.SocketIO;
 using DG.Tweening;
 
 public class WaitForNextRoundController : BaseStateController {
@@ -110,8 +110,7 @@ public class WaitForNextRoundController : BaseStateController {
 			userId = Player.Me.userId
 		};
 
-		gameSocket.EmitJson (Messages.Ready, JsonConvert.SerializeObject(request), (string msg) => {
-		});  
+		gameSocket.Emit (Messages.Ready, JsonConvert.SerializeObject(request));  
 	}
 
 

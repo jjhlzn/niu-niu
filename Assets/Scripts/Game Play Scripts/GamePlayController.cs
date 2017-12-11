@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
-using socket.io;
+//using socket.io;
+using BestHTTP.SocketIO;
 using System;
 
 using cn.sharesdk.unity3d;
@@ -149,6 +150,8 @@ public class GamePlayController : BaseMonoBehaviour {
 	}
 
 	public void SetGameSocket(Socket socket) {
+		if (gameSocket != null)
+			return;
 		gameSocket = socket;
 		gameSocket.On (Messages.GoToFirstDeal, new MessageHandler<FirstDealResponse, FirstDealerController> (firstDealerController, game).Handle);
 		gameSocket.On (Messages.GoToCheckCard, new MessageHandler<GoToCheckCardNotify, CheckCardController> (checkCardController, game).Handle);
@@ -428,11 +431,11 @@ public class GamePlayController : BaseMonoBehaviour {
 		if (pauseStatus) {
 			pauseTime = DateTime.Now;
 			if (isConnected) {
-				gameSocket.EmitJson(Messages.Delegate, JsonConvert.SerializeObject(new {userId = Player.Me.userId, roomNo = game.roomNo}));
+				gameSocket.Emit(Messages.Delegate, JsonConvert.SerializeObject(new {userId = Player.Me.userId, roomNo = game.roomNo}));
 			}
 		} else {
-			if (gameSocket != null && gameSocket.IsConnected)
-				gameSocket.EmitJson(Messages.NotDelegate, JsonConvert.SerializeObject(new {userId = Player.Me.userId, roomNo = game.roomNo}));
+			if (gameSocket != null && gameSocket.IsOpen)
+				gameSocket.Emit(Messages.NotDelegate, JsonConvert.SerializeObject(new {userId = Player.Me.userId, roomNo = game.roomNo}));
 
 			if (game != null  &&  (game.state == GameState.GameOver || game.state == GameState.BeforeStart ))
 				return;

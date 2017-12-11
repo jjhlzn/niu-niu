@@ -4,6 +4,12 @@ using Newtonsoft.Json;
 using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
+using BestHTTP.SocketIO;
+
+class MessageHandlerNoity {
+	public string messageName;
+	public object result;
+}
 
 public class MessageHandler<T, U> where T : BaseGameResponse 
 								   where U : BaseStateController
@@ -17,10 +23,17 @@ public class MessageHandler<T, U> where T : BaseGameResponse
 		//this.game = game;
 	}
 
+
+
 	//
-	public void Handle(string msg) {
-		
+	public void Handle(Socket socket, Packet packet, params object[] args) {
+		string msg = packet.ToString();
+
 		//检查消息的类型，根据消息的类型，将消息转为为相应的类型。
+		Debug.Log(typeof(T).Name + ": " + msg);
+		msg = msg.Substring(msg.IndexOf(',') + 1);
+		msg = msg.Substring (0, msg.Length - 1);
+		//msg = JsonConvert.SerializeObject ( ((object[])BestHTTP.JSON.Json.Decode (msg)) [1]);
 		Debug.Log(typeof(T).Name + ": " + msg);
 		T resp = JsonConvert.DeserializeObject<T>(msg);
 		//Debug.Log(resp);
@@ -31,6 +44,7 @@ public class MessageHandler<T, U> where T : BaseGameResponse
 
 		var game = controller.GetGamePlayController ().game;
 		if (!game.isInited) {
+			Debug.Log ("game.isInited = " + game.isInited);
 			return;
 		}
 	

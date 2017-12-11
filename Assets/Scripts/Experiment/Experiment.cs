@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using BestHTTP;
+using BestHTTP.SocketIO;
+using System;
+using BestHTTP.JSON;
+using Newtonsoft.Json;
+using cn.sharesdk.unity3d;
 
 
 public class Experiment : MonoBehaviour {
@@ -21,12 +27,17 @@ public class Experiment : MonoBehaviour {
 	private Image[] cards;
 
 	private Vector3[] positions;
+	private SocketManager socketManager;
+
+	private DateTime startTime = DateTime.Now;
 
 	// Use this for initialization
 	void Start () {
 		
 		Setup ();
 		//MoveCard ();
+		startTime = DateTime.Now;
+		ConnectSocket();
 	}
 	
 	// Update is called once per frame
@@ -43,6 +54,59 @@ public class Experiment : MonoBehaviour {
 			}));
 			s.AppendInterval (0.05f);
 		}
+	}
+
+
+
+	public void ConnectSocket ()
+	{
+		TimeSpan e = TimeSpan.FromMilliseconds (1000);
+
+		var options = new SocketOptions ();
+		options.ReconnectionAttempts = 1000000000;
+		options.AutoConnect = true;
+		options.ReconnectionDelay = e;
+
+		//Server URI
+		socketManager = new SocketManager (new Uri (ServerUtils.GetSocketIOUrl()), options);
+
+		//socketManager.GetSocket("/").On ("connect", OnConnect);
+		socketManager.Socket.On(SocketIOEventTypes.Error, (socket, packet, args) => Debug.LogError(string.Format("Error: {0}", args[0].ToString())));
+		socketManager.Socket.On (SocketIOEventTypes.Disconnect, (socket, packet, eventArgs) => {
+			Debug.Log("lose connection");
+		});
+		socketManager.GetSocket("/").On(SocketIOEventTypes.Connect, (socket, packet, arg) => {
+			
+			Debug.Log ("Connected");  
+			var joinRoomReq =  new {
+				roomNo = "123456",
+				userId = "1313123"
+			};
+
+			//BestHTTP.SocketIO.Events.SocketIOAckCallback a = null;
+			string json = JsonConvert.SerializeObject(joinRoomReq);
+			Debug.Log ("jsons = " + json);
+			socket.Emit ("JoinRoom", JoinRoomCallback,  json);
+		});
+		socketManager.Open();
+
+	}
+
+	private void OnConnect (Socket socket, Packet packet, params object[] args) {
+		
+	}
+
+	private void JoinRoomCallback(Socket socket, Packet packet, params object[] args) {
+		string msg = packet.ToString ();
+		JoinRoomResponse resp = JsonConvert.DeserializeObject<JoinRoomResponse[]> (msg) [0];
+		Debug.Log("msg: " + resp.status );
+
+		DateTime end = DateTime.Now;
+
+		double millisecs = (end - startTime).TotalMilliseconds;
+		Debug.Log ("TotalMilliseconds = " + millisecs);
+
+
 	}
 
 	public void MoveCard() {

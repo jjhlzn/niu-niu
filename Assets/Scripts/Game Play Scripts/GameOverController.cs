@@ -67,7 +67,7 @@ public class GameOverController : BaseStateController {
 
 
 	public void BackToMainPageClick() {
-		connect.disconnect ();
+		//connect.disconnect ();
 		Scenes.Load ("MainPage");
 	}
 
