@@ -10,25 +10,25 @@
       <File FileName="Assets/Scripts/CanvasScreenAutoFix.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Server/Connect.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Message Handlers/MessageHandler.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Main Page Scripts/MainPageController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Login Scripts/LoginController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Main Page Scripts/MainPageController.cs" Line="45" Column="32" />
+      <File FileName="Assets/Scripts/Login Scripts/LoginController.cs" Line="91" Column="28" />
       <File FileName="Assets/Scripts/Game Play Scripts/BaseStateController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Game Play Scripts/BeforeGameStartController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Game Play Scripts/SetupCardGame.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Game Play Scripts/GamePlayController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Game Play Scripts/WaitForNextRoundController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Game Play Scripts/BeforeGameStartController.cs" Line="201" Column="1" />
+      <File FileName="Assets/Scripts/Game Play Scripts/SetupCardGame.cs" Line="53" Column="23" />
+      <File FileName="Assets/Scripts/Game Play Scripts/GamePlayController.cs" Line="200" Column="29" />
+      <File FileName="Assets/Scripts/Game Play Scripts/WaitForNextRoundController.cs" Line="33" Column="22" />
       <File FileName="Assets/Scripts/Game Play Scripts/RoomController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Game Play Scripts/Utils.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Game Play Scripts/CheckCardController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Game Play Scripts/Utils.cs" Line="71" Column="49" />
+      <File FileName="Assets/Scripts/Game Play Scripts/CheckCardController.cs" Line="39" Column="47" />
       <File FileName="Assets/Scripts/Game Play Scripts/SecondDealController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Game Play Scripts/BetController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Game Play Scripts/BetController.cs" Line="115" Column="19" />
       <File FileName="Assets/Scripts/Game Play Scripts/ChooseBankerController.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Game Play Scripts/FirstDealerController.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Domain Model/Deck.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Game Play Scripts/RobBankerController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Game Play Scripts/CompareCardController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Game Play Scripts/CompareCardController.cs" Line="175" Column="43" />
       <File FileName="Assets/Scripts/Game Play Scripts/UI/GameOverPanel.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Game Play Scripts/GameOverController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Game Play Scripts/GameOverController.cs" Line="91" Column="44" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
