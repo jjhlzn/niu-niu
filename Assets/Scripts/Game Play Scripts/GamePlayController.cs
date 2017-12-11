@@ -423,8 +423,7 @@ public class GamePlayController : BaseMonoBehaviour {
 		//isPaused = pauseStatus;
 		Debug.Log("OnApplicationPause: pauseStatus = " + pauseStatus);
 
-		if (game != null  &&  (game.state == GameState.GameOver || game.state == GameState.BeforeStart ))
-			return;
+
 
 		if (pauseStatus) {
 			pauseTime = DateTime.Now;
@@ -434,6 +433,10 @@ public class GamePlayController : BaseMonoBehaviour {
 		} else {
 			if (gameSocket != null && gameSocket.IsConnected)
 				gameSocket.EmitJson(Messages.NotDelegate, JsonConvert.SerializeObject(new {userId = Player.Me.userId, roomNo = game.roomNo}));
+
+			if (game != null  &&  (game.state == GameState.GameOver || game.state == GameState.BeforeStart ))
+				return;
+
 			DateTime now = DateTime.Now;
 			var differ = now - pauseTime;
 			double seconds = differ.TotalSeconds;
