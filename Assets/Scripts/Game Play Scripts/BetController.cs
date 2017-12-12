@@ -57,6 +57,7 @@ public class BetController : BaseStateController {
 		stateTimeLeft = Constants.MaxStateTimeLeft - animationTime;
 		hasPlayBetTip = false;
 		hasPlayCountDown = false;
+		gamePlayController.game.HideBetButtons ();
 	}
 	
 	public override GamePlayController GetGamePlayController ()

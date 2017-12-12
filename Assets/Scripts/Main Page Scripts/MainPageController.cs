@@ -84,8 +84,7 @@ public class MainPageController : BaseMonoBehaviour {
 
 		CheckPlayerInGame ();
 
-		//String a = null;
-		//a.ToString ();
+
 	}
 	
 	// Update is called once per frame
@@ -194,6 +193,10 @@ public class MainPageController : BaseMonoBehaviour {
 				parameters["roomNo"] = resp.roomNo;
 				parameters["serverUrl"] = resp.serverUrl;
 				Scenes.Load("Gameplay", parameters); 
+			} else {
+				if (!string.IsNullOrEmpty (LoginController.roomNo)) {
+					JoinRoom(LoginController.roomNo);
+				}
 			}
 		};
 		StartCoroutine (ServerUtils.PostRequest(ServerUtils.GetCheckUserInGameUrl() + "?req=" 
@@ -388,24 +391,8 @@ public class MainPageController : BaseMonoBehaviour {
 		if (Application.platform != RuntimePlatform.Android)
 			return;
 
-		string arguments = "";
-		AndroidJavaClass UnityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"); 
-		AndroidJavaObject currentActivity = UnityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-
-		if (currentActivity == null) {
-			Debug.Log ("currentActivity is null");
-			return;
-		}
-
-		AndroidJavaObject intent = currentActivity.Call<AndroidJavaObject>("getIntent");
-
-		string data = intent.Call<string> ("getDataString");
-		Debug.Log ("data = " + data);
-
-		if (!string.IsNullOrEmpty (data)) {
-			
-			string roomNo = data.Replace ("wx73653b5260b24787://?room=", "");
-			Debug.Log ("roomNo = " + roomNo);
+		string roomNo = Utils.GetRoomNoFromIntentUrl ();
+		if (!string.IsNullOrEmpty (roomNo)) {
 			JoinRoom (roomNo);
 		}
 	}
@@ -420,16 +407,11 @@ public class MainPageController : BaseMonoBehaviour {
 
 	void OnEnable()
 	{
-		//if (!IsLogCallbackRegistered (LogCallback)) {
-			Application.logMessageReceived += LogCallback;
-		//}
+		Application.logMessageReceived += LogCallback;
 	}
 
 	void OnDisable() {
-		//if (IsLogCallbackRegistered (LogCallback)) {
-			Application.logMessageReceived -= LogCallback;
-		//}
-
+		Application.logMessageReceived -= LogCallback;
 	}
 
 

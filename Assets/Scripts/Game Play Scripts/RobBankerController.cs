@@ -21,6 +21,7 @@ public class RobBankerController : BaseStateController {
 	public override void Reset() {
 		stateTimeLeft = Constants.MaxStateTimeLeft;
 		hasPlayCountDown = false;
+		robRankerPanel.SetActive (false);
 	}
 
 	void Start() {

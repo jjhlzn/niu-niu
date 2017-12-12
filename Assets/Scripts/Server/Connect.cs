@@ -66,9 +66,7 @@ public class Connect : BaseMonoBehaviour {
 		Debug.Log ("connecting to server ...");
 		startConnTime = DateTime.Now;
 		isConnecting = true;
-
-
-
+	
 		socketManager = new SocketManager (new Uri (ServerUtils.GetSocketIOUrl()), options);
 		socketManager.Socket.On(SocketIOEventTypes.Error, 
 			(socket, packet, args) => { 
@@ -86,6 +84,7 @@ public class Connect : BaseMonoBehaviour {
 		socketManager.Socket.On(SocketIOEventTypes.Connect, (socket, packet, arg) => {
 			
 			gameSocket = socketManager.Socket;
+			gamePlayController.connect = this;
 			gamePlayController.isConnected = true;
 			gamePlayController.SetGameSocket (gameSocket);
 			JoinRoom ();

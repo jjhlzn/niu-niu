@@ -13,6 +13,7 @@ using System.IO;
 public class LoginController : BaseMonoBehaviour {
 
 	public static bool isFromLogin = false;
+	public static string roomNo = "";
 
 	[SerializeField]
 	private ShareSDK ssdk;
@@ -30,6 +31,7 @@ public class LoginController : BaseMonoBehaviour {
 	private string newVersion;
 
 	void Start() {
+		isFromLogin = true;
 		versionLabel.text = "版本号: " + Utils.GetVersion ();
 
 		ssdk.authHandler = AuthResultHandler;
@@ -64,6 +66,7 @@ public class LoginController : BaseMonoBehaviour {
 				}
 			} else {
 				//Utils.ShowConfirmMessagePanel("没有新版本", confirmMessagePanel);
+				AutoLogin();
 			}
 		};
 
@@ -85,8 +88,13 @@ public class LoginController : BaseMonoBehaviour {
 		Utils.HideMessagePanel (confirmMessagePanel);
 	}
 
+	public void AutoLogin() {
+		Utils.ShowMessagePanel ("登陆中...", messagePanel);
+
+		ssdk.GetUserInfo(PlatformType.WeChat);
+	}
+
 	public void LoginClick() {
-		isFromLogin = true;
 		Debug.Log ("login clicked");
 		Utils.ShowMessagePanel ("登陆中...", messagePanel);
 		ssdk.Authorize (PlatformType.WeChat);
@@ -157,7 +165,6 @@ public class LoginController : BaseMonoBehaviour {
 		{
 			Debug.Log ("authorize success !");
 			ssdk.GetUserInfo(PlatformType.WeChat);
-
 		}
 		else if (state == ResponseState.Fail)
 		{
@@ -169,7 +176,7 @@ public class LoginController : BaseMonoBehaviour {
 		{
 			Debug.Log  ("cancel !");
 			Utils.HideMessagePanel (messagePanel);
-			Utils.ShowConfirmMessagePanel ("登陆失败", confirmMessagePanel);
+			//Utils.ShowConfirmMessagePanel ("登陆失败", confirmMessagePanel);
 		}
 	}
 
@@ -204,7 +211,7 @@ public class LoginController : BaseMonoBehaviour {
 		{
 			print ("fail! throwable stack = " + result["stack"] + "; error msg = " + result["msg"]);
 			Utils.HideMessagePanel(messagePanel);
-			Utils.ShowConfirmMessagePanel ("登陆失败", confirmMessagePanel);
+			//Utils.ShowConfirmMessagePanel ("登陆失败", confirmMessagePanel);
 		}
 		else if (state == ResponseState.Cancel) 
 		{
@@ -225,4 +232,20 @@ public class LoginController : BaseMonoBehaviour {
 		return me;
 	}
 
+
+	private void LoadActivityParamsForAndroid() {
+		if (Application.platform != RuntimePlatform.Android)
+			return;
+
+	    roomNo = Utils.GetRoomNoFromIntentUrl ();
+		Debug.Log ("roomNo = " + roomNo);
+	}
+
+	void OnApplicationPause(bool pauseStatus)
+	{
+		if (pauseStatus) {
+		} else {  //回到主界面
+			LoadActivityParamsForAndroid();
+		}
+	}
 }

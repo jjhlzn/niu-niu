@@ -58,6 +58,7 @@ public class GamePlayController : BaseMonoBehaviour {
 	public GameState pauseState;
 	public Socket gameSocket;
 	public Game game;
+	public Connect connect;
 
 
 	// Use this for initialization
@@ -150,7 +151,7 @@ public class GamePlayController : BaseMonoBehaviour {
 	}
 
 	public void SetGameSocket(Socket socket) {
-		if (gameSocket != null)
+		if (gameSocket != null && gameSocket == socket)
 			return;
 		gameSocket = socket;
 		gameSocket.On (Messages.GoToFirstDeal, new MessageHandler<FirstDealResponse, FirstDealerController> (firstDealerController, game).Handle);
@@ -348,9 +349,9 @@ public class GamePlayController : BaseMonoBehaviour {
 
 	private void SetMyCards(JoinRoomResponse resp, Game game) {
 		var cards = resp.playerCards;
-		Debug.Log ("cards.keys: " + cards.Keys);
-		Debug.Log ("Me.userId: " + Player.Me.userId);
-		Debug.Log ("cards.ContainsKey (Player.Me.userId): " + cards.ContainsKey (Player.Me.userId));
+		//Debug.Log ("cards.keys: " + cards.Keys);
+		//Debug.Log ("Me.userId: " + Player.Me.userId);
+		//Debug.Log ("cards.ContainsKey (Player.Me.userId): " + cards.ContainsKey (Player.Me.userId));
 		if (cards.ContainsKey (Player.Me.userId)) {
 			game.currentRound.playerCardsDict [Player.Me.userId] = new string[5];
 			for (int i = 0; i < cards[Player.Me.userId].Length; i++) {
@@ -461,6 +462,10 @@ public class GamePlayController : BaseMonoBehaviour {
 				isConnected = false;
 				isInited = false;
 				game.isInited = false;
+				gameSocket.Manager.Close ();
+				if (connect != null) {
+					connect.connect ();
+				}
 			}
 		}
 	}

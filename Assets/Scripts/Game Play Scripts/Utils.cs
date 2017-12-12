@@ -71,6 +71,30 @@ public class Utils
 	public static string GetShareGameResultFileName() {
 		return  "zhanji.png";;
 	}
+
+	public static string GetRoomNoFromIntentUrl() {
+		AndroidJavaClass UnityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"); 
+		AndroidJavaObject currentActivity = UnityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+		if (currentActivity == null) {
+			Debug.Log ("currentActivity is null");
+			return "";
+		}
+
+		AndroidJavaObject intent = currentActivity.Call<AndroidJavaObject>("getIntent");
+
+		string data = intent.Call<string> ("getDataString");
+		Debug.Log ("data = " + data);
+
+		if (!string.IsNullOrEmpty (data)) {
+
+			string roomNo = data.Replace ("wx73653b5260b24787://?room=", "");
+			Debug.Log ("roomNo = " + roomNo);
+			return roomNo;
+		}
+
+		return "";
+	}
 }
 
 
