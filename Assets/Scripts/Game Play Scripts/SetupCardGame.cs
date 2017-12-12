@@ -319,6 +319,9 @@ public class SetupCardGame : BaseStateController {
 			case "Leave Image Sign":
 				seat.leaveImage = image;
 				break;
+			case "Wait Image Sign":
+				seat.waitImage = image;
+				break;
 			case "Chip Image":
 				image.transform.SetParent (userPanel.transform);
 				image.transform.localScale = new Vector3 (ChipScale, ChipScale);
@@ -348,6 +351,8 @@ public class SetupCardGame : BaseStateController {
 				seat.originScoreLabelPosition = seat.scoreLabel.transform.position;
 				if (index == 3) {
 					seat.targetScoreLabelPosition = new Vector3 (seat.originScoreLabelPosition.x, seat.originScoreLabelPosition.y + 0.8f, 0);
+				} else if (index == 5 || index == 1) {
+					seat.targetScoreLabelPosition = new Vector3 (seat.originScoreLabelPosition.x, seat.originScoreLabelPosition.y + 1.46f, 0);
 				} else {
 					seat.targetScoreLabelPosition = new Vector3 (seat.originScoreLabelPosition.x, seat.originScoreLabelPosition.y + 1.1f, 0);
 				}
@@ -414,7 +419,7 @@ public class SetupCardGame : BaseStateController {
 			initialY = 95;
 			break;
 		case 5:
-			initialX = 330;
+			initialX = 300;
 			initialY = -70;
 			break;
 		}
@@ -598,51 +603,6 @@ public class SetupCardGame : BaseStateController {
 		return images;
 	}
 		
-
-	private Text GetScoreLabel(int index) {
-		int x = 0, y = 0;
-		switch (index) {
-		case 0:
-			x = -515;
-			y = -265;
-			break;
-		case 1:
-			x = -555;
-			y = -37;
-			break;
-		case 2:
-			x = -420;
-			y = 234;
-			break;
-		case 3:
-			x = 30;
-			y = 273;
-			break;
-		case 4:
-			x = 375;
-			y = 210;
-			break;
-		case 5:
-			x = 555;
-			y = -33;
-			break;
-		}
-
-		Text text = Instantiate (scoreLabel);
-		text.name = "userScoreLabel" + index;
-		text.transform.SetParent (userPanel.transform);
-
-		Vector3 localScale = new Vector3 ();
-		localScale.x = 1f;
-		localScale.y = 1f;
-		text.transform.localScale = localScale;
-
-		text.gameObject.SetActive (false);
-
-		text.transform.position = new Vector3 ( x / TransformConstant, y / TransformConstant, 0);
-		return text;
-
-	}
 
 	/**
 	 * 生成一副牌的图片

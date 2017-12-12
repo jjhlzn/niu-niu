@@ -20,19 +20,12 @@ public class WaitForNextRoundController : BaseStateController {
 	[SerializeField]
 	private Button readyButton;
 
-	private Seat[] seats {
-		get {
-			return gamePlayerController.game.seats;
-		}
-	}
 
 	private float stateTimeLeft; //这状态停留的时间
 	private bool hasPlayCountDown;
-	//public bool hasReady;
 
 	public void Init() {
 		stateTimeLeft = Constants.MaxStateTimeLeft;
-		//hasReady = false;
 	}
 
 	/**
@@ -41,7 +34,7 @@ public class WaitForNextRoundController : BaseStateController {
 	public override void Reset() {
 		stateTimeLeft = Constants.MaxStateTimeLeft;
 		hasPlayCountDown = false;
-		//hasReady = false;
+		readyButton.gameObject.SetActive (false);
 	}
 
 	public override GamePlayController GetGamePlayController ()

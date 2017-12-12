@@ -86,7 +86,7 @@ public class CheckCardController : BaseStateController {
 			}
 		}
 	
-		CheckCardAnimation2 ();
+		CheckCardAnimation ();
 	}
 
 	public bool isMeShowCard() {
@@ -145,7 +145,7 @@ public class CheckCardController : BaseStateController {
 
 	}
 
-	private void CheckCardAnimation2() {
+	private void CheckCardAnimation() {
 		var round = gamePlayController.game.currentRound;
 		if (secondDealController.isSecondDealDone) {
 			for (int i = 0; i < isTurnCardArray.Length; i++) {
@@ -236,8 +236,10 @@ public class CheckCardController : BaseStateController {
 			cards [cardIndex].transform.SetSiblingIndex (index * 5 + sequences [cardIndex]);
 			if (j == 4) {
 				t.OnComplete (() => {
-					
-					cards [cardIndex].transform.SetSiblingIndex (index * 5 + sequences [cardIndex]);
+					for(int m = 0; m < 5; m++) {
+						cards [m].transform.SetSiblingIndex (index * 5 + sequences [m]);
+					}
+
 					MusicController.instance.Play ("niu" + round.niuArray [index], player.sex);
 
 
@@ -254,7 +256,9 @@ public class CheckCardController : BaseStateController {
 				});
 			} else {
 				t.OnComplete (() => {
-					cards [cardIndex].transform.SetSiblingIndex (index * 5 + sequences [cardIndex]);
+					for(int m = 0; m < 5; m++) {
+						cards [m].transform.SetSiblingIndex (index * 5 + sequences [m]);
+					}
 				});
 			}
 		} 

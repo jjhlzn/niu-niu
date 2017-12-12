@@ -224,8 +224,12 @@ public class GamePlayController : BaseMonoBehaviour {
 
 			SetRobBankerPlayers (resp, game);
 			SetMyCards (resp, game);
-			SetMyBets (resp, game);
+
 			beforeGameStartController.SetUI ();
+
+			//需要在移动位置之后设置
+			SetMyBets (resp, game);
+
 			firstDealerController.SetUI ();
 			robBankerController.SetUI ();
 
@@ -239,9 +243,11 @@ public class GamePlayController : BaseMonoBehaviour {
 
 			SetBanker (resp, game);
 			SetMyBets (resp, game);
+
+			beforeGameStartController.SetUI ();
 			SetBetPlayers (resp, game);
 			SetMyCards (resp, game);
-			beforeGameStartController.SetUI ();
+
 			firstDealerController.SetUI ();
 			robBankerController.SetUI ();
 			chooseBankerController.SetUI ();
@@ -257,11 +263,14 @@ public class GamePlayController : BaseMonoBehaviour {
 			SetBanker (resp, game);
 			SetMyCards (resp, game);
 			SetMyBets (resp, game);
+
+			beforeGameStartController.SetUI ();
+
 			SetBetPlayers (resp, game);
 			SetShowcardPlayers (resp, game);
 			SetBetPlayers (resp, game);
 
-			beforeGameStartController.SetUI ();
+
 			firstDealerController.SetUI ();
 			robBankerController.SetUI ();
 			chooseBankerController.SetUI ();
@@ -279,6 +288,7 @@ public class GamePlayController : BaseMonoBehaviour {
 			beforeGameStartController.SetUI ();
 
 			SetReadyPlayers (resp, game);
+
 			waitForNextRoundController.SetUI();
 
 
@@ -286,6 +296,8 @@ public class GamePlayController : BaseMonoBehaviour {
 		} else {
 			throw new UnityException ("客户端无法处理该状态，state = " + state);
 		}
+		game.UpdateSeatUIs ();
+
 		isInited = true;
 		game.isInited = isInited;
 
@@ -311,8 +323,10 @@ public class GamePlayController : BaseMonoBehaviour {
 				player.ip = userInfo.ip;
 
 			}
-			if (resp.scores.ContainsKey(userId))
+			if (resp.scores.ContainsKey (userId))
 				player.score = resp.scores [userId];
+			else
+				player.score = 0;
 			seat.player = player;
 			player.seat = seat;
 			//player.isPlaying = true;
@@ -379,15 +393,19 @@ public class GamePlayController : BaseMonoBehaviour {
 		}
 	}
 
+	//TODO 需要在寻转座位之后进行，进行重构
 	private void SetBetPlayers(JoinRoomResponse resp, Game game) {
 		Dictionary<string, int> betPlayerDict = resp.betPlayers;
 		foreach (KeyValuePair<string, int> pair in betPlayerDict) {
 			string userId = pair.Key;
 			int bet = pair.Value;
+			//有问题，因为现在的位置不是最终的位置。
 			game.currentRound.playerBets [game.GetSeatIndex (userId)] = bet;
+			Debug.Log ("Set " + userId + " index = " + game.GetSeatIndex(userId) + " bet = " + bet);
 		}
 	}
 
+	//TODO 需要在寻转座位之后进行，进行重构
 	private void SetShowcardPlayers(JoinRoomResponse resp, Game game) {
 		Dictionary<string, string[]> cardsDict = resp.playerCards;
 		Dictionary<string, ShowCardResult> showcardPlayersDict = resp.showcardPlayers;
@@ -395,6 +413,7 @@ public class GamePlayController : BaseMonoBehaviour {
 			string userId = pair.Key;
 			ShowCardResult showcardResult = pair.Value;
 
+			//这是的位置不是用户最终的位置。
 			int index = game.GetSeatIndex (userId);
 			game.currentRound.cardSequenceArray [index] = showcardResult.cardSequences;
 			game.currentRound.niuArray [index] = showcardResult.niu;
@@ -410,8 +429,7 @@ public class GamePlayController : BaseMonoBehaviour {
 			}
 		}
 	}
-
-
+		
 	private void SetReadyPlayers(JoinRoomResponse resp, Game game) {
 		Dictionary<string, bool> readyPlayerDict = resp.readyPlayers;
 		foreach (KeyValuePair<string, bool> pair in readyPlayerDict) {

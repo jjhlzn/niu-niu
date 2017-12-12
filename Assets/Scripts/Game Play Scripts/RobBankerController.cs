@@ -42,7 +42,7 @@ public class RobBankerController : BaseStateController {
 	public new void Update ()  {
 		base.Update ();
 		if (gamePlayerController.state == GameState.RobBanker) {
-			if (stateTimeLeft <=  3.5f && !hasPlayCountDown) {
+			if (stateTimeLeft <= 3.5f && !hasPlayCountDown) {
 				hasPlayCountDown = true;
 				MusicController.instance.Play (AudioItem.CountDown);
 			}
@@ -54,6 +54,10 @@ public class RobBankerController : BaseStateController {
 
 			if (Player.Me.isPlaying && !Player.Me.hasRobBanker && !robRankerPanel.gameObject.activeInHierarchy) {
 				robRankerPanel.gameObject.SetActive (true);
+			}
+		} else {
+			if (robRankerPanel.gameObject.activeInHierarchy) {
+				robRankerPanel.gameObject.SetActive (false);
 			}
 		}
 			
@@ -149,6 +153,10 @@ public class RobBankerController : BaseStateController {
 			} else {
 				HandleOtherSeatRobBanker (seatIndex, pair.Value);
 			}
+		}
+			
+		if (game.state != GameState.RobBanker) {
+			game.HideIsRobImages ();
 		}
 	}
 }

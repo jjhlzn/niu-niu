@@ -17,6 +17,10 @@ public class GameOverPanel : MonoBehaviour
 		for (int i = 0; i < players.Count; i++) {
 			UserScorePanel panel = panels [i];
 			panel.nickNameLabel.text = players [i].nickname;
+			var player = players [i];
+			ImageLoader.Instance.Load (player.headimgurl, (Sprite sprite) => {
+				panel.userImage.sprite = sprite;
+			});
 			int score = resp.scores [players [i].userId];
 			panel.ScoreLabel.text = score > 0 ? "+" + score :  score + "";
 			if (score > 0) {
@@ -126,6 +130,9 @@ public class GameOverPanel : MonoBehaviour
 				break;
 			case "Win Or Lose Image Sign":
 				panel.winOrLoseImageSign = image;
+				break;
+			case "User Image":
+				panel.userImage = image;
 				break;
 			}
 		}

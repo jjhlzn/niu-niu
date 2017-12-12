@@ -33,6 +33,7 @@ public class Seat
 	public Vector3 bankerSignPosition;
 	public Image readyImage;
 	public Image leaveImage;
+	public Image waitImage;
 	public Text scoreLabel;
 	public Image chipImageForBet;
 	public Vector3 originChipImagePositionForBet;
@@ -67,7 +68,6 @@ public class Seat
 	public void UpdateUI(Game game) {
 		robingSeatBorderImage.gameObject.SetActive (false);
 
-		//Debug.Log ("Seat.UpdateUI called, seatNo = " + seatNo);
 		//有人的情况
 		if (player != null) {
 			//Debug.Log ("player userid = " + player.userId);
@@ -96,7 +96,7 @@ public class Seat
 
 			playerScoreLabel.text = Utils.GetNumberSring(player.score);
 			playerScoreLabel.gameObject.SetActive (true);
-			//Debug.Log (player.userId + ": player.isPlaying = " + player.isPlaying + ", player.isReady = " + player.isReady);
+
 			if (player.isPlaying && player.isReady 
 						&& (game.state == GameState.BeforeStart || game.state == GameState.WaitForNextRound)) {
 				readyImage.gameObject.SetActive (true);
@@ -105,13 +105,27 @@ public class Seat
 			}
 
 			if (player.isPlaying && player.isReady && game.state == GameState.WaitForNextRound) {
-				scoreLabel.gameObject.SetActive (true);
+				if (scoreLabel.transform.position.y == originScoreLabelPosition.y) {
+					scoreLabel.gameObject.SetActive (false);
+				} else {
+					scoreLabel.gameObject.SetActive (true);
+				}
+
 			} else {
 				scoreLabel.gameObject.SetActive (false);
 			}
-				
-			Debug.Log ("player.isDelegate = " + player.isDelegate);
+
 			leaveImage.gameObject.SetActive (player.isDelegate);
+			//什么情况是等待呢，游戏已经开始，刚刚坐下
+			if (game.state != GameState.BeforeStart && game.state != GameState.WaitForNextRound) {
+				if (!player.isPlaying && !player.isReady) {
+					waitImage.gameObject.SetActive (true);
+				} else {
+					waitImage.gameObject.SetActive (false);
+				}
+			} else {
+				waitImage.gameObject.SetActive (false);
+			}
 
 		} else {
 			//Debug.Log ("player is null");
@@ -132,6 +146,7 @@ public class Seat
 			}
 			readyImage.gameObject.SetActive (false);
 			leaveImage.gameObject.SetActive (false);
+			waitImage.gameObject.SetActive (false);
 		} 
 
 
@@ -143,8 +158,6 @@ public class Seat
 		for (int i = 0; i < cards.Length; i++) {
 			cards [i] = null;
 		}
-			
-		//scoreLabel.transform.position = originScoreLabelPosition;
 
 		chipImageForBet.gameObject.SetActive (false);
 		chipImageForBet.transform.position = originChipImagePositionForBet;

@@ -36,25 +36,10 @@ public class Connect : BaseMonoBehaviour {
 	}
 
 	void Update () {
-
-		/*
-		if (!gamePlayController.isConnected && timeLeft >= 0) {
-			timeLeft -= Time.deltaTime;
-		}
-
-		//Debug.Log ("gamePlayController.isConnected = " + gamePlayController.isConnected + ", timeLeft = " + timeLeft);
-		if (!gamePlayController.isConnected && timeLeft < 0 ) {
-			timeLeft = retryTimeInterval;
-			Debug.Log ("retry connect");
-			connect ();
-
-		}*/
-		//Debug.Log ("isConnected = " + gamePlayController.isConnected + ", timeLeft = " + timeLeft);
 	}
 		
 	public void connect() {
 		if (isConnecting) {
-			//Debug.Log ("isConnecting is true, return");
 			return;
 		}
 
@@ -73,7 +58,7 @@ public class Connect : BaseMonoBehaviour {
 				Debug.LogError(string.Format("Error: {0}", args[0].ToString()));
 				if (gamePlayController != null)
 					gamePlayController.ShowConnectFailMessage ();
-			});
+		});
 		socketManager.Socket.On (SocketIOEventTypes.Disconnect, (socket, packet, eventArgs) => {
 			Debug.Log("lose connection");
 			if (gamePlayController != null) {
@@ -89,7 +74,8 @@ public class Connect : BaseMonoBehaviour {
 			gamePlayController.SetGameSocket (gameSocket);
 			JoinRoom ();
 			gamePlayController.isConnected = true;
-
+			//连接成功，自动关闭错误消息
+			gamePlayController.ConnectFailConfirmClick();
 			isConnecting = false;
 		});
 		socketManager.Open();

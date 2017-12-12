@@ -105,6 +105,8 @@ public class Game
 		return -1;
 	}
 
+
+
 	public int GetSeatIndexThroughSeatNo(string seatNo) {
 		for (int i = 0; i < seats.Length; i++) {
 			if (seats [i].seatNo == seatNo) {
@@ -118,7 +120,6 @@ public class Game
 		get {
 			List<Player>  players = new List<Player>();
 			for (int i = 0; i < seats.Length; i++) {
-				//Debug.Log ("seat " + i + " hasPlyer ? " + seats[i].hasPlayer());
 
 				if (seats [i].hasPlayer () && seats[i].player.isPlaying) {
 					players.Add (seats [i].player);
@@ -240,6 +241,14 @@ public class Game
 		}
 	}
 
+	public void HideIsRobImages() {
+		foreach(Player player in PlayingPlayers) {
+			if (player.seat.isRobImage.gameObject.activeInHierarchy) {
+				player.seat.isRobImage.gameObject.SetActive (false);
+			}
+		}
+	}
+
 	public void UpdateGameInfos() {
 		this.roomLabel.text =  "房号 : " + this.roomNo;
 		if (state == GameState.BeforeStart)
@@ -252,6 +261,15 @@ public class Game
 		Debug.Log ("this.totalRoundCount = " + this.totalRoundCount);
 	}
 
+	public void UpdateSeatUIs() {
+		for (int i = 0; i < Game.SeatCount; i++) {
+			if (seats [i].hasPlayer ()) {
+				seats [i].UpdateUI (this);
+			}
+		}
+	}
+
+
 
 	public void FirstDeal() {
 		
@@ -259,6 +277,8 @@ public class Game
 			FirstDeal (PlayingPlayers[i]);
 		}
 	}
+
+
 
 	private void FirstDeal(Player player) {
 		player.seat.cards [0] = deck.Deal ();

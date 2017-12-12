@@ -250,7 +250,7 @@ public class BeforeGameStartController : BaseStateController {
 		}, JsonConvert.SerializeObject (seatReq));
 	}
 
-	//移动玩家
+	//移动玩家, 将位置seatIndex移动到0号位置
 	public void MoveSeats(int seatIndex) {
 		Debug.Log ("MoveSeats is called");
 
@@ -281,9 +281,9 @@ public class BeforeGameStartController : BaseStateController {
 		for (int i = 0; i < Game.SeatCount; i++) {
 			seats [i].seatNo = seatNos [destIndexes[i]];
 			seats [i].player = players [destIndexes[i]];
-			if (players [destIndexes [i]] != null ) {
+			if (players [destIndexes [i]] != null) {
 				players [destIndexes [i]].seat = seats [i];
-			} 
+			}
 		}
 			
 		this.fromPositions = destIndexes;
@@ -376,6 +376,7 @@ public class BeforeGameStartController : BaseStateController {
 				player.nickname = notify.nickname;
 				player.sex = notify.sex;
 				player.ip = notify.ip;
+				player.score = 0;
 				player.seat = seat;
 				seat.player = player;
 				seat.UpdateUI(gamePlayerController.game);
@@ -473,6 +474,19 @@ public class BeforeGameStartController : BaseStateController {
 		standUpButton.interactable = false;
 	}
 
+
+	public void SetUI_MoveSeat() {
+		if ( IsNeedMoveSeat() ) {
+			//first has player seat index
+			int seatIndex = getMoveSeatIndex(); 
+			MoveSeats (seatIndex);
+			isMoveSeat = false;
+			for (int i = 0; i < Game.SeatCount; i++) {
+				if (seats[i].hasPlayer())
+					seats [i].player.seat = seats [i];
+			}
+		}
+	}
 
 	public void SetUI() {
 		var game = gamePlayerController.game;

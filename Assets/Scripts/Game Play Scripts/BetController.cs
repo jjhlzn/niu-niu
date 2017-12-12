@@ -74,7 +74,7 @@ public class BetController : BaseStateController {
 				MusicController.instance.Play (AudioItem.BetTip);
 			}
 
-			if (stateTimeLeft <=  3.5f && !hasPlayCountDown) {
+			if (stateTimeLeft <= 3.5f && !hasPlayCountDown) {
 				hasPlayCountDown = true;
 				MusicController.instance.Play (AudioItem.CountDown);
 			}
@@ -84,12 +84,14 @@ public class BetController : BaseStateController {
 				stateTimeLeft -= Time.deltaTime;
 			}
 
-			if (  Player.Me.isPlaying
-				&& !Player.Me.hasBet
-				&& gamePlayController.game.currentRound.banker != gamePlayController.game.PlayingPlayers [0].userId) {
+			if (Player.Me.isPlaying
+			    && !Player.Me.hasBet
+			    && gamePlayController.game.currentRound.banker != gamePlayController.game.PlayingPlayers [0].userId) {
 				gamePlayController.game.ShowBetButtons ();
 			} 
-		} 
+		} else {
+			gamePlayController.game.HideBetButtons ();
+		}
 			
 		BetAnimation ();
 	}
@@ -180,7 +182,7 @@ public class BetController : BaseStateController {
 		var round = game.currentRound;
 		for (int i = 0; i < round.playerBets.Length; i++) {
 			if (round.playerBets [i] != -1) {
-				seats [i].chipLabelBackground.gameObject.SetActive (true);
+				seats[i].chipLabelBackground.gameObject.SetActive (true);
 				seats[i].chipImageForBet.gameObject.transform.position = seats [i].chipPositionWhenBet;
 				seats[i].chipImageForBet.gameObject.SetActive (true);
 				seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
