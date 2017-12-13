@@ -31,9 +31,16 @@ public class Experiment : MonoBehaviour {
 
 	private DateTime startTime = DateTime.Now;
 
+	[SerializeField]
+	private Image card2;
+	private Image[] turnCards;
+
+
+	private Sprite[] cardSprites;
+
 	// Use this for initialization
 	void Start () {
-		
+		cardSprites = Resources.LoadAll<Sprite>("sprites/cards1");
 		Setup ();
 		//MoveCard ();
 		startTime = DateTime.Now;
@@ -109,9 +116,46 @@ public class Experiment : MonoBehaviour {
 
 	}
 
-	public void MoveCard() {
+	public void TurnCards() {
+		for (int i = 0; i < turnCards.Length; i++) {
+			StartCoroutine(TurnCard(turnCards[i]));
+		}
+	}
+
+	public IEnumerator TurnCard(Image card) {
 		
-		ShowChips ();
+		Animator anim = card.GetComponent<Animator> ();
+		anim.Play ("Turn90_2");
+		yield return new WaitForSeconds (0.15f);
+		card.gameObject.SetActive (false);
+		card.sprite = cardSprites[UnityEngine.Random.Range(1, 40)];
+		card.gameObject.SetActive (true);
+		anim.Play ("Turn85_3");
+		yield return new WaitForSeconds (0.1f);
+
+	}
+
+	/*
+	public IEnumerator TurnCard2(Image card) {
+
+		Animator anim = card.GetComponent<Animator> ();
+		anim.Play ("Turn90_2");
+		yield return new WaitForSeconds (0.5f);
+		card.gameObject.SetActive (false);
+		card.sprite = cardSprites[UnityEngine.Random.Range(1, 40)];
+		card.gameObject.SetActive (true);
+		anim.Play ("Turn85_3");
+		yield return new WaitForSeconds (0.2f);
+
+	}
+*/
+
+
+	public void MoveCard() {
+
+		TurnCards ();
+		
+		//ShowChips ();
 
 		/*
 		text.DOText ("9000", 1, true, ScrambleMode.Numerals);  
@@ -119,19 +163,25 @@ public class Experiment : MonoBehaviour {
 		s.SetDelay (0.1f);
 		s.Append(readyImage.transform.DOScale (3f, 0.2f));
 		s.SetDelay (0.1f);
-		s.Append(readyImage.transform.DOScale (1f, 0.2f));
+		s.Append(readyImage.transform.DOScale (1f, 0.2f)); */
 
+
+		/*
 		for(int i = 0; i < cards.Length / 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				int index = i * 4 + j;
 		
-			    cards [index].transform.DOLocalMove (positions [index], 1000f, false)
+			    cards [index].transform.DOLocalMove (positions [index], 13000f, false)
 					.SetSpeedBased ()
 					.SetDelay (index * 0.07f);
 				if (i == 0)
 					cards [index].transform
-						.DOScale (1.3f, 0.04f)
-						.SetDelay (index * 0.07f + 0.02f);
+						.DOScale (1.7f, 0.04f)
+						.SetDelay (index * 0.07f + 0.02f)
+						.OnComplete (() => {
+
+
+					});
 			}
 		} */
 
@@ -143,6 +193,10 @@ public class Experiment : MonoBehaviour {
 		for(int i = 0; i < cards.Length; i++) {
 			cards [i].transform.position = card.transform.position;
 			cards [i].transform.localScale = new Vector3 (1.1f, 1.1f, 0);
+		}
+
+		for (int i = 0; i < turnCards.Length; i++) {
+			turnCards [i].sprite = cards [i].sprite;
 		}
 	}
 
@@ -185,8 +239,17 @@ public class Experiment : MonoBehaviour {
 
 				positions [i * 4 + j] = new Vector3 (x, y, 0);
 			}
+		}
 
 
+		turnCards = new Image[4];
+		for (int i = 0; i < 4; i++) {
+			turnCards[i] = Instantiate (card2);
+			turnCards [i].transform.position = card2.transform.position;
+			turnCards [i].transform.position = new Vector3(turnCards [i].transform.position.x + i * 1.5f, turnCards [i].transform.position.y);
+			turnCards [i].transform.SetParent (canvas.transform);
+			turnCards [i].transform.localScale = new Vector3 (1.8f, 1.8f, 0);
+			turnCards [i].gameObject.SetActive (true);
 		}
 
 	}

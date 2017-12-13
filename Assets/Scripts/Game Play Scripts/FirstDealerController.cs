@@ -78,10 +78,10 @@ public class FirstDealerController : BaseStateController {
 					t.OnComplete (() => {
 						MusicController.instance.Stop (AudioItem.Deal);
 						if (Player.Me.isPlaying) {
-							StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [0], round.playerCardsDict[Player.Me.userId] [0]));
-							StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [1], round.playerCardsDict[Player.Me.userId] [1]));
-							StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [2], round.playerCardsDict[Player.Me.userId] [2]));
-							StartCoroutine (TurnCardUp (playingPlayers [0].seat.cards [3], round.playerCardsDict[Player.Me.userId] [3]));
+							StartCoroutine (game.TurnCardUp (playingPlayers [0].seat.cards [0], round.playerCardsDict[Player.Me.userId] [0]));
+							StartCoroutine (game.TurnCardUp (playingPlayers [0].seat.cards [1], round.playerCardsDict[Player.Me.userId] [1]));
+							StartCoroutine (game.TurnCardUp (playingPlayers [0].seat.cards [2], round.playerCardsDict[Player.Me.userId] [2]));
+							StartCoroutine (game.TurnCardUp (playingPlayers [0].seat.cards [3], round.playerCardsDict[Player.Me.userId] [3]));
 						}
 						isFirstDealing = false;
 						isFirstDealDone = true;
@@ -97,17 +97,7 @@ public class FirstDealerController : BaseStateController {
 		}
 	}
 		
-	IEnumerator TurnCardUp(Image card, string cardValue) {
-		if (!string.IsNullOrEmpty (cardValue)) {
-			Animator anim = card.GetComponent<Animator> ();
-			anim.Play ("TurnUp");
-			yield return new WaitForSeconds (turnUpTime);
-			card.sprite = deck.GetCardFaceImage (cardValue);
-			anim.Play ("TurnBackNow2");
 
-		}
-	    yield return new WaitForSeconds (turnUpTime);
-	}
 		
 	IEnumerator GoToNextState() {
 		yield return new WaitForSeconds (.3f);

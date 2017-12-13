@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public delegate void Callback();
+
 public class Game
 {
 	public Vector3 originBankerSignPosition;
@@ -292,6 +294,26 @@ public class Game
 
 		player.seat.cards [3] = deck.Deal ();
 		player.seat.cards [3].sprite = deck.cardBack;
+	}
+
+	public IEnumerator TurnCardUp(Image card, string cardValue, Callback handler = null) {
+		if (!string.IsNullOrEmpty (cardValue)) {
+			Animator anim = card.GetComponent<Animator> ();
+			anim.Play ("Turn90_2");
+			yield return new WaitForSeconds (0.15f);
+			card.gameObject.SetActive (false);
+			card.sprite = deck.GetCardFaceImage (cardValue);
+			card.gameObject.SetActive (true);
+			anim.Play ("Turn85_3");
+			yield return new WaitForSeconds (0.1f);
+
+		} else {
+			yield return new WaitForSeconds (0.25f);
+		}
+		if (handler != null) {
+			yield return new WaitForSeconds (0.2f);
+			handler ();
+		}
 	}
 
 }

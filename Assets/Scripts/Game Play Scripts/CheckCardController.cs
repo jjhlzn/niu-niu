@@ -151,7 +151,7 @@ public class CheckCardController : BaseStateController {
 			for (int i = 0; i < isTurnCardArray.Length; i++) {
 				if (isTurnCardArray [i]) {
 					isTurnCardArray [i] = false;
-					StartCoroutine (TurnUserCardsUp (i));
+					TurnUserCardsUp (i);
 				}
 			}
 		}
@@ -164,8 +164,24 @@ public class CheckCardController : BaseStateController {
 	}
 
 
+	IEnumerator TurnCardUp2(Image card, string cardValue) {
+		if (!string.IsNullOrEmpty (cardValue)) {
+			Animator anim = card.GetComponent<Animator> ();
+			anim.Play ("Turn90");
+			yield return new WaitForSeconds (0.3f);
+			card.gameObject.SetActive (false);
+			card.sprite = deck.GetCardFaceImage (cardValue);
+			card.gameObject.SetActive (true);
+			anim.Play ("Turn85_2");
+			yield return new WaitForSeconds (0.2f);
 
-	IEnumerator TurnUserCardsUp(int seatIndex) {
+			//anim.Play ("TurnBackNow2");
+
+		}
+		yield return new WaitForSeconds (FirstDealerController.turnUpTime);
+	}
+
+	void TurnUserCardsUp(int seatIndex) {
 		isTurnCardArray [seatIndex] = false;
 
 		var game = gamePlayController.game;
@@ -173,26 +189,45 @@ public class CheckCardController : BaseStateController {
 		string[] cardPoints = round.playerCardsDict [game.seats [seatIndex].player.userId];
 		if (seats [seatIndex].player.userId == Player.Me.userId) {
 			Image card = Player.Me.cards[4];
+			//yield return TurnCardUp2 (card, cardPoints [4]);
+			/*
 			Animator anim = card.GetComponent<Animator> ();
 			anim.Play ("TurnUp");
 
 			yield return new WaitForSeconds (FirstDealerController.turnUpTime);
 			card.sprite = deck.GetCardFaceImage (cardPoints [4]); 
 			anim.Play ("TurnBackNow2");
-			yield return new WaitForSeconds (.2f);
+			yield return new WaitForSeconds (.2f); */
+			StartCoroutine( game.TurnCardUp (card, cardPoints [4], () => {
+				MoveCards (seats [seatIndex].player);
+			}) );
 
-			MoveCards (seats [seatIndex].player);
 
 		} else {
-
 			Image[] cards = seats [seatIndex].player.cards;
 			for (int i = 0; i < 5; i++) {
 				Image card = cards [i];
+				if (i == 4) {
+					StartCoroutine( game.TurnCardUp (card, cardPoints [i], () => {
+						MoveCards (seats [seatIndex].player);
+					}) );
+				} else {
+					StartCoroutine( game.TurnCardUp (card, cardPoints [i]) );
+				}
+
+
+			}
+			/*
+			Image[] cards = seats [seatIndex].player.cards;
+			for (int i = 0; i < 5; i++) {
+				Image card = cards [i];
+
 				Animator anim = card.GetComponent<Animator> ();
-				anim.Play ("TurnUp");
+				anim.Play ("Turn90");
+
 			}
 
-			yield return new WaitForSeconds (FirstDealerController.turnUpTime);
+			yield return new WaitForSeconds (0.3f);
 
 			for (int i = 0; i < 5; i++) {
 				Image card = cards [i];
@@ -205,8 +240,8 @@ public class CheckCardController : BaseStateController {
 				anim.Play ("TurnBackNow2");
 			}
 
-			yield return new WaitForSeconds (.2f);
-			MoveCards (seats [seatIndex].player);
+			//yield return new WaitForSeconds (.2f); */
+
 		}
 	}
 
@@ -230,10 +265,10 @@ public class CheckCardController : BaseStateController {
 				targetV = new Vector3 (targetV.x + interval, targetV.y, targetV.z);
 			} 
 				
-			Tween t = cards [j].transform.DOLocalMove (targetV, 0.25f);
-
 			int cardIndex = j;
 			cards [cardIndex].transform.SetSiblingIndex (index * 5 + sequences [cardIndex]);
+			Tween t = cards [j].transform.DOLocalMove (targetV, 0.25f);
+
 			if (j == 4) {
 				t.OnComplete (() => {
 					for(int m = 0; m < 5; m++) {
@@ -241,7 +276,6 @@ public class CheckCardController : BaseStateController {
 					}
 
 					MusicController.instance.Play ("niu" + round.niuArray [index], player.sex);
-
 
 					var game = gamePlayController.game;
 					seats [index].niuImage.sprite = game.getNiuSprite (game.currentRound.niuArray [index]);
@@ -284,7 +318,7 @@ public class CheckCardController : BaseStateController {
 		Player.Me.hasShowCard = true;
 		MusicController.instance.Play (AudioItem.ShowCardTip, Player.Me.sex);
 		//user1 亮牌
-		StartCoroutine(TurnUserCardsUp(0));
+		TurnUserCardsUp(0);
 	}
 
 	private void ShowCard() {
