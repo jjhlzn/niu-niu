@@ -400,8 +400,8 @@ public class GamePlayController : BaseMonoBehaviour {
 			string userId = pair.Key;
 			int bet = pair.Value;
 			//有问题，因为现在的位置不是最终的位置。
-			game.currentRound.playerBets [game.GetSeatIndex (userId)] = bet;
-			Debug.Log ("Set " + userId + " index = " + game.GetSeatIndex(userId) + " bet = " + bet);
+			game.currentRound.playerBets [userId] = bet;
+			//Debug.Log ("Set " + userId + " index = " + game.GetSeatIndex(userId) + " bet = " + bet);
 		}
 	}
 
@@ -415,9 +415,9 @@ public class GamePlayController : BaseMonoBehaviour {
 
 			//这是的位置不是用户最终的位置。
 			int index = game.GetSeatIndex (userId);
-			game.currentRound.cardSequenceArray [index] = showcardResult.cardSequences;
-			game.currentRound.niuArray [index] = showcardResult.niu;
-			game.currentRound.multipleArray [index] = showcardResult.multiple;
+			game.currentRound.cardSequenceArray [userId] = showcardResult.cardSequences;
+			game.currentRound.niuArray [userId] = showcardResult.niu;
+			game.currentRound.multipleArray [userId] = showcardResult.multiple;
 
 			foreach (KeyValuePair<string, string[]> kv in cardsDict) {
 				string uid = kv.Key;

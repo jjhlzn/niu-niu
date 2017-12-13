@@ -93,7 +93,7 @@ public class CheckCardController : BaseStateController {
 		var game = gamePlayController.game;
 		var round = game.currentRound;
 		int seatIndex = game.GetSeatIndex (Player.Me.userId);
-		if (seatIndex != -1 && round.cardSequenceArray[seatIndex] != null) {
+		if (seatIndex != -1 && round.cardSequenceArray.ContainsKey(Player.Me.userId)) {
 			return true;
 		}
 		return false;
@@ -112,16 +112,16 @@ public class CheckCardController : BaseStateController {
 		for (int i = 0; i < players.Count; i++) {
 			var player = players [i];
 			int seatIndex = player.seat.seatIndex;
-			if (round.cardSequenceArray [seatIndex] != null) {
+			if (round.cardSequenceArray.ContainsKey(player.userId)) {
 				playerShowCardCompleted [seatIndex] = true;
 				Vector3[] showcardPositions = player.seat.showCardPositions;
-				int[] sequences = round.cardSequenceArray [seatIndex];
+				int[] sequences = round.cardSequenceArray [player.userId];
 				for(int j = 0;  j < 5; j++) {
 					player.cards[j].sprite = deck.GetCardFaceImage(round.playerCardsDict [player.userId][j]); 
 					Vector3 targetV = showcardPositions [sequences[j]];
 					//有牛的话，第4张牌和第6张牌要有点距离
 					float interval = 0f;
-					if (round.HasNiu (seatIndex) && sequences [j] >= 3) {
+					if (round.HasNiu (player.userId) && sequences [j] >= 3) {
 						interval = 0.3f;
 						if (seatIndex != 0) {
 							interval = 0.22f;
@@ -132,10 +132,10 @@ public class CheckCardController : BaseStateController {
 					player.cards[j].transform.SetSiblingIndex (seatIndex * 5 + sequences [j]);
 				}
 
-				player.seat.niuImage.sprite = game.getNiuSprite (game.currentRound.niuArray [seatIndex]);
+				player.seat.niuImage.sprite = game.getNiuSprite (game.currentRound.niuArray [player.userId]);
 				player.seat.niuImage.gameObject.SetActive (true);
-				if (game.currentRound.niuArray [seatIndex] > 6) {
-					player.seat.mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [seatIndex]);
+				if (game.currentRound.niuArray [player.userId] > 6) {
+					player.seat.mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [player.userId]);
 					player.seat.mutipleImage.gameObject.SetActive (true);
 				}
 
@@ -251,13 +251,13 @@ public class CheckCardController : BaseStateController {
 		Vector3[] showcardPositions = player.seat.showCardPositions;
 
 		int index = player.seat.seatIndex;
-		int[] sequences = gamePlayController.game.currentRound.cardSequenceArray [index];
+		int[] sequences = gamePlayController.game.currentRound.cardSequenceArray [player.userId];
 	
 
 		for (int j = 0; j < 5; j++) {
 			Vector3 targetV = showcardPositions [sequences [j]];
 			//有牛的话，第4张牌和第6张牌要有点距离
-			if (game.currentRound.HasNiu (index) && sequences [j] >= 3) {
+			if (game.currentRound.HasNiu (player.userId) && sequences [j] >= 3) {
 				int interval = 30;
 				if (player.seat.seatIndex != 0) {
 					interval = 22;	
@@ -275,15 +275,15 @@ public class CheckCardController : BaseStateController {
 						cards [m].transform.SetSiblingIndex (index * 5 + sequences [m]);
 					}
 
-					MusicController.instance.Play ("niu" + round.niuArray [index], player.sex);
+					MusicController.instance.Play ("niu" + round.niuArray [player.userId], player.sex);
 
 					var game = gamePlayController.game;
-					seats [index].niuImage.sprite = game.getNiuSprite (game.currentRound.niuArray [index]);
-					seats [index].niuImage.gameObject.SetActive (true);
+					player.seat.niuImage.sprite = game.getNiuSprite (game.currentRound.niuArray [player.userId]);
+					player.seat.niuImage.gameObject.SetActive (true);
 
-					if (game.currentRound.niuArray [index] > 6) {
-						seats [index].mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [index]);
-						seats [index].mutipleImage.gameObject.SetActive (true);
+					if (game.currentRound.niuArray [player.userId] > 6) {
+						player.seat.mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [player.userId]);
+						player.seat.mutipleImage.gameObject.SetActive (true);
 					}
 					Debug.Log ("seat " + index + " show card anim completed");
 					StartCoroutine (SetPlayerShowCardCompleted (index));
@@ -311,9 +311,9 @@ public class CheckCardController : BaseStateController {
 		checkCardPanel.gameObject.SetActive(false);
 
 		Round round = gamePlayController.game.currentRound;
-		round.niuArray[0] = niu;
-		round.cardSequenceArray[0] = cardSequences;
-		round.multipleArray[0] = mutiple;
+		round.niuArray[seats[0].player.userId] = niu;
+		round.cardSequenceArray[seats[0].player.userId] = cardSequences;
+		round.multipleArray[seats[0].player.userId] = mutiple;
 
 		Player.Me.hasShowCard = true;
 		MusicController.instance.Play (AudioItem.ShowCardTip, Player.Me.sex);
@@ -346,9 +346,9 @@ public class CheckCardController : BaseStateController {
 		Game game = gamePlayController.game;
 		int seatIndex = game.GetSeatIndex (notify.userId);
 		game.currentRound.playerCardsDict [notify.userId] = notify.cards;
-		game.currentRound.cardSequenceArray [seatIndex] = notify.cardSequences;
-		game.currentRound.multipleArray [seatIndex] = notify.multiple;
-		game.currentRound.niuArray [seatIndex] = notify.niu;
+		game.currentRound.cardSequenceArray [notify.userId] = notify.cardSequences;
+		game.currentRound.multipleArray [notify.userId] = notify.multiple;
+		game.currentRound.niuArray [notify.userId] = notify.niu;
 
 		if (seatIndex == 0) {
 			HandleUser0ShowCardNotify (notify.niu, notify.cardSequences, notify.multiple);

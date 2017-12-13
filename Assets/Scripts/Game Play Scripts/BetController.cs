@@ -104,7 +104,7 @@ public class BetController : BaseStateController {
 				isMoveChipArray [i] = false;
 
 				Seat seat = seats [i];
-				int bet = gamePlayController.game.currentRound.playerBets [i];
+				int bet = gamePlayController.game.currentRound.playerBets [seat.player.userId];
 				if (!seats[i].chipImageForBet.gameObject.activeInHierarchy)
 					seats[i].chipImageForBet.gameObject.SetActive (true);
 
@@ -130,7 +130,7 @@ public class BetController : BaseStateController {
 	private void HandleUser0BetNotify(int bet) {
 		gamePlayController.game.HideBetButtons ();
 		Player.Me.hasBet = true;
-		gamePlayController.game.currentRound.playerBets[0] = bet;
+		gamePlayController.game.currentRound.playerBets[seats[0].player.userId] = bet;
 		isMoveChipArray[0] = true;
 		MusicController.instance.Play (AudioItem.Bet, seats [0].player.sex);
 	}
@@ -170,7 +170,7 @@ public class BetController : BaseStateController {
 		if (index == 0) {
 			HandleUser0BetNotify (notify.bet);
 		} else {
-			game.currentRound.playerBets [index] = notify.bet;
+			game.currentRound.playerBets [notify.userId] = notify.bet;
 			isMoveChipArray [index] = true;
 			MusicController.instance.Play (AudioItem.Bet, seats [index].player.sex);
 		}
@@ -180,19 +180,20 @@ public class BetController : BaseStateController {
 	public void SetUI() {
 		var game = gamePlayController.game;
 		var round = game.currentRound;
-		for (int i = 0; i < round.playerBets.Length; i++) {
-			if (round.playerBets [i] != -1) {
-				seats[i].chipLabelBackground.gameObject.SetActive (true);
-				seats[i].chipImageForBet.gameObject.transform.position = seats [i].chipPositionWhenBet;
-				seats[i].chipImageForBet.gameObject.SetActive (true);
-				seats[i].chipCountLabel.text = gamePlayController.game.currentRound.playerBets[i] + "";
-				seats[i].chipCountLabel.gameObject.SetActive (true);
-				isBetCompletedArray [i] = true;
 
-				if (Player.Me.isPlaying && Player.Me.seat.seatIndex == i) {
-					Player.Me.hasBet = true;
-				}
-			} 
+		foreach (KeyValuePair<string, int> pair in round.playerBets) {
+			string userId = pair.Key;
+			int seatIndex = game.GetSeatIndex (userId);
+			seats[seatIndex].chipLabelBackground.gameObject.SetActive (true);
+			seats[seatIndex].chipImageForBet.gameObject.transform.position = seats [seatIndex].chipPositionWhenBet;
+			seats[seatIndex].chipImageForBet.gameObject.SetActive (true);
+			seats[seatIndex].chipCountLabel.text = pair.Value + "";
+			seats[seatIndex].chipCountLabel.gameObject.SetActive (true);
+			isBetCompletedArray [seatIndex] = true;
+
+			if (Player.Me.isPlaying && Player.Me.seat.seatIndex == seatIndex) {
+				Player.Me.hasBet = true;
+			}
 		}
 	}
 }
