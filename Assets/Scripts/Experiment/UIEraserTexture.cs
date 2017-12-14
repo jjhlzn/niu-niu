@@ -212,11 +212,11 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 
 	private bool CheckIsEnough() {
 		//Debug.Log ("rightConnerCount = " + (float) this.rightConnerCount / this.totalConnerCount);
-		if ((float)rightConnerCount / totalConnerCount > 0.53f)
+		if ((float)rightConnerCount / totalConnerCount > 0.56f)
 			return true;
-		else if ((float)leftConnerCount / totalConnerCount > 0.53f)
+		else if ((float)leftConnerCount / totalConnerCount > 0.56f)
 			return true;
-		else if ((float)totalCuoCount / totalCount > 0.40f) {
+		else if ((float)totalCuoCount / totalCount > 0.28f) {
 			return true;
 		}
 		return false;

@@ -261,7 +261,7 @@ public class CheckCardController : BaseStateController {
 
 	public void CuoCardClick() {
 		//eraser.Reset ();
-		//fifthCard.sprite = deck.GetCardFaceImage (game.currentRound.playerCardsDict [Player.Me.userId] [4]);
+		fifthCard.sprite = deck.GetCardFaceImageForCuoPai (game.currentRound.playerCardsDict [Player.Me.userId] [4]);
 		cuoCardPanel.SetActive(true);
 		if (eraser != null)
 			eraser.ReadyForErase = true;
@@ -284,6 +284,8 @@ public class CheckCardController : BaseStateController {
 		MusicController.instance.Play (AudioItem.ShowCardTip, Player.Me.sex);
 		//user1 亮牌
 		TurnUserCardsUp(0);
+		if (eraser != null)
+			eraser.Reset ();
 	}
 
 	public void ShowCardForChuoPai() {
@@ -293,7 +295,7 @@ public class CheckCardController : BaseStateController {
 	public IEnumerator ShowCardForChuoPai2() {
 		yield return new WaitForSeconds (.3f);
 		ShowCard ();
-		eraser.Reset ();
+
 	}
 
 	private void ShowCard() {
@@ -308,7 +310,6 @@ public class CheckCardController : BaseStateController {
 		};
 
 		gameSocket.Emit (Messages.ShowCard, JsonConvert.SerializeObject (request));
-
 	}
 
 	public void HandleResponse(GoToCheckCardNotify notify) {
