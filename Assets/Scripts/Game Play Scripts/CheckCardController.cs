@@ -12,23 +12,27 @@ public class CheckCardController : BaseStateController {
 
 	[SerializeField] 
 	private GamePlayController gamePlayController;
-
 	[SerializeField]
 	private SecondDealController secondDealController;
 
 	[SerializeField]
 	private GameObject checkCardPanel;
-
+	[SerializeField]
+	private GameObject cuoCardPanel;
+	[SerializeField]
+	private Image fifthCard;
 
 	private bool[] playerShowCardCompleted;
 	private bool[] isTurnCardArray;
 	private float stateTimeLeft; //这状态停留的时间
 	private bool hasPlayCountDown;
+	public UIEraserTexture eraser;
 
 	public void Awake() {
 		isTurnCardArray = new bool[Game.SeatCount];
 		playerShowCardCompleted = new bool[Game.SeatCount];
 	}
+
 
 	public override void Reset() {
 	    // hasShowCard = false;
@@ -65,8 +69,7 @@ public class CheckCardController : BaseStateController {
 	{
 		return gamePlayController;
 	}
-
-	// Update is called once per frame
+		
 	public new void Update ()  {
 		base.Update ();
 		if (gamePlayController.state == GameState.CheckCard) {
@@ -138,11 +141,8 @@ public class CheckCardController : BaseStateController {
 					player.seat.mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [player.userId]);
 					player.seat.mutipleImage.gameObject.SetActive (true);
 				}
-
 			}
 		}
-
-
 	}
 
 	private void CheckCardAnimation() {
@@ -155,7 +155,6 @@ public class CheckCardController : BaseStateController {
 				}
 			}
 		}
-
 	}
 
 	IEnumerator SetPlayerShowCardCompleted(int index) {
@@ -174,9 +173,6 @@ public class CheckCardController : BaseStateController {
 			card.gameObject.SetActive (true);
 			anim.Play ("Turn85_2");
 			yield return new WaitForSeconds (0.2f);
-
-			//anim.Play ("TurnBackNow2");
-
 		}
 		yield return new WaitForSeconds (FirstDealerController.turnUpTime);
 	}
@@ -189,15 +185,6 @@ public class CheckCardController : BaseStateController {
 		string[] cardPoints = round.playerCardsDict [game.seats [seatIndex].player.userId];
 		if (seats [seatIndex].player.userId == Player.Me.userId) {
 			Image card = Player.Me.cards[4];
-			//yield return TurnCardUp2 (card, cardPoints [4]);
-			/*
-			Animator anim = card.GetComponent<Animator> ();
-			anim.Play ("TurnUp");
-
-			yield return new WaitForSeconds (FirstDealerController.turnUpTime);
-			card.sprite = deck.GetCardFaceImage (cardPoints [4]); 
-			anim.Play ("TurnBackNow2");
-			yield return new WaitForSeconds (.2f); */
 			StartCoroutine( game.TurnCardUp (card, cardPoints [4], () => {
 				MoveCards (seats [seatIndex].player);
 			}) );
@@ -214,34 +201,7 @@ public class CheckCardController : BaseStateController {
 				} else {
 					StartCoroutine( game.TurnCardUp (card, cardPoints [i]) );
 				}
-
-
 			}
-			/*
-			Image[] cards = seats [seatIndex].player.cards;
-			for (int i = 0; i < 5; i++) {
-				Image card = cards [i];
-
-				Animator anim = card.GetComponent<Animator> ();
-				anim.Play ("Turn90");
-
-			}
-
-			yield return new WaitForSeconds (0.3f);
-
-			for (int i = 0; i < 5; i++) {
-				Image card = cards [i];
-				card.sprite = deck.GetCardFaceImage (cardPoints [i]); 
-			}
-
-			for (int i = 0; i < 5; i++) {
-				Image card = cards [i];
-				Animator anim = card.GetComponent<Animator> ();
-				anim.Play ("TurnBackNow2");
-			}
-
-			//yield return new WaitForSeconds (.2f); */
-
 		}
 	}
 
@@ -300,7 +260,11 @@ public class CheckCardController : BaseStateController {
 	}
 
 	public void CuoCardClick() {
-		ShowCard ();
+		//eraser.Reset ();
+		//fifthCard.sprite = deck.GetCardFaceImage (game.currentRound.playerCardsDict [Player.Me.userId] [4]);
+		cuoCardPanel.SetActive(true);
+		if (eraser != null)
+			eraser.ReadyForErase = true;
 	}
 
 	public void ShowCardClick() {
@@ -308,6 +272,7 @@ public class CheckCardController : BaseStateController {
 	}
 
 	private void HandleUser0ShowCardNotify(int niu, int[] cardSequences, int mutiple) {
+		cuoCardPanel.gameObject.SetActive (false);
 		checkCardPanel.gameObject.SetActive(false);
 
 		Round round = gamePlayController.game.currentRound;
@@ -319,6 +284,16 @@ public class CheckCardController : BaseStateController {
 		MusicController.instance.Play (AudioItem.ShowCardTip, Player.Me.sex);
 		//user1 亮牌
 		TurnUserCardsUp(0);
+	}
+
+	public void ShowCardForChuoPai() {
+		StartCoroutine( ShowCardForChuoPai2 () );
+	}
+
+	public IEnumerator ShowCardForChuoPai2() {
+		yield return new WaitForSeconds (.3f);
+		ShowCard ();
+		eraser.Reset ();
 	}
 
 	private void ShowCard() {
@@ -333,6 +308,7 @@ public class CheckCardController : BaseStateController {
 		};
 
 		gameSocket.Emit (Messages.ShowCard, JsonConvert.SerializeObject (request));
+
 	}
 
 	public void HandleResponse(GoToCheckCardNotify notify) {

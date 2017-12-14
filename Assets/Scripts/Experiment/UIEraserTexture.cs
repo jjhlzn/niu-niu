@@ -7,7 +7,10 @@ using System;
 
 public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler{  
 	[SerializeField]
-	public  RawImage image;  
+	private  RawImage image;  
+
+	[SerializeField]
+	private CheckCardController checkCardController;
 
 	public  int brushScale = 20;  
 	bool isMove = false;  
@@ -23,6 +26,7 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 
 	private Queue<Vector2> queue;
 	private List<Vector2> positions;
+	public bool ReadyForErase = false;
 
 	void Awake(){ 
 		//Time.timeScale = 0.0001f;
@@ -32,36 +36,48 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 	}  
 
 	void Start () {  
-		texRender = new Texture2D(image.mainTexture.width, image.mainTexture.height,TextureFormat.RGBA32,true);  
-		Reset ();  
+		texRender = new Texture2D(image.mainTexture.width, image.mainTexture.height,TextureFormat.RGBA32,true);
+		ReadyForErase = true;
+		Debug.Log ("checkCardController != null : " + (checkCardController != null));
+		if (checkCardController != null) 
+			checkCardController.eraser = this;
+		Init ();  
 	}  
 
 	public void OnPointerEnter (PointerEventData data) {
+		if (!this.image.gameObject.activeInHierarchy || !ReadyForErase)
+			return;
 		//Debug.Log ("OnPointerEnter..."+data.position);  
 		start = data.position;  
 		isMove = true;  
 	}
 
 	public void OnPointerExit (PointerEventData data) {
+		if (!this.image.gameObject.activeInHierarchy  || ReadyForErase)
+			return;
 		isMove = false;  
 		//Debug.Log ("OnPointerUp..."+data.position);   
 		AddPoints (start, data.position);
 	}
 		
 	public void OnPointerDown(PointerEventData data){  
+		if (!this.image.gameObject.activeInHierarchy  || ReadyForErase)
+			return;
 		//Debug.Log ("OnPointerDown..."+data.position);  
 		start = data.position;  
 		isMove = true;  
 	}  
 
 	public void OnPointerUp(PointerEventData data){  
+		if (!this.image.gameObject.activeInHierarchy  || ReadyForErase)
+			return;
 		isMove = false;  
 		//Debug.Log ("OnPointerUp..."+data.position);  
 		AddPoints (start, data.position);
 	}
 
 	private int GetPointCount(float distance) {
-		Debug.Log ("distance = " + distance);
+		//Debug.Log ("distance = " + distance);
 		if (distance > 400) {
 			return 100;
 		} else if (distance > 200) {
@@ -97,12 +113,6 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 			}
 		}
 		return true;
-
-		/*
-		Vector2 a = ConvertSceneToUI (position);
-		int x = (int)(a.x + texRender.width / 2);
-		int y = (int)(a.y + texRender.height /2); */
-
 	}
 
 	public void AddPoints(Vector3 start, Vector3 end) {
@@ -121,7 +131,6 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 	}
 		
 	void Update(){  
-		
 		if (isMove) {
 			AddPoints (start, Input.mousePosition);
 			start  = Input.mousePosition;
@@ -155,8 +164,8 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 	private int leftConnerX= 0, leftConnerY = 0;
 	private int rightConnerCount = 0;
 	private int leftConnerCount = 0;
-
 	private int totalCuoCount = 1;
+
 	private int totalCount = 1;
 	private int totalConnerCount = 1;
 	void Draw(Rect rect){  
@@ -188,13 +197,32 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 
 		image.material.SetTexture ("_RendTex",texRender);  
 
-		if (CheckIsEnough ()) {
+		if (CheckIsEnough () && !hasShowCard) {
+			hasShowCard = true;
 			this.image.gameObject.SetActive (false);
+			if (checkCardController != null) {
+				Debug.Log ("invoke checkCardController.ShowCardForChuoPai");
+				checkCardController.ShowCardForChuoPai ();
+			}
+
 		}
 	}  
 
+	private bool hasShowCard = false;
 
-	void Reset(){  
+	private bool CheckIsEnough() {
+		//Debug.Log ("rightConnerCount = " + (float) this.rightConnerCount / this.totalConnerCount);
+		if ((float)rightConnerCount / totalConnerCount > 0.53f)
+			return true;
+		else if ((float)leftConnerCount / totalConnerCount > 0.53f)
+			return true;
+		else if ((float)totalCuoCount / totalCount > 0.40f) {
+			return true;
+		}
+		return false;
+	}
+
+	void Init(){  
 		Debug.Log ("texRender.width = " + texRender.width);
 		Debug.Log ("texRender.height = " + texRender.height);
 		matrix = new bool[texRender.width ][];
@@ -228,21 +256,35 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 
 		leftConnerX =  (int)(texRender.width * 0.2);
 		leftConnerY = (int)(texRender.height * 0.75); 
-
 	}  
 
+	public void Reset(){  
+		//yield return new WaitForSeconds (1f);
+	    rightConnerCount = 0;
+		leftConnerCount = 0;
+		totalCuoCount = 0;
+		ReadyForErase = false;
 
-	private bool CheckIsEnough() {
-		//Debug.Log ("rightConnerCount = " + (float) this.rightConnerCount / this.totalConnerCount);
-		if ((float)rightConnerCount / totalConnerCount > 0.53f)
-			return true;
-		else if ((float)leftConnerCount / totalConnerCount > 0.53f)
-			return true;
-		else if ((float)totalCuoCount / totalCount > 0.60f) {
-			return true;
-		}
-		return false;
+		isMove = false;
+		queue.Clear ();
+
+		hasShowCard = false;
+
+		image.gameObject.SetActive(true);
+		for (int i = 0; i < texRender.width; i++) {  
+			for (int j = 0; j < texRender.height; j++) {  
+				Color color = texRender.GetPixel (i,j);  
+				color.a = 1;  
+				texRender.SetPixel (i,j,color);  
+				matrix [i] [j] = false;
+			}  
+		}  
+		texRender.Apply ();  
+		image.material.SetTexture ("_RendTex",texRender); 
 	}
+
+
+
 		
 
 }  
