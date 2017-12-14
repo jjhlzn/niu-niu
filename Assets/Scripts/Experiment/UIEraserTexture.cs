@@ -61,11 +61,17 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 	}
 
 	private int GetPointCount(float distance) {
+		Debug.Log ("distance = " + distance);
 		if (distance > 400) {
 			return 100;
 		} else if (distance > 200) {
 			return 50;
-		} else if (distance < 10) {
+		} else if (distance > 100) {
+			return 20;
+		} else if (distance > 50) {
+			return 10;
+		} 
+		else if (distance < 10) {
 			return 4;
 		} else if (distance < 1) {
 			return 1;
@@ -81,21 +87,15 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 			for (int y = (int)rect.yMin; y < (int)rect.yMax; y++) {
 				if (x< 0 || x >= matrix.Length) {
 					return true;
-					//Debug.LogError ("x is too big: x = " + x + ", texRender.width = " + texRender.width );
 				}
 				if (y < 0 || y >= texRender.height ) {
 					return true;
-					//Debug.LogError ("y is too big: y = " + y + ", texRender.height = " + texRender.height );
 				}
-				try {
-					if ( !matrix[x][y] )
-						return false;
-				}catch(Exception ex) {
-					//return true;
-				}
+
+				if ( !matrix[x][y] )
+					return false;
 			}
 		}
-
 		return true;
 
 		/*
