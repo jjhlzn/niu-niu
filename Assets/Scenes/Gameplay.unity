@@ -137,7 +137,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 7661946}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 80, z: 0}
+  m_LocalPosition: {x: 0, y: 64, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1080061388}
@@ -145,8 +145,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 80}
-  m_SizeDelta: {x: 337, y: 473}
+  m_AnchoredPosition: {x: 0, y: 64}
+  m_SizeDelta: {x: 375, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7661948
 MonoBehaviour:
@@ -167,7 +167,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Texture: {fileID: 2800000, guid: 88ae7e3c1905b401e931823b8639e6fa, type: 3}
+  m_Texture: {fileID: 2800000, guid: a405118afafc44dbaa186228fff10dd3, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -504,6 +504,22 @@ Prefab:
         type: 2}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114320951562578110, guid: 947333f4b5c7e4d28a6f108d5e9c02b1,
+        type: 2}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300108, guid: e3c7e73cf999b4f03b7092ee464dd4c6,
+        type: 3}
+    - target: {fileID: 224235247914929102, guid: 947333f4b5c7e4d28a6f108d5e9c02b1,
+        type: 2}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224235247914929102, guid: 947333f4b5c7e4d28a6f108d5e9c02b1,
+        type: 2}
+      propertyPath: m_LocalScale.y
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 947333f4b5c7e4d28a6f108d5e9c02b1, type: 2}
@@ -7044,7 +7060,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 778113817}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 80, z: 0}
+  m_LocalPosition: {x: 0, y: 64, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1080061388}
@@ -7052,8 +7068,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 80}
-  m_SizeDelta: {x: 349, y: 489}
+  m_AnchoredPosition: {x: 0, y: 64}
+  m_SizeDelta: {x: 375, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &778113819
 MonoBehaviour:

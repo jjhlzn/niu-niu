@@ -615,7 +615,7 @@ public class SetupCardGame : BaseStateController {
 		deck = new Deck ();
 		List<Image> cards = new List<Image> ();
 		//deck.cardFaceSprites = Resources.LoadAll<Sprite>("sprites/mobile");
-		deck.cardFaceSprites = Resources.LoadAll<Sprite>("sprites/cards1");
+		deck.cardFaceSprites = Resources.LoadAll<Sprite>("sprites/cards2");
 		deck.cardFaceSpritesForCuoPai  = Resources.LoadAll<Sprite>("sprites/cards");
 
 		for (int i = 0; i < cardCount; i++) {

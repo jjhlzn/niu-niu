@@ -8,7 +8,7 @@ public class CompareCardController : BaseStateController {
 	private static float ChipShowInterval = 0.002f;
 	public static float Move_Chip_Disapear_Interval = 0.2f;
 	public static float Move_Chip_Move_Duration = 0.3f;
-	public static float Move_Chip_Move_Interval = 0.04f;
+	public static float Move_Chip_Move_Interval = 0.05f;
 	public static float Move_Score_Label_Duration = 0.8f;
 	private delegate void Callback();
 
@@ -155,7 +155,17 @@ public class CompareCardController : BaseStateController {
 			MusicController.instance.Play (AudioItem.TransmitCoin, allowRepeat: true);
 
 			Image chip = seats [fromSeatIndex].chipImages [startIndex + i];
-			delay += Random.Range (0, Move_Chip_Move_Interval * 1.5f);
+
+
+			//每三个三个传
+			float thisDeay = 0;
+			if (i % (int)Random.Range(2, 4) == 0) {
+				delay += Random.Range (Move_Chip_Move_Interval * 0f, Move_Chip_Move_Interval * 2f);
+				thisDeay = delay;
+			} else {
+				thisDeay = delay + Random.Range (Move_Chip_Move_Interval * 0f, Move_Chip_Move_Interval * 2f);
+			}
+
 			Tween t = chip.transform.DOMove (target, Move_Chip_Move_Duration).SetDelay(delay);
 			int index = i;
 			t.OnComplete (() => {

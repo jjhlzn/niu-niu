@@ -222,6 +222,31 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 		return false;
 	}
 
+	bool isConner(int x, int y) {
+		double r = 45;
+
+		if (x < r && y < (r - x)) {
+			//圆心（r, r)
+			double delta = Math.Pow (x - r, 2) + Math.Pow (y - r, 2) - Math.Pow (r, 2);
+			return delta > r;
+		} else if (x < r && y > (this.texRender.height - r)) {
+			//圆心（r, this.texRender.height - r)
+			double delta = Math.Pow (x - r, 2) + Math.Pow (y - this.texRender.height + r, 2) - Math.Pow (r, 2);
+			return delta > r;
+		} else if (x > (this.texRender.width - r) && y < r) {
+			//圆心（this.texRender.width - r, r)
+			double delta = Math.Pow (x - this.texRender.width + r , 2) + Math.Pow (y - r, 2) - Math.Pow (r, 2);
+			return delta > r;
+		} else if (x > (this.texRender.width - r) && y > (this.texRender.height - r)) {
+			//圆心（this.texRender.width - r, this.texRender.height - r)
+			double delta = Math.Pow (x - this.texRender.width + r , 2) + Math.Pow (y - this.texRender.height + r, 2) - Math.Pow (r, 2);
+			return delta > r;
+		} else {
+			return false;
+		}
+
+	}
+
 	void Init(){  
 		Debug.Log ("texRender.width = " + texRender.width);
 		Debug.Log ("texRender.height = " + texRender.height);
@@ -229,11 +254,16 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 		for (int i = 0; i < texRender.width; i++) {  
 			matrix [i] = new bool[texRender.height];
 			for (int j = 0; j < texRender.height; j++) {  
-				
 				Color color = texRender.GetPixel (i,j);  
-				color.a = 1;  
+				if (isConner (i, j)) {
+					color.a = 0;  
+					matrix [i] [j] = true;
+				} else {
+					color.a = 1;
+					matrix [i] [j] = false;
+				}
 				texRender.SetPixel (i,j,color);  
-				matrix [i] [j] = false;
+
 			}  
 		}  
 		texRender.Apply ();  
@@ -274,9 +304,14 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 		for (int i = 0; i < texRender.width; i++) {  
 			for (int j = 0; j < texRender.height; j++) {  
 				Color color = texRender.GetPixel (i,j);  
-				color.a = 1;  
-				texRender.SetPixel (i,j,color);  
-				matrix [i] [j] = false;
+				if (isConner (i, j)) {
+					color.a = 0;  
+					matrix [i] [j] = true;
+				} else {
+					color.a = 1;
+					matrix [i] [j] = false;
+				}
+				texRender.SetPixel (i,j,color); 
 			}  
 		}  
 		texRender.Apply ();  
