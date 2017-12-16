@@ -616,7 +616,7 @@ public class SetupCardGame : BaseStateController {
 		List<Image> cards = new List<Image> ();
 		//deck.cardFaceSprites = Resources.LoadAll<Sprite>("sprites/mobile");
 		deck.cardFaceSprites = Resources.LoadAll<Sprite>("sprites/cards2");
-		deck.cardFaceSpritesForCuoPai  = Resources.LoadAll<Sprite>("sprites/cards");
+		deck.cardFaceSpritesForCuoPai  = Resources.LoadAll<Sprite>("sprites/cards3");
 
 		for (int i = 0; i < cardCount; i++) {
 			Image temp = Instantiate (card);
