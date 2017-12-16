@@ -56,8 +56,10 @@ public class Connect : BaseMonoBehaviour {
 		socketManager.Socket.On(SocketIOEventTypes.Error, 
 			(socket, packet, args) => { 
 				Debug.LogError(string.Format("Error: {0}", args[0].ToString()));
-				if (gamePlayController != null)
+				if (gamePlayController != null) {
 					gamePlayController.ShowConnectFailMessage ();
+					//socketManager.Socket.Off();
+				}
 		});
 		socketManager.Socket.On (SocketIOEventTypes.Disconnect, (socket, packet, eventArgs) => {
 			Debug.Log("lose connection");
@@ -71,8 +73,8 @@ public class Connect : BaseMonoBehaviour {
 			gameSocket = socketManager.Socket;
 			gamePlayController.connect = this;
 			gamePlayController.isConnected = true;
-			gamePlayController.SetGameSocket (gameSocket);
 			JoinRoom ();
+			gamePlayController.SetGameSocket (gameSocket);
 			gamePlayController.isConnected = true;
 			//连接成功，自动关闭错误消息
 			gamePlayController.ConnectFailConfirmClick();
@@ -90,7 +92,7 @@ public class Connect : BaseMonoBehaviour {
 		Debug.Log ("try to join room");
 		gameSocket.Emit (Messages.JoinRoom, (socket, packet, args) => {
 			string msg = packet.ToString();
-			Debug.Log("msg = " + msg);
+			Debug.Log("Join Room Response: " + msg);
 			JoinRoomResponse resp = JsonConvert.DeserializeObject<JoinRoomResponse[]>(msg)[0];
 			if (resp.status != 0) {
 				Debug.LogError("ErrorMessage: " + resp.errorMessage);

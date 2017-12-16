@@ -34,7 +34,7 @@ public class ImageLoader : BaseMonoBehaviour
 			return;
 		
 		if (dict.ContainsKey (url)) {
-			Debug.Log ("Find Image in Cache, url = " + url);
+			//Debug.Log ("Find Image in Cache, url = " + url);
 			imageHanlder( dict [url] );
 			return;
 		}
@@ -53,7 +53,9 @@ public class ImageLoader : BaseMonoBehaviour
 		if (www != null && www.texture != null) { 
 			Sprite sprite = Sprite.Create (www.texture, new Rect (0, 0, www.texture.width, www.texture.height), new Vector3 (0, 0, 0));
 			dict [url] = sprite;
-			imageHanlder (sprite); 
+
+			if (imageHanlder != null)
+				imageHanlder (sprite); 
 		}
 	}
 }

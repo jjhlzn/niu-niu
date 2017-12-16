@@ -109,7 +109,7 @@ public class GamePlayController : BaseMonoBehaviour {
 		compareController.Init ();
 
 		game.UpdateGameInfos ();
-		menuButton.gameObject.transform.SetAsLastSibling ();
+		//menuButton.gameObject.transform.SetAsLastSibling ();
 	}
 
 	void Update() {
@@ -151,8 +151,8 @@ public class GamePlayController : BaseMonoBehaviour {
 	}
 
 	public void SetGameSocket(Socket socket) {
-		if (gameSocket != null && gameSocket == socket)
-			return;
+		//if (gameSocket != null && gameSocket != socket)
+		//	return;
 		gameSocket = socket;
 		gameSocket.On (Messages.GoToFirstDeal, new MessageHandler<FirstDealResponse, FirstDealerController> (firstDealerController, game).Handle);
 		gameSocket.On (Messages.GoToCheckCard, new MessageHandler<GoToCheckCardNotify, CheckCardController> (checkCardController, game).Handle);
@@ -198,14 +198,19 @@ public class GamePlayController : BaseMonoBehaviour {
 			System.IO.File.Delete(Utils.GetShareGameResultUrl());
 			Debug.Log ("delete file: " + Utils.GetShareGameResultUrl ());
 		}
-
-		Reset ();
-
+		game.totalRoundCount = resp.totalRoundCount;
+		game.currentRoundNo = resp.currentRoundNo;
 		game.roomNo = resp.roomNo;
 		game.creater = resp.creater;
 		GameState state = GameState.GetGameState (resp.state);
-		game.totalRoundCount = resp.totalRoundCount;
-		game.currentRoundNo = resp.currentRoundNo;
+		game.rounds = new Round[game.totalRoundCount];
+		Round round = new Round ();
+		game.rounds [game.currentRoundNo - 1] = round;
+		SetRounds (resp, game);
+
+		Reset ();
+
+	
 		game.state = state;
 		if (state == GameState.BeforeStart) {
 			//加载坐在座位的玩家信息
@@ -302,6 +307,12 @@ public class GamePlayController : BaseMonoBehaviour {
 		game.isInited = isInited;
 
 		game.UpdateGameInfos ();
+	}
+
+	private void SetRounds(JoinRoomResponse resp, Game game) {
+		for (int i = 0; i < game.currentRoundNo - 1; i++) {
+			game.rounds [i] = resp.rounds [i];
+		}
 	}
 
 	private void SetSitdownPlayers(JoinRoomResponse resp, Game game) {

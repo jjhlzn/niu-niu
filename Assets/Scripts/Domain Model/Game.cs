@@ -28,9 +28,9 @@ public class Game
 	public Game ()
 	{
 		state = GameState.BeforeStart;
-		rounds = new List<Round> ();
-		currentRound = new Round();
-		rounds.Add(currentRound);
+		//rounds = new List<Round> ();
+		//currentRound = new Round();
+		//rounds.Add(currentRound);
 		deck = new Deck ();
 	}  
 		
@@ -50,7 +50,7 @@ public class Game
 
 	public GameState state;
 	public string roomNo;
-	public List<Round> rounds;
+	public Round[] rounds;
 	public Player me = Player.Me;
 	public Round currentRound;
 	public int totalRoundCount;
@@ -72,7 +72,7 @@ public class Game
 	public Text roundLabel;
 
 	public void Reset() {
-		rounds = new List<Round> ();
+		//rounds = new List<Round> ();
 		currentRound = null;
 	}
 
@@ -158,13 +158,23 @@ public class Game
 		return false;
 	}
 
+
+	public Player GetPlayer(string userId) {
+		foreach (Player player in PlayingPlayers) {
+			if (player.userId == userId)
+				return player;
+		}
+		return null;
+	}
+
+
 	public void GoToNextRound() {
 		//currentRoundNo++;
 		bankerSignImage.transform.position = originBankerSignPosition;
 		bankerSignImage.gameObject.SetActive (false);
 		//设置CurrentRound的数据
 		currentRound = new Round();
-		rounds.Add (currentRound);
+		rounds [currentRoundNo - 1] = currentRound;
 		for (int i = 0; i < Game.SeatCount; i++) {
 			if (seats [i].hasPlayer ()) {
 				seats [i].player.isPlaying = true;

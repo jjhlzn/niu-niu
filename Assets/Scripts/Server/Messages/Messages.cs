@@ -162,6 +162,7 @@ public class JoinRoomResponse : BaseGameResponse {
 	public Dictionary<string, ShowCardResult> showcardPlayers = new Dictionary<string, ShowCardResult> ();
 	public Dictionary<string, bool> readyPlayers = new Dictionary<string,bool> ();
 	public string[] delegatePlayers = new string[0];
+	public List<Round> rounds = new List<Round> ();
 }
 
 public class CheckUserInGameResponse : BaseGameResponse {

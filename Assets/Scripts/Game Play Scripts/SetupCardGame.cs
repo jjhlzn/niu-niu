@@ -55,6 +55,8 @@ public class SetupCardGame : BaseStateController {
 	[SerializeField]
 	private Button menuButton;
 	[SerializeField]
+	private Button roundButton;
+	[SerializeField]
 	private GameObject menuPanel;
 
 	[SerializeField]
@@ -119,8 +121,8 @@ public class SetupCardGame : BaseStateController {
 		bankerSign.transform.SetParent(userPanel.transform);
 		bankerSign.transform.SetAsLastSibling ();
 
-		menuButton.transform.SetParent (canvas.transform);
-		menuButton.transform.SetAsLastSibling ();
+		//menuButton.transform.SetParent (canvas.transform);
+		//menuButton.transform.SetAsLastSibling ();
 
 		SetSettingsPanel ();
 	}
@@ -155,11 +157,13 @@ public class SetupCardGame : BaseStateController {
 
 	public void MenuClick() {
 		menuButton.gameObject.SetActive (false);
+		roundButton.gameObject.SetActive (false);
 		menuPanel.gameObject.SetActive (true);
 	}
 
 	public void CloseMenuClick() {
 		menuButton.gameObject.SetActive (true);
+		roundButton.gameObject.SetActive (true);
 		menuPanel.gameObject.SetActive (false);
 	}
 		

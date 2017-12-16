@@ -952,6 +952,7 @@
      <Compile Include="Assets\Scripts\Game Play Scripts\SecondDealController.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\SetupCardGame.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\UI\GameOverPanel.cs" />
+     <Compile Include="Assets\Scripts\Game Play Scripts\UI\RoundsPanel.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\UI\SettingsPanel.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\Utils.cs" />
      <Compile Include="Assets\Scripts\Game Play Scripts\WaitForNextRoundController.cs" />

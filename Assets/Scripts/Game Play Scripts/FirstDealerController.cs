@@ -126,6 +126,15 @@ public class FirstDealerController : BaseStateController {
 		var game = gamePlayController.game;
 		beforeGameStartController.UpdateButtonStatusAfterStart ();
 
+
+		List<Player> players = game.currentRound.players;
+		foreach (string playerId in cardsDict.Keys) {
+			Player player = game.GetPlayer (playerId);
+			if (player != null) {
+				players.Add (player);
+			}
+		}
+
 		//更新位置UI
 		for (int i = 0; i < seats.Length; i++) {
 			if (seats [i].hasPlayer ()) {
