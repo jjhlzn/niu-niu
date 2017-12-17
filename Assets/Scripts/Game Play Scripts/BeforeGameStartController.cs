@@ -335,7 +335,7 @@ public class BeforeGameStartController : BaseStateController {
 		ShareContent content = new ShareContent();
 		content.SetTitle("房间【" + game.roomNo + "】");
 		content.SetText("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
-		content.SetImageUrl("http://is5.mzstatic.com/image/thumb/Purple18/v4/d7/7e/2a/d77e2a15-3898-8fcf-9ea9-7e48a0593af0/source/512x512bb.jpg");
+		content.SetImageUrl("http://niu.yhkamani.com:3001/images/icon.png");
 		content.SetUrl("http://niu.yhkamani.com/share?room="+game.roomNo);
 		//content.SetUrlDescription("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");
 		//content.SetDesc ("【玩法：AA支付，" + game.totalRoundCount + "局，【4，6，8分】，明牌抢庄，闲家推注】");

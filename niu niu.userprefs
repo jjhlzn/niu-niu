@@ -1,30 +1,30 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Game Play Scripts/SetupCardGame.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Game Play Scripts/BeforeGameStartController.cs">
     <Files>
       <File FileName="Assets/Scripts/Experiment/Experiment.cs" Line="1" Column="1" />
       <File FileName="Assets/Best HTTP (Pro)/Examples/SocketIO/SocketIOChatSample.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Login Scripts/LoginController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Server/ServerUtils.cs" Line="20" Column="2" />
+      <File FileName="Assets/Scripts/Server/ServerUtils.cs" Line="18" Column="29" />
       <File FileName="Assets/Best HTTP (Pro)/BestHTTP/WebSocket/Frames/WebSocketFrameReader.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Server/Connect.cs" Line="77" Column="36" />
-      <File FileName="Assets/Scripts/Game Play Scripts/UI/RoundsPanel.cs" Line="135" Column="4" />
-      <File FileName="Assets/Scripts/Game Play Scripts/UI/GameOverPanel.cs" Line="62" Column="19" />
-      <File FileName="Assets/Scripts/Game Play Scripts/BeforeGameStartController.cs" Line="172" Column="31" />
+      <File FileName="Assets/Scripts/Server/Connect.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Game Play Scripts/UI/RoundsPanel.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Game Play Scripts/UI/GameOverPanel.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Game Play Scripts/BeforeGameStartController.cs" Line="345" Column="3" />
       <File FileName="Assets/Scripts/Game Play Scripts/RoomController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Game Play Scripts/GamePlayController.cs" Line="163" Column="51" />
-      <File FileName="Assets/Scripts/Domain Model/Game.cs" Line="177" Column="3" />
-      <File FileName="Assets/Scripts/Game Play Scripts/CheckCardController.cs" Line="115" Column="44" />
-      <File FileName="Assets/Scripts/Domain Model/Seat.cs" Line="84" Column="45" />
-      <File FileName="Assets/Scripts/Game Play Scripts/FirstDealerController.cs" Line="109" Column="28" />
+      <File FileName="Assets/Scripts/Game Play Scripts/GamePlayController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Domain Model/Game.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Game Play Scripts/CheckCardController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Domain Model/Seat.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Game Play Scripts/FirstDealerController.cs" Line="1" Column="1" />
       <File FileName="Assets/Best HTTP (Pro)/BestHTTP/ServerSentEvents/Message.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Server/Messages/Messages.cs" Line="165" Column="19" />
-      <File FileName="Assets/Scripts/Domain Model/Round.cs" Line="9" Column="50" />
-      <File FileName="Assets/Scripts/Message Handlers/MessageHandler.cs" Line="24" Column="3" />
-      <File FileName="Assets/Scripts/ImageLoader.cs" Line="37" Column="6" />
-      <File FileName="Assets/Scripts/Domain Model/Player.cs" Line="9" Column="2" />
-      <File FileName="Assets/Scripts/Experiment/UIEraserTexture.cs" Line="24" Column="18" />
-      <File FileName="Assets/Scripts/Game Play Scripts/CompareCardController.cs" Line="166" Column="65" />
+      <File FileName="Assets/Scripts/Server/Messages/Messages.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Domain Model/Round.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Message Handlers/MessageHandler.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/ImageLoader.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Domain Model/Player.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Experiment/UIEraserTexture.cs" Line="20" Column="24" />
+      <File FileName="Assets/Scripts/Game Play Scripts/CompareCardController.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Game Play Scripts/SetupCardGame.cs" Line="619" Column="77" />
     </Files>
   </MonoDevelop.Ide.Workbench>
