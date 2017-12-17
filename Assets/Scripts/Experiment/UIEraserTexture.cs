@@ -31,7 +31,8 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 	void Awake(){ 
 		//Time.timeScale = 0.0001f;
 		queue = new Queue<Vector2> ();
-		mRectTransform = GetComponent<RectTransform> ();  
+		mRectTransform = GetComponent<RectTransform> ();
+		//mRectTransform.localScale = new Vector2 (0.5f, 0.5f);
 		canvas = GameObject.Find("Canvas").GetComponent<Canvas>();  
 	}  
 
@@ -69,25 +70,25 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 	}  
 
 	public void OnPointerUp(PointerEventData data){  
+		
 		if (!this.image.gameObject.activeInHierarchy  || ReadyForErase)
 			return;
 		isMove = false;  
 		//Debug.Log ("OnPointerUp..."+data.position);  
-		AddPoints (start, data.position);
+		AddPoints (start, data.position); 
 	}
 
 	private int GetPointCount(float distance) {
 		//Debug.Log ("distance = " + distance);
 		if (distance > 400) {
-			return 100;
+			return 80;
 		} else if (distance > 200) {
-			return 50;
+			return 40;
 		} else if (distance > 100) {
 			return 20;
 		} else if (distance > 50) {
 			return 10;
-		} 
-		else if (distance < 10) {
+		} else if (distance < 10) {
 			return 4;
 		} else if (distance < 1) {
 			return 1;
@@ -123,6 +124,7 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 		float stepX = xDis / pointCount;
 		float stepY = yDis / pointCount;
 
+
 		for (int i = 0; i < pointCount; i++) {
 			Vector3 point = new Vector3 (start.x + i * stepX, start.y + i * stepY);
 			if (!IsDrawed(point))
@@ -135,29 +137,30 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 			AddPoints (start, Input.mousePosition);
 			start  = Input.mousePosition;
 		}  
-		Draw ();
+		StartCoroutine( Draw () );
 	}  
 
 
-	void Draw() {
+	IEnumerator Draw() {
+		
 		while (queue.Count > 0 && this.gameObject.activeInHierarchy) {
-			StartCoroutine( Draw (queue.Dequeue()));  
+			Draw (queue.Dequeue());
 		}
+		yield return new WaitForSeconds (0);
 	}
 
 	Vector2 ConvertSceneToUI(Vector3 posi){  
 		Vector2 postion;  
-		if(RectTransformUtility.ScreenPointToLocalPointInRectangle(mRectTransform , posi, canvas.worldCamera, out postion)){  
-			return postion;  
+		if(RectTransformUtility.ScreenPointToLocalPointInRectangle(mRectTransform, posi, canvas.worldCamera, out postion)){  
+			return new Vector3(postion.x / 2, postion.y/2);  
 		}  
 		return Vector2.zero;  
 	}  
 
-	IEnumerator Draw(Vector2 position)  
+	void Draw(Vector2 position)  
 	{  
 		Vector2 a = ConvertSceneToUI (position);
 		Draw (new Rect (a.x + texRender.width/2, a.y + texRender.height/2, brushScale, brushScale));
-		yield return new WaitForSeconds(0f);
 	}  
 		
 	private int rightConnerX = 0, rightConnerY = 0;
@@ -223,7 +226,7 @@ public class UIEraserTexture : MonoBehaviour ,IPointerDownHandler,IPointerUpHand
 	}
 
 	bool isConner(int x, int y) {
-		double r = 45;
+		double r = 26;  //45
 
 		if (x < r && y < (r - x)) {
 			//圆心（r, r)
