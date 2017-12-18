@@ -121,6 +121,8 @@ public class MainPageController : BaseMonoBehaviour {
 	}
 
 	public void CreateRoomClick() {
+
+
 		
 		//创建房间
 		Debug.Log("create room click");

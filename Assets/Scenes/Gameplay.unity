@@ -1147,6 +1147,7 @@ MonoBehaviour:
   waitForNextRoundController: {fileID: 1232574140}
   gameOverController: {fileID: 1431278720}
   readyButton: {fileID: 131127926}
+  userPanel: {fileID: 1896386742}
 --- !u!1 &119280278
 GameObject:
   m_ObjectHideFlags: 0
@@ -9604,6 +9605,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gamePlayController: {fileID: 1193017314}
   bankerSign: {fileID: 489148643}
+  userPanel: {fileID: 1896386742}
 --- !u!4 &1071049202
 Transform:
   m_ObjectHideFlags: 0
@@ -9891,7 +9893,7 @@ RectTransform:
   m_GameObject: {fileID: 1081230390}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 90}
-  m_LocalScale: {x: 0.01510532, y: 0.01510532, z: 0.01510532}
+  m_LocalScale: {x: 0.010421753, y: 0.010421753, z: 0.010421753}
   m_Children:
   - {fileID: 1940176492}
   - {fileID: 559491632}
@@ -14005,6 +14007,7 @@ MonoBehaviour:
   beforeGameStartController: {fileID: 1945840095}
   deckCardPosition: {fileID: 0}
   shareButton: {fileID: 67522523}
+  userPanel: {fileID: 1896386742}
   isFirstDealDone: 0
 --- !u!4 &1464680084
 Transform:
@@ -14048,6 +14051,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gamePlayController: {fileID: 1193017314}
   secondDealController: {fileID: 2085001086}
+  userPanel: {fileID: 1896386742}
   checkCardPanel: {fileID: 1311565985}
   cuoCardPanel: {fileID: 1080061387}
   fifthCard: {fileID: 778113819}
@@ -18185,6 +18189,7 @@ MonoBehaviour:
   roomNoLabel: {fileID: 578138699}
   playerScoreGameObj: {fileID: 1656721708}
   gamePlayController: {fileID: 1193017314}
+  userPanel: {fileID: 1896386742}
 --- !u!1 &2053649438
 GameObject:
   m_ObjectHideFlags: 0
@@ -18371,6 +18376,7 @@ MonoBehaviour:
   betController: {fileID: 190287831}
   firstDealController: {fileID: 1464680083}
   deckCardPosition: {fileID: 0}
+  userPanel: {fileID: 1896386742}
   isSecondDealDone: 0
 --- !u!1 &2102248769
 GameObject:

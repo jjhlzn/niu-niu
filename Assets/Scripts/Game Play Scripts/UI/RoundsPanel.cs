@@ -22,6 +22,8 @@ public class RoundsPanel : MonoBehaviour {
 	private GameObject playerScoreGameObj;
 	[SerializeField]
 	private GamePlayController gamePlayController;
+	[SerializeField]
+	private GameObject userPanel;
 
 	private RoundPlayerScorePanel[] playerScores;
 
@@ -115,7 +117,9 @@ public class RoundsPanel : MonoBehaviour {
 			playerScore.transform.localScale = new Vector3 (1f, 1f);
 
 			int x = -2, y = i / 3 * -220;
-			playerScore.transform.position = new Vector3 ((x + i % 3 * 181) / SetupCardGame.TransformConstant, y / SetupCardGame.TransformConstant);
+
+			playerScore.transform.position = userPanel.transform.TransformPoint( new Vector3 (x + i % 3 * 181, y));
+			//playerScore.transform.position = new Vector3 ((x + i % 3 * 181) / SetupCardGame.TransformConstant, y / SetupCardGame.TransformConstant);
 			//playerScore.SetActive (true);
 		}
 	}

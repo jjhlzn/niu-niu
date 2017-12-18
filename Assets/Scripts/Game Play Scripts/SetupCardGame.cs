@@ -6,13 +6,17 @@ using UnityEngine.UI;
 public class SetupCardGame : BaseStateController {
 	public static int Chip_Count_When_Transimit = 40;
 	private int MaxMoveChipCount = Chip_Count_When_Transimit * 6;
-	public static float TransformConstant = 71.98f;
+	//public static float TransformConstant = 71.98f;
 	private int cardCount = 30; //生成多少张牌的图片，6 * 5 = 30
 	public static float ChipScale = 0.6f;
 
 
+
 	[SerializeField]
 	private CheckCardController checkCardController;
+
+	private RectTransform reactTransform;
+	private Camera camera;
 
 	[SerializeField]
 	private GameObject seatUI;
@@ -209,7 +213,9 @@ public class SetupCardGame : BaseStateController {
 				x = 433; y  = 10;
 				break;
 			}
-			betChip.transform.position = new Vector3 (x / TransformConstant, y / TransformConstant);
+
+			betChip.transform.position = userPanel.transform.TransformPoint(new Vector3 (x , y ));
+			//betChip.transform.position = new Vector3 (x / TransformConstant, y / TransformConstant);
 			betChip.transform.SetParent (betChipContainer.transform);
 			betChip.transform.localScale = new Vector3 (1f, 1f);
 			seats[i].chipCountLabel = betChip.GetComponentInChildren<Text> ();
@@ -296,7 +302,10 @@ public class SetupCardGame : BaseStateController {
 		localScale.x = 0.7f;
 		localScale.y = 0.7f;
 		seatUICopy.transform.localScale = localScale;
-		seatUICopy.transform.position = new Vector3 ( x / TransformConstant, y / TransformConstant, 0);
+
+
+		seatUICopy.transform.position = userPanel.transform.TransformPoint(new Vector3(x, y));
+		//seatUICopy.transform.position = new Vector3 ( x / TransformConstant, y / TransformConstant, 0);
 
 		Image[] childrenImages = seatUICopy.GetComponentsInChildren<Image>();
 		foreach (Image image in childrenImages) {
@@ -530,7 +539,8 @@ public class SetupCardGame : BaseStateController {
 		localScale.y = 0.55f;
 		image.transform.localScale = localScale;
 
-		image.transform.position = new Vector3 ( (initialX + 20) / TransformConstant, (initialY - 40) / TransformConstant, 0);
+		image.transform.position = userPanel.transform.TransformPoint (new Vector3 ( initialX + 20, initialY - 40));
+		//image.transform.position = new Vector3 ( (initialX + 20) / TransformConstant, (initialY - 40) / TransformConstant, 0);
 		return image;
 	}
 
@@ -573,7 +583,8 @@ public class SetupCardGame : BaseStateController {
 		localScale.y = 0.4f;
 		image.transform.localScale = localScale;
 
-		image.transform.position = new Vector3 ( (initialX + 140) / TransformConstant, (initialY - 45) / TransformConstant, 0);
+		image.transform.position = userPanel.transform.TransformPoint(new Vector3 (initialX + 140, initialY - 45));
+		//image.transform.position = new Vector3 ( (initialX + 140) / TransformConstant, (initialY - 45) / TransformConstant, 0);
 		return image;
 	}
 
@@ -670,11 +681,13 @@ public class SetupCardGame : BaseStateController {
 		betLabelPositionsFor4Button = new Vector3[4];
 		int X = -132, Y = -125, YForLabel = -170;
 		for (int i = 0; i < betButtonPositionsFor4Button.Length; i++) {
-			
-			betButtonPositionsFor4Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);
+
+			betButtonPositionsFor4Button [i] = userPanel.transform.TransformPoint(new Vector3 (X, Y));
+			//betButtonPositionsFor4Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);
 			betButtons [i].transform.position = betButtonPositionsFor4Button [i];
 
-			betLabelPositionsFor4Button [i] = new Vector3 (X / TransformConstant, YForLabel / TransformConstant, 0);
+			betLabelPositionsFor4Button [i] = userPanel.transform.TransformPoint(new Vector3 (X , YForLabel));
+			//betLabelPositionsFor4Button [i] = new Vector3 (X / TransformConstant, YForLabel / TransformConstant, 0);
 			betLabels [i].transform.position = betLabelPositionsFor4Button [i];
 			X += 88;
 		}
@@ -685,9 +698,11 @@ public class SetupCardGame : BaseStateController {
 		betLabelPositionsFo3Button = new Vector3[3];
 		int X = -84, Y = -125, YForLabel = -170;
 		for (int i = 0; i < betButtonPositionsFo3Button.Length; i++) {
-			
-			betButtonPositionsFo3Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);
-			betLabelPositionsFo3Button [i] = new Vector3 (X / TransformConstant, YForLabel / TransformConstant, 0);
+
+			betButtonPositionsFo3Button [i] = userPanel.transform.TransformPoint(new Vector3 (X, Y));
+			betLabelPositionsFo3Button [i] = userPanel.transform.TransformPoint(new Vector3 (X, YForLabel));
+			//betButtonPositionsFo3Button [i] = new Vector3 (X / TransformConstant, Y / TransformConstant, 0);
+			//betLabelPositionsFo3Button [i] = new Vector3 (X / TransformConstant, YForLabel / TransformConstant, 0);
 			X += 88;
 		}
 	}

@@ -217,3 +217,7 @@ public class CheckUpdateResponse : BaseGameResponse {
 	public string newVersion = "";
 	public string updateUrl = "";
 }
+
+public class CheckIOSAuditVersionResponse : BaseGameResponse {
+	public bool isAuditVersion;
+}

@@ -14,6 +14,8 @@ public class SecondDealController : BaseStateController {
 	private FirstDealerController firstDealController;
 	[SerializeField]
 	private GameObject deckCardPosition;
+	[SerializeField]
+	private GameObject userPanel;
 
 	private bool isSecondDealing;
 	public bool isSecondDealDone;
@@ -109,7 +111,8 @@ public class SecondDealController : BaseStateController {
 		for (int i = 0; i < playingPlayers.Count; i++) {
 			var player = playingPlayers [i];
 			Vector3 position = player.seat.cardPositions [4];
-			player.cards[4].transform.position = new Vector3(position.x / SetupCardGame.TransformConstant, position.y / SetupCardGame.TransformConstant) ;
+			player.cards[4].transform.position = userPanel.transform.TransformPoint(position) ;
+			//player.cards[4].transform.position = new Vector3(position.x / SetupCardGame.TransformConstant, position.y / SetupCardGame.TransformConstant) ;
 			if (player.seat.seatIndex == 0) {
 				Vector3 localScale = new Vector3 ();
 				localScale.x = FirstDealerController.user0CardScale;

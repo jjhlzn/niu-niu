@@ -16,6 +16,8 @@ public class CheckCardController : BaseStateController {
 	private SecondDealController secondDealController;
 
 	[SerializeField]
+	private GameObject userPanel;
+	[SerializeField]
 	private GameObject checkCardPanel;
 	[SerializeField]
 	private GameObject cuoCardPanel;
@@ -130,7 +132,10 @@ public class CheckCardController : BaseStateController {
 							interval = 0.22f;
 						}
 					} 
-					targetV = new Vector3 (targetV.x / SetupCardGame.TransformConstant + interval , targetV.y / SetupCardGame.TransformConstant, targetV.z);
+
+					targetV =  userPanel.transform.TransformPoint(new Vector3 (targetV.x , targetV.y, targetV.z));
+					targetV = new Vector3 (targetV.x + interval, targetV.y);
+					//targetV =  new Vector3 (targetV.x / SetupCardGame.TransformConstant + interval , targetV.y / SetupCardGame.TransformConstant, targetV.z);
 					player.cards[j].gameObject.transform.position = targetV;
 					player.cards[j].transform.SetSiblingIndex (seatIndex * 5 + sequences [j]);
 				}

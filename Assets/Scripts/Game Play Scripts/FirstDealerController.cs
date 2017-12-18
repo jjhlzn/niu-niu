@@ -21,6 +21,8 @@ public class FirstDealerController : BaseStateController {
 	private GameObject deckCardPosition; //发牌位置
 	[SerializeField]
 	private Button shareButton;
+	[SerializeField]
+	private GameObject userPanel;
 
 	private bool isFirstDealing;
 	public bool isFirstDealDone;
@@ -200,7 +202,8 @@ public class FirstDealerController : BaseStateController {
 			Vector3[] targetCardPositions = player.seat.cardPositions;
 			for (int j = 0; j < 4; j++) {
 				Vector3 targetCard = targetCardPositions [j];
-				cards [j].transform.position = new Vector3(targetCard.x / SetupCardGame.TransformConstant, targetCard.y/SetupCardGame.TransformConstant);
+				cards [j].transform.position = userPanel.transform.TransformPoint( new Vector3(targetCard.x, targetCard.y));
+				//cards [j].transform.position = new Vector3(targetCard.x / SetupCardGame.TransformConstant, targetCard.y/SetupCardGame.TransformConstant);
 				if (i == 0) {
 					Vector3 localScale = new Vector3 (user0CardScale, user0CardScale);
 					cards [j].transform.localScale = localScale;

@@ -46,6 +46,14 @@ public class ServerUtils
 		return protocol + "://" + mainServer + ":" + port + "/reporterror";
 	}
 
+	public static string CheckIOSAuditVersionUrl() {
+		return protocol + "://" + mainServer + ":" + port + "/checkiosauditversion";
+	}
+
+	public static string AuditLoginUrl() {
+		return protocol + "://" + mainServer + ":" + port + "/auditlogin";
+	}
+
 	public static IEnumerator PostRequest(string url, string json, ResponseHandle handle, ResponseHandle errorHandle = null)
 	{
 		Debug.Log ("Post Request: url = " + url);

@@ -14,6 +14,8 @@ public class ChooseBankerController : BaseStateController {
 
 	[SerializeField]
 	private Image bankerSign;
+	[SerializeField]
+	private GameObject userPanel;
 
 
 	private string[] randomSelectBankerUserIds;
@@ -134,8 +136,10 @@ public class ChooseBankerController : BaseStateController {
 		int bankerSeatIndex = game.GetSeatIndex (game.currentRound.banker);
 		game.ShowStateLabel (game.seats[bankerSeatIndex].player.nickname + "成为庄家");
 
-		bankerSign.gameObject.transform.position = new Vector3 (game.gameStateLabel.transform.position.x - (game.gameStateLabel.preferredWidth + 20) / SetupCardGame.TransformConstant / 2,
-			game.gameStateLabel.transform.position.y / SetupCardGame.TransformConstant, 0);
+		bankerSign.gameObject.transform.position = userPanel.transform.TransformPoint( new Vector3 (game.gameStateLabel.transform.position.x - (game.gameStateLabel.preferredWidth + 20) / 2,
+			game.gameStateLabel.transform.position.y));
+		//bankerSign.gameObject.transform.position = new Vector3 (game.gameStateLabel.transform.position.x - (game.gameStateLabel.preferredWidth + 20) / SetupCardGame.TransformConstant / 2,
+		//	game.gameStateLabel.transform.position.y / SetupCardGame.TransformConstant, 0);
 		bankerSign.gameObject.SetActive (true);
 
 		yield return new WaitForSeconds (.5f);

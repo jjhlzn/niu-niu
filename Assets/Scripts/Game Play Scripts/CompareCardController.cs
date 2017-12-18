@@ -25,6 +25,9 @@ public class CompareCardController : BaseStateController {
 	[Header("UI")]
 	[SerializeField]
 	private Button readyButton;
+
+	[SerializeField]
+	private GameObject userPanel;
 		
 	private bool moveToBanker;
 	Dictionary<string, int>  resultDict;
@@ -125,10 +128,13 @@ public class CompareCardController : BaseStateController {
 			s.Append(chip.DOFade(1, 0.01f).OnComplete( () => {
 				chip.gameObject.SetActive(true);
 	
-				float max = 20f;
-				chip.transform.position = new Vector3 (
-					chip.transform.position.x + Random.Range(-1 * max, max) / SetupCardGame.TransformConstant,
-					chip.transform.position.y + Random.Range(-1 * max, max) / SetupCardGame.TransformConstant);
+				float radius = 20f;
+				chip.transform.position =  seats[fromSeatIndex].playerImage.transform.TransformPoint( new Vector3 (
+					chip.transform.position.x + Random.Range(-1 * radius, radius),
+					chip.transform.position.y + Random.Range(-1 * radius, radius)));
+				//chip.transform.position = new Vector3 (
+				//	chip.transform.position.x + Random.Range(-1 * max, max) / SetupCardGame.TransformConstant,
+				//	chip.transform.position.y + Random.Range(-1 * max, max) / SetupCardGame.TransformConstant);
 			}));
 
 			s.AppendInterval (ChipShowInterval);
@@ -149,8 +155,10 @@ public class CompareCardController : BaseStateController {
 		for (int i = SetupCardGame.Chip_Count_When_Transimit - 1; i >= 0; i--) {
 			float max = 18f;
 			//随机生成移动的目标位置
-			Vector3 target = new Vector3 (position.x + Random.Range (-1 * max, max) / SetupCardGame.TransformConstant,
-				position.y + Random.Range (-1 * max, max) / SetupCardGame.TransformConstant);
+			Vector3 target = seats[toSeatIndex].playerImage.transform.TransformPoint(new Vector3 (position.x + Random.Range (-1 * max, max),
+				position.y + Random.Range (-1 * max, max)));
+			//Vector3 target = new Vector3 (position.x + Random.Range (-1 * max, max) / SetupCardGame.TransformConstant,
+			//	position.y + Random.Range (-1 * max, max) / SetupCardGame.TransformConstant);
 			
 			MusicController.instance.Play (AudioItem.TransmitCoin, allowRepeat: true);
 

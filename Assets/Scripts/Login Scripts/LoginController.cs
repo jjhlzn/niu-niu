@@ -25,10 +25,19 @@ public class LoginController : BaseMonoBehaviour {
 	private GameObject confirmMessagePanel;
 	[SerializeField]
 	private Text versionLabel;
+	[SerializeField]
+	private Button loginButton;
+	[SerializeField]
+	private InputField userNameInputField;
+	[SerializeField]
+	private InputField passwordInputField;
+	private Sprite loginBtnSprite;
 
 	private WWW www;
 	private bool isDonwloading;
 	private string newVersion;
+
+	private bool isAuditVersion;
 
 	void Start() {
 		isFromLogin = true;
@@ -37,7 +46,14 @@ public class LoginController : BaseMonoBehaviour {
 		ssdk.authHandler = AuthResultHandler;
 		ssdk.showUserHandler = GetUserInfoResultHandler;
 
+
+		passwordInputField.inputType = InputField.InputType.Password;
+		loginBtnSprite = Resources.Load<Sprite> ("sprites/loginpage/login_btn");
+
+		/*正式代码
 		CheckUpdate ();
+		*/
+		CheckiOSAuditVersion ();
 	}
 
 	void Update() {
@@ -47,11 +63,50 @@ public class LoginController : BaseMonoBehaviour {
 		}
 	}
 
+	public void CheckiOSAuditVersion() {
+		//iOS版本，检查是否是iOS审核版本
+		if (Application.platform == RuntimePlatform.IPhonePlayer) {
+			Utils.ShowMessagePanel ("正在获取服务器信息...", messagePanel);
+			ResponseHandle handler = delegate(string jsonString){
+				Debug.Log("GetCheckIOSAuditUpdateVersion: " + jsonString);
+				Utils.HideMessagePanel (messagePanel);
+				//加入玩家已经游戏了，那么跳转到Gameplay Scene。否则什么都不需要坐。
+				CheckIOSAuditVersionResponse resp = JsonConvert.DeserializeObject<CheckIOSAuditVersionResponse>(jsonString);
+				if (resp.isAuditVersion) {
+					userNameInputField.gameObject.SetActive(true);
+					passwordInputField.gameObject.SetActive(true);
+					loginButton.image.sprite = loginBtnSprite;
+					isAuditVersion = true;
+				} else {
+					CheckUpdate();
+				}
+			};
+
+			ResponseHandle errorHandler = delegate (string error) {
+				Debug.Log("errorHandler is called");
+				Utils.HideMessagePanel (messagePanel);
+				Utils.ShowConfirmMessagePanel("连接服务器失败，请检查你的网络", confirmMessagePanel);	
+			};
+
+			var req = new {
+				platform = Utils.GetPlatform(),
+				version = Application.version
+			};
+
+			StartCoroutine(ServerUtils.PostRequest (ServerUtils.CheckIOSAuditVersionUrl(), JsonConvert.SerializeObject(req), handler, errorHandler));
+		} else {
+			CheckUpdate ();
+		}
+
+	}
+
 	private void CheckUpdate() {
 		if (Application.platform != RuntimePlatform.Android && Application.platform != RuntimePlatform.IPhonePlayer)
 			return;
 
-		Utils.ShowMessagePanel ("正在检查新版本...", messagePanel);
+		if (Application.platform != RuntimePlatform.IPhonePlayer)
+			Utils.ShowMessagePanel ("正在检查新版本...", messagePanel);
+		
 		ResponseHandle handler = delegate(string jsonString){
 			Debug.Log("GetCheckUpdate: " + jsonString);
 			Utils.HideMessagePanel (messagePanel);
@@ -97,7 +152,38 @@ public class LoginController : BaseMonoBehaviour {
 	public void LoginClick() {
 		Debug.Log ("login clicked");
 		Utils.ShowMessagePanel ("登陆中...", messagePanel);
-		ssdk.Authorize (PlatformType.WeChat);
+
+		//iOS版本，如果是iOS审核版本，那么就该使用审核版本的登陆
+		if (isAuditVersion && Application.platform == RuntimePlatform.IPhonePlayer) {
+
+			var req = new {
+				username = userNameInputField.text,
+				password = passwordInputField.text
+			};
+			ResponseHandle handler = (string msg) => {
+				Utils.HideMessagePanel(messagePanel);
+				LoginResponse resp = JsonConvert.DeserializeObject<LoginResponse>(msg);
+				if (resp.status != 0) {
+					Debug.LogError("登陆失败，errorMessage = " + resp.errorMessage);
+					Utils.ShowConfirmMessagePanel(resp.errorMessage, confirmMessagePanel);
+					return;
+				}
+				Player me = JsonConvert.DeserializeObject<Player> (msg);
+				Player.Me = me;
+				Scenes.Load("MainPage", new Dictionary<string, string>());
+			};
+
+			StartCoroutine (ServerUtils.PostRequest (ServerUtils.AuditLoginUrl(), JsonConvert.SerializeObject(req), handler));
+			
+		} else {
+			
+			ssdk.Authorize (PlatformType.WeChat);
+		}
+
+	}
+
+	public void XieyiClick() {
+		Application.OpenURL ("http://niu.yhkamani.com/xieyi.html");
 	}
 
 	private void InstallUpdate(string url) {
@@ -224,11 +310,16 @@ public class LoginController : BaseMonoBehaviour {
 		SceneManager.LoadScene ("MainPage");
 	}
 
+	private void LoginAsMockPlayer() {
+		Player.Me = CreateMockPlayer ();
+		Scenes.Load("MainPage", new Dictionary<string, string>());
+	}
+
 	public static Player CreateMockPlayer() {
 		string json = @"{""country"":""CN"", ""province"":""Zhejiang"", ""headimgurl"":""http://www.gx8899.com/uploads/allimg/2016101713/0rbdwhgad3z.jpg"", ""unionid"":""omrAqw3jZJyVBtnJHN2atDrlddFDRY"", ""openid"":""oa75AwCba3xVbNeCNraVMZENVeg0"", ""nickname"":""\u91d1"", ""city"":""Jinhua"", ""sex"":1, ""language"":""zh_CN"", ""privilege"":[]}";
 		Player me = JsonConvert.DeserializeObject<Player> (json);
 		me.userId = "7654321";
-		me.nickname = "7654321";
+		me.nickname = "漫天飞雪";
 		return me;
 	}
 

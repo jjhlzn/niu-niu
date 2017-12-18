@@ -103,7 +103,8 @@ public class GameOverPanel : MonoBehaviour
 			x = 10 + (index - 3) * 340;
 			y = -180;
 		}
-		copy.transform.position = new Vector3 ( x / SetupCardGame.TransformConstant, y / SetupCardGame.TransformConstant, 0);
+		copy.transform.position = wholePanel.transform.TransformPoint( new Vector3 ( x , y ));
+		//copy.transform.position = new Vector3 ( x / SetupCardGame.TransformConstant, y / SetupCardGame.TransformConstant, 0);
 
 
 

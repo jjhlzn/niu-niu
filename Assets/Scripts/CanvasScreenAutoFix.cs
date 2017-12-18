@@ -16,6 +16,7 @@ public class CanvasScreenAutoFix : CanvasScaler
 
 	private void ResizeCanvas()
 	{
+		
 		if (is1920x1080 ()) {
 			Debug.Log ("is 1920 * 1080");
 			matchWidthOrHeight = 0.5f;
@@ -28,7 +29,7 @@ public class CanvasScreenAutoFix : CanvasScaler
 			Debug.Log ("is Width First");
 			matchWidthOrHeight = 0f;
 
-		}
+		} 
 			
 	}
 
