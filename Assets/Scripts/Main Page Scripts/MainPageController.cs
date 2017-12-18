@@ -23,7 +23,10 @@ public class MainPageController : BaseMonoBehaviour {
 	[SerializeField]
 	private GameObject messagePanel;
 	[SerializeField]
+	private Text confirmMessageLabel;
+	[SerializeField]
 	private Text messageLabel;
+
 
 	[SerializeField]
 	private GameObject joinRoomPanel;
@@ -101,8 +104,8 @@ public class MainPageController : BaseMonoBehaviour {
 
 	private void ShowConfirmMessagePanel(string msg) {
 		HideMessagePanel ();
-		messageLabel.text = msg;
-		messageLabel.gameObject.SetActive (true);
+		confirmMessageLabel.text = msg;
+		confirmMessageLabel.gameObject.SetActive (true);
 		confirmMessagePanel.SetActive (true);
 	}
 
@@ -121,13 +124,12 @@ public class MainPageController : BaseMonoBehaviour {
 	}
 
 	public void CreateRoomClick() {
-
-
-		
+		ShowMessagePanel ("正在创建房间...");
 		//创建房间
 		Debug.Log("create room click");
 		ResponseHandle createRoom = delegate(string jsonString){
 			Debug.Log("CreateRoomResponse: " + jsonString);
+			HideMessagePanel();
 			//加入玩家已经游戏了，那么跳转到Gameplay Scene。否则什么都不需要坐。
 			CreateRoomResponse resp = JsonConvert.DeserializeObject<CreateRoomResponse>(jsonString);
 			Dictionary<string, string> parameters = new Dictionary<string, string>();
