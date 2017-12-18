@@ -52,7 +52,7 @@ public class CompareCardController : BaseStateController {
 
 				for (int i = 0; i < playingPlayers.Count; i++) {
 					playingPlayers [i].score = scoreDict [playingPlayers [i].userId];
-					Debug.Log (playingPlayers [i].userId + ": " + scoreDict [playingPlayers [i].userId]);
+					//Debug.Log (playingPlayers [i].userId + ": " + scoreDict [playingPlayers [i].userId]);
 				}
 
 				List<string> losers = new List<string> ();

@@ -50,8 +50,8 @@ public class MainPageController : BaseMonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Debug.Log ("---------------------------------------------");
-		Debug.Log ("MainPageController.Start() called");
+		//Debug.Log ("---------------------------------------------");
+		//Debug.Log ("MainPageController.Start() called");
 		//Player.Me = LoginController.CreateMockPlayer ();
 		if (!LoginController.isFromLogin) {
 			Player.Me = LoginController.CreateMockPlayer ();
@@ -161,7 +161,7 @@ public class MainPageController : BaseMonoBehaviour {
 			if (btn.image.sprite.name.EndsWith ("_y")) {
 				int index = btn.image.name.IndexOf ("_");
 				string result = btn.name.Substring (index + 1);
-				Debug.Log (result);
+				//Debug.Log (result);
 				return result;
 			}
 		}
@@ -302,17 +302,17 @@ public class MainPageController : BaseMonoBehaviour {
 
 	public void JoinRoomFromUrl( string url )  
 	{  
-		Debug.Log( "openUrl： " + url );  
+		//Debug.Log( "openUrl： " + url );  
 		string roomNo = url.Replace ("wx73653b5260b24787://?room=", ""); 
-		Debug.Log ("roomNo = " + roomNo);
+		//Debug.Log ("roomNo = " + roomNo);
 		JoinRoom (roomNo);
 	}  
 
 
 	public void GamePropertyClick() {
 		string name = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
-		Debug.Log ("name = " + name);
-		Debug.Log("name.StartsWith(\"fs_\")" + name.StartsWith("fs_"));
+		//Debug.Log ("name = " + name);
+		//Debug.Log("name.StartsWith(\"fs_\")" + name.StartsWith("fs_"));
 		string tag = "";
 		if (name.StartsWith ("jushu_")) {
 			tag = "gameproperty_jushu";

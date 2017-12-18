@@ -125,12 +125,12 @@ public class RoundsPanel : MonoBehaviour {
 	}
 
 	private void ShowRound(){
-		//Debug.Log ("ShowRound() called");
-		if (roundNo == 0 || roundNo >= gamePlayController.game.currentRoundNo)
-			return;
-
 		var game = gamePlayController.game;
 		roundNoLabel.text = roundNo + "/" + game.totalRoundCount;
+
+		//Debug.Log ("ShowRound() called");
+		if (roundNo <= 0 || roundNo >= gamePlayController.game.currentRoundNo)
+			return;
 
 		var round = gamePlayController.game.rounds [roundNo - 1];
 		//Debug.Log ("round = " + round);
@@ -188,8 +188,7 @@ public class RoundsPanel : MonoBehaviour {
 		roundNo = 1;
 		ShowRound ();
 	}
-
-
+		
 	public void PrevBtnClick() {
 		roundNo -= 1;
 		if (roundNo <= 1)

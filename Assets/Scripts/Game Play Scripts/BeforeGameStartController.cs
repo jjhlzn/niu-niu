@@ -128,8 +128,8 @@ public class BeforeGameStartController : BaseStateController {
 	public int getMoveSeatIndex() {
 		var game = gamePlayerController.game;
 		int seatIndex = -1;
-		Debug.Log ("game.seats = " + seats);
-		Debug.Log ("game.seats.length = " + seats.Length);
+		//Debug.Log ("game.seats = " + seats);
+		//Debug.Log ("game.seats.length = " + seats.Length);
 		if (Player.Me.isPlaying && Player.Me.seat != null && Player.Me.seat.seatIndex != 0) { 
 			seatIndex = Player.Me.seat.seatIndex;
 		} else if (game.state != GameState.BeforeStart && !seats [0].hasPlayer ()) {
@@ -497,7 +497,7 @@ public class BeforeGameStartController : BaseStateController {
 
 	public void SetUI() {
 		var game = gamePlayerController.game;
-		Debug.Log ("game.roomNo = " + game.roomNo);
+		//Debug.Log ("game.roomNo = " + game.roomNo);
 		//需要循转座位
 		if ( IsNeedMoveSeat() ) {
 			//first has player seat index

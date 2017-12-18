@@ -63,8 +63,8 @@ public class GamePlayController : BaseMonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Debug.Log ("--------------------------------------------------------");
-		Debug.Log ("GamePlayController.Start() called");
+		//Debug.Log ("--------------------------------------------------------");
+		//Debug.Log ("GamePlayController.Start() called");
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
 		CreateGame ();
@@ -454,7 +454,7 @@ public class GamePlayController : BaseMonoBehaviour {
 	void OnApplicationPause(bool pauseStatus)
 	{
 		//isPaused = pauseStatus;
-		Debug.Log("OnApplicationPause: pauseStatus = " + pauseStatus);
+		//Debug.Log("OnApplicationPause: pauseStatus = " + pauseStatus);
 
 
 

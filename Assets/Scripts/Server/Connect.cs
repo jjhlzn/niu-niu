@@ -110,7 +110,7 @@ public class Connect : BaseMonoBehaviour {
 			DateTime endConnTime = DateTime.Now;
 			double totalMilliSecs = (endConnTime - startConnTime).TotalMilliseconds;
 			Debug.Log("连接和加入房间，使用了" + totalMilliSecs + "ms");
-			Debug.Log("Connect");
+			//Debug.Log("Connect");
 		}, JsonConvert.SerializeObject (joinReq));
 	}
 

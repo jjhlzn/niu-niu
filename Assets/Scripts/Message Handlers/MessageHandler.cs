@@ -34,7 +34,7 @@ public class MessageHandler<T, U> where T : BaseGameResponse
 		msg = msg.Substring(msg.IndexOf(',') + 1);
 		msg = msg.Substring (0, msg.Length - 1);
 		//msg = JsonConvert.SerializeObject ( ((object[])BestHTTP.JSON.Json.Decode (msg)) [1]);
-		Debug.Log(typeof(T).Name + ": " + msg);
+		//Debug.Log(typeof(T).Name + ": " + msg);
 		T resp = JsonConvert.DeserializeObject<T>(msg);
 		//Debug.Log(resp);
 		if (resp.status != 0) {

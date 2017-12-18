@@ -75,7 +75,7 @@ public class SecondDealController : BaseStateController {
 						gamePlayController.state = GameState.CheckCard;
 					isSecondDealing = false;
 					isSecondDealDone = true;
-					Debug.Log ("SecondDealAnimation done");
+					//Debug.Log ("SecondDealAnimation done");
 				});
 			}
 		}

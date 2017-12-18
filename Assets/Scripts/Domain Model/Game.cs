@@ -268,9 +268,9 @@ public class Game
 		else 
 			this.roundLabel.text = "局数 : " + this.currentRoundNo + "/" + this.totalRoundCount;
 
-		Debug.Log ("state = " + state.value);
-		Debug.Log ("this.currentRoundNo = " + this.currentRoundNo);
-		Debug.Log ("this.totalRoundCount = " + this.totalRoundCount);
+		//Debug.Log ("state = " + state.value);
+		//Debug.Log ("this.currentRoundNo = " + this.currentRoundNo);
+		//Debug.Log ("this.totalRoundCount = " + this.totalRoundCount);
 	}
 
 	public void UpdateSeatUIs() {

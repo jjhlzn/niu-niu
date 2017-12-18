@@ -161,7 +161,7 @@ public class ChooseBankerController : BaseStateController {
 			}
 		}
 			
-		Debug.Log ("randomSelectBankerUserIds.Length = " + randomSelectBankerUserIds.Length);
+		//Debug.Log ("randomSelectBankerUserIds.Length = " + randomSelectBankerUserIds.Length);
 		isChoosingBanker = true;
 		game.HideStateLabel ();
 	}

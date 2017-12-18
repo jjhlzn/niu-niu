@@ -119,7 +119,7 @@ public class BetController : BaseStateController {
 					seat.chipCountLabel.text = bet + "";
 					seat.chipCountLabel.gameObject.SetActive (true);
 					seat.chipLabelBackground.gameObject.SetActive (true);
-					Debug.Log ("index = " + index);
+					//Debug.Log ("index = " + index);
 					isBetCompletedArray [index] = true;
 
 				});

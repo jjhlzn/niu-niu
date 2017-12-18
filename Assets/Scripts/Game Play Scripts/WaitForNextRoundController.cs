@@ -95,7 +95,7 @@ public class WaitForNextRoundController : BaseStateController {
 
 	public void ReadyClick() {
 		Socket gameSocket = gamePlayerController.gameSocket;
-		Debug.Log ("ready  click");
+		//Debug.Log ("ready  click");
 
 		//make start game request
 		var request = new {

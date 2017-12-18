@@ -87,7 +87,7 @@ public class CheckCardController : BaseStateController {
 
 			if (Player.Me.isPlaying && !Player.Me.hasShowCard && !checkCardPanel.gameObject.activeInHierarchy) {
 				checkCardPanel.gameObject.SetActive (true);
-				Debug.Log ("Show checkCardPanel");
+				//Debug.Log ("Show checkCardPanel");
 			}
 		}
 	
@@ -250,7 +250,7 @@ public class CheckCardController : BaseStateController {
 						player.seat.mutipleImage.sprite = game.getMultipleSprite (game.currentRound.multipleArray [player.userId]);
 						player.seat.mutipleImage.gameObject.SetActive (true);
 					}
-					Debug.Log ("seat " + index + " show card anim completed");
+					//Debug.Log ("seat " + index + " show card anim completed");
 					StartCoroutine (SetPlayerShowCardCompleted (index));
 				});
 			} else {

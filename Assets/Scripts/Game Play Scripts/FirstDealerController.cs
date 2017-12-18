@@ -152,7 +152,7 @@ public class FirstDealerController : BaseStateController {
 
 		string[] cards;
 		string userId = seats [0].player.userId;
-		Debug.Log ("userId = " + userId);
+		//Debug.Log ("userId = " + userId);
 		if (cardsDict.ContainsKey (userId)) {
 			cards = cardsDict [userId];
 		} else {
@@ -210,10 +210,10 @@ public class FirstDealerController : BaseStateController {
 				}
 
 				if (i == 0 && player.userId == Player.Me.userId) {
-					Debug.Log ("game.currentRound.playerCardsDict.ContainsKey ("+player.userId+"): " + game.currentRound.playerCardsDict.ContainsKey (player.userId));
+					//Debug.Log ("game.currentRound.playerCardsDict.ContainsKey ("+player.userId+"): " + game.currentRound.playerCardsDict.ContainsKey (player.userId));
 					if (game.currentRound.playerCardsDict.ContainsKey (player.userId)) {
 						cards [j].sprite = deck.GetCardFaceImage (game.currentRound.playerCardsDict [player.userId] [j]);
-						Debug.Log ("Set My Card " + j + "th sprite, card is " + cards[j]);
+						//Debug.Log ("Set My Card " + j + "th sprite, card is " + cards[j]);
 					}
 				}
 
