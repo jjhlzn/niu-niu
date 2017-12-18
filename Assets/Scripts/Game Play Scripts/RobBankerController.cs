@@ -114,7 +114,9 @@ public class RobBankerController : BaseStateController {
 		var robReq = new {
 			roomNo = gamePlayerController.game.roomNo,
 			isRob = isRob ? 1 : 0,
-			userId = Player.Me.userId
+			userId = Player.Me.userId,
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
 		};
 
 		gamePlayerController.gameSocket.Emit (Messages.RobBanker, JsonConvert.SerializeObject (robReq));

@@ -90,7 +90,9 @@ public class LoginController : BaseMonoBehaviour {
 
 			var req = new {
 				platform = Utils.GetPlatform(),
-				version = Application.version
+				version = Application.version,
+				clientInfo = Utils.GetClientInfo(),
+				userInfo = Utils.GetUserInfo()
 			};
 
 			StartCoroutine(ServerUtils.PostRequest (ServerUtils.CheckIOSAuditVersionUrl(), JsonConvert.SerializeObject(req), handler, errorHandler));
@@ -133,7 +135,9 @@ public class LoginController : BaseMonoBehaviour {
 
 		var req = new {
 			platform = Utils.GetPlatform(),
-			version = Application.version
+			version = Application.version,
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
 		};
 
 		StartCoroutine(ServerUtils.PostRequest (ServerUtils.CheckUpdateUrl(), JsonConvert.SerializeObject(req), handler, errorHandler));

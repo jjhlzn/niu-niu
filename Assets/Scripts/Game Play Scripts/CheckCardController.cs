@@ -311,7 +311,9 @@ public class CheckCardController : BaseStateController {
 		Socket gameSocket = gamePlayController.gameSocket;
 		var request = new {
 			userId = Player.Me.userId,
-			roomNo = gamePlayController.game.roomNo
+			roomNo = gamePlayController.game.roomNo,
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
 		};
 
 		gameSocket.Emit (Messages.ShowCard, JsonConvert.SerializeObject (request));

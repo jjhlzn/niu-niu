@@ -42,7 +42,9 @@ public class RoomController : MonoBehaviour
 
 		var req = new {
 			userId = Player.Me.userId,
-			roomNo = game.roomNo
+			roomNo = game.roomNo,
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
 		};
 		socket.Emit(Messages.DismissRoom, (s, packet, args) => {
 			string msg = packet.ToString();
@@ -82,7 +84,9 @@ public class RoomController : MonoBehaviour
 
 		var req = new {
 			userId = Player.Me.userId,
-			roomNo = game.roomNo
+			roomNo = game.roomNo,
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
 		};
 
 		socket.Emit (Messages.LeaveRoom, (s, packet, args) => {

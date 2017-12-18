@@ -422,213 +422,25 @@ MonoBehaviour:
   appKey: 228150c33fca8
   appSecret: 601becea419914e249ccebecec63f890
   devInfo:
-    sinaweibo:
-      Enable: 0
-      app_key: 568898243
-      app_secret: 38a4f8204cc784f81f9f0daaf31e02e3
-      redirect_uri: http://www.sharesdk.cn
-      auth_type: both
-    tencentweibo:
-      Enable: 0
-      app_key: 801307650
-      app_secret: ae36f4ee3946e1cbb98d6965b0b2ff5c
-      redirect_uri: http://sharesdk.cn
-    facebook:
-      Enable: 0
-      api_key: 107704292745179
-      app_secret: 38053202e1a5fe26c80c753071f0b573
-      auth_type: both
-      display_name: ShareSDK
-    twitter:
-      Enable: 0
-      consumer_key: LRBM0H75rWrU9gNHvlEAA2aOy
-      consumer_secret: gbeWsZvA9ELJSdoBzJ5oLKX0TU09UOwrzdGfo9Tg7DjyGuMe8G
-      redirect_uri: http://mob.com
-    email:
-      Enable: 0
-    shortMessage:
-      Enable: 0
-    douban:
-      Enable: 0
-      api_key: 02e2cbe5ca06de5908a863b15e149b0b
-      secret: 9f1e7b4f71304f2f
-      redirect_uri: http://www.sharesdk.cn
-    renren:
-      Enable: 0
-      app_id: 226427
-      app_key: fc5b8aed373c4c27a05b712acba0f8c3
-      secret_key: f29df781abdd4f49beca5a2194676ca4
-      auth_type: both
-    googlePlus:
-      Enable: 0
-      client_id: 232554794995.apps.googleusercontent.com
-      client_secret: PEdFgtrMw97aCvf0joQj7EMk
-      redirect_uri: http://localhost
-      auth_type: both
-    kaiXin:
-      Enable: 0
-      api_key: 358443394194887cee81ff5890870c7c
-      secret_key: da32179d859c016169f66d90b6db2a23
-      redirect_uri: http://www.sharesdk.cn
-    pocket:
-      Enable: 0
-      consumer_key: 11496-de7c8c5eb25b2c9fcdc2b627
-      redirect_uri: pocketapp1234
-      auth_type: both
-    instagram:
-      Enable: 0
-      client_id: ff68e3216b4f4f989121aa1c2962d058
-      client_secret: 1b2e82f110264869b3505c3fe34e31a1
-      redirect_uri: http://sharesdk.cn
-    linkedIn:
-      Enable: 0
-      api_key: ejo5ibkye3vo
-      secret_key: cC7B2jpxITqPLZ5M
-      redirect_url: http://sharesdk.cn
-    tumblr:
-      Enable: 0
-      consumer_key: 2QUXqO9fcgGdtGG1FcvML6ZunIQzAEL8xY6hIaxdJnDti2DYwM
-      consumer_secret: 3Rt0sPFj7u2g39mEVB3IBpOzKnM3JnTtxX2bao2JKk4VV1gtNo
-      callback_url: http://sharesdk.cn
-    youDao:
-      Enable: 0
-      consumer_key: dcde25dca105bcc36884ed4534dab940
-      consumer_secret: d98217b4020e7f1874263795f44838fe
-      oauth_callback: http://www.sharesdk.cn/
-    flickr:
-      Enable: 0
-      api_key: 33d833ee6b6fca49943363282dd313dd
-      api_secret: 3a2c5b42a8fbb8bb
-    evernote:
-      Enable: 0
-      consumer_key: sharesdk-7807
-      consumer_secret: d05bf86993836004
-      isSandBox: 1
-    whatsApp:
-      Enable: 0
-    line:
-      Enable: 0
-    dropbox:
-      Enable: 0
-      app_key: i5vw2mex1zcgjcj
-      app_secret: 3i9xifsgb4omr0s
-      oauth_callback: https://www.sharesdk.cn
-    vkontakte:
-      Enable: 0
-      application_id: 3921561
-      secret_key: 6Qf883ukLDyz4OBepYF1
-      auth_type: both
-    pinterest:
-      Enable: 0
-      client_id: 4797078908495202393
-    mingdao:
-      Enable: 0
-      app_key: EEEE9578D1D431D3215D8C21BF5357E3
-      app_secret: 5EDE59F37B3EFA8F65EEFB9976A4E933
-      redirect_uri: http://sharesdk.cn
-    kakaoTalk:
-      Enable: 0
-      app_key: 48d3f524e4a636b08d81b3ceb50f1003
-      rest_api_key: ac360fa50b5002637590d24108e6cb10
-      redirect_uri: http://www.mob.com/oauth
-      auth_type: both
-    kakaoStory:
-      Enable: 0
-      app_key: 48d3f524e4a636b08d81b3ceb50f1003
-      rest_api_key: ac360fa50b5002637590d24108e6cb10
-      redirect_uri: http://www.mob.com/oauth
-      auth_type: both
-    qq:
-      Enable: 0
-      app_id: 100371282
-      app_key: aed9b0303e3ed1e27bae87c33761161d
-      auth_type: both
-    qzone:
-      Enable: 0
-      app_id: 100371282
-      app_key: aed9b0303e3ed1e27bae87c33761161d
-      auth_type: both
     wechat:
       Enable: 1
-      app_id: wx73653b5260b24787
-      app_secret: fc31886ecfd2fe190822b4fb72adb9f7
+      SortId: 5
+      AppId: wx73653b5260b24787
+      AppSecret: fc31886ecfd2fe190822b4fb72adb9f7
+      userName: gh_afb25ac019c9@app
+      path: /page/API/pages/share/share
+      BypassApproval: 1
     wechatMoments:
       Enable: 1
-      app_id: wx73653b5260b24787
-      app_secret: fc31886ecfd2fe190822b4fb72adb9f7
+      SortId: 6
+      AppId: wx73653b5260b24787
+      AppSecret: fc31886ecfd2fe190822b4fb72adb9f7
+      BypassApproval: 0
     wechatFavorites:
       Enable: 0
-      app_id: wx73653b5260b24787
-      app_secret: fc31886ecfd2fe190822b4fb72adb9f7
-    yixin:
-      Enable: 0
-      app_id: yx0d9a9f9088ea44d78680f3274da1765f
-      app_secret: 1a5bd421ae089c3
-      redirect_uri: https://open.yixin.im/resource/oauth2_callback.html
-      auth_type: both
-    yixinMoments:
-      Enable: 0
-      app_id: yx0d9a9f9088ea44d78680f3274da1765f
-      app_secret: 1a5bd421ae089c3
-      redirect_uri: https://open.yixin.im/resource/oauth2_callback.html
-      auth_type: both
-    facebookMessenger:
-      Enable: 0
-    instapaper:
-      Enable: 0
-      consumer_key: 4rDJORmcOcSAZL1YpqGHRI605xUvrLbOhkJ07yO0wWrYrc61FA
-      consumer_secret: GNr1GespOQbrm8nvd7rlUsyRQsIo3boIbMguAl9gfpdL0aKZWe
-    aliSocial:
-      Enable: 0
-      app_id: 2015072400185895
-    aliSocialMoments:
-      Enable: 0
-      app_id: 2015072400185895
-    dingTalk:
-      Enable: 0
-      app_id: dingoanxyrpiscaovl4qlw
-    youtube:
-      Enable: 0
-      client_id: 906418427202-jinnbqal1niq4s8isbg2ofsqc5ddkcgr.apps.googleusercontent.com
-      client_secret: 
-      redirect_uri: http://localhost
-    meiPai:
-      Enable: 0
-      app_key: 1089867596
-    copy:
-      Enable: 1
-    yixinFavorites:
-      Enable: 1
-      app_id: yx0d9a9f9088ea44d78680f3274da1765f
-      app_secret: 1a5bd421ae089c3
-      redirect_uri: https://open.yixin.im/resource/oauth2_callback.html
-      auth_type: both
-    yixinSeries:
-      Enable: 1
-      app_id: yx0d9a9f9088ea44d78680f3274da1765f
-      app_secret: 1a5bd421ae089c3
-      redirect_uri: https://open.yixin.im/resource/oauth2_callback.html
-      auth_type: both
-    wechatSeries:
-      Enable: 1
-      app_id: wx73653b5260b24787
-      app_secret: fc31886ecfd2fe190822b4fb72adb9f7
-    qqSeries:
-      Enable: 1
-      app_id: 100371282
-      app_key: aed9b0303e3ed1e27bae87c33761161d
-      auth_type: both
-    kakaoSeries:
-      Enable: 1
-      app_key: 48d3f524e4a636b08d81b3ceb50f1003
-      rest_api_key: ac360fa50b5002637590d24108e6cb10
-      redirect_uri: http://www.mob.com/oauth
-      auth_type: both
-    evernoteInternational:
-      Enable: 1
-      consumer_key: sharesdk-7807
-      consumer_secret: d05bf86993836004
-      isSandBox: 0
+      SortId: 7
+      AppId: wx73653b5260b24787
+      AppSecret: fc31886ecfd2fe190822b4fb72adb9f7
 --- !u!114 &309713403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1901,7 +1713,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0.5
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96

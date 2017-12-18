@@ -157,7 +157,10 @@ public class BeforeGameStartController : BaseStateController {
 		//make start game request
 		var request = new {
 			roomNo = gamePlayerController.game.roomNo,
-			userId = Player.Me.userId
+			userId = Player.Me.userId,
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
+				
 		};
 
 		gameSocket.Emit (Messages.StartGame, (s, packet, args) => {
@@ -199,6 +202,8 @@ public class BeforeGameStartController : BaseStateController {
 			roomNo = gamePlayerController.game.roomNo,
 			seat = seats[seatIndex].seatNo,
 			userId = Player.Me.userId,
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
 		};
 			
 		socket.Emit (Messages.SitDown, (s, packet, args) => {
@@ -300,6 +305,8 @@ public class BeforeGameStartController : BaseStateController {
 			roomNo = gamePlayerController.game.roomNo,
 			seat = Player.Me.seat.seatNo,
 			userId = Player.Me.userId,
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
 		};
 
 		socket.Emit (Messages.StandUp, (s, packet, args) => {

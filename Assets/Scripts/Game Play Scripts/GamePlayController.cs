@@ -461,11 +461,17 @@ public class GamePlayController : BaseMonoBehaviour {
 		if (pauseStatus) {
 			pauseTime = DateTime.Now;
 			if (isConnected) {
-				gameSocket.Emit(Messages.Delegate, JsonConvert.SerializeObject(new {userId = Player.Me.userId, roomNo = game.roomNo}));
+				gameSocket.Emit(Messages.Delegate, JsonConvert.SerializeObject(new {userId = Player.Me.userId, 
+					roomNo = game.roomNo,
+					clientInfo = Utils.GetClientInfo(),
+					userInfo = Utils.GetUserInfo()}));
 			}
 		} else {
 			if (gameSocket != null && gameSocket.IsOpen)
-				gameSocket.Emit(Messages.NotDelegate, JsonConvert.SerializeObject(new {userId = Player.Me.userId, roomNo = game.roomNo}));
+				gameSocket.Emit(Messages.NotDelegate, JsonConvert.SerializeObject(new {userId = Player.Me.userId, 
+					roomNo = game.roomNo,
+					clientInfo = Utils.GetClientInfo(),
+					userInfo = Utils.GetUserInfo()}));
 
 			if (game != null  &&  (game.state == GameState.GameOver || game.state == GameState.BeforeStart ))
 				return;

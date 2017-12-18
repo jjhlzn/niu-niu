@@ -64,6 +64,26 @@ public class Utils
 		return Application.version;
 	}
 
+	public static object GetClientInfo() {
+		return new {
+			platform = GetPlatform(),
+			version = GetVersion()
+		};
+	}
+
+	public static object GetUserInfo() {
+		if (Player.Me != null) {
+			return new {
+				userId = Player.Me.userId,
+				nickname = Player.Me.nickname,
+				//time = String.Format ("YYYY-MM-DD HH:mm:ss", DateTime.Now)
+			};
+		} else {
+			return new {
+			};
+		}
+	}
+
 	public static string GetShareGameResultUrl() {
 		return System.IO.Path.Combine (Application.persistentDataPath, GetShareGameResultFileName());
 	}

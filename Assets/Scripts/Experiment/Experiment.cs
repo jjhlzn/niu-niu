@@ -87,7 +87,9 @@ public class Experiment : MonoBehaviour {
 			Debug.Log ("Connected");  
 			var joinRoomReq =  new {
 				roomNo = "123456",
-				userId = "1313123"
+				userId = "1313123",
+				clientInfo = Utils.GetClientInfo(),
+				userInfo = Utils.GetUserInfo()
 			};
 
 			//BestHTTP.SocketIO.Events.SocketIOAckCallback a = null;

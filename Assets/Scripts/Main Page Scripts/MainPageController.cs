@@ -145,7 +145,9 @@ public class MainPageController : BaseMonoBehaviour {
 			fangfei = GetGameProperty("gameproperty_fangfei"),
 			fengshu = GetGameProperty("gameproperty_fs"),
 			qz = GetGameProperty("gameproperty_qz"),
-			wanfa = GetGameProperty("gameproperty_wanfa")
+			wanfa = GetGameProperty("gameproperty_wanfa"),
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
 		};
 
 		StartCoroutine (PostRequest(ServerUtils.GetCreateRoomUrl(), JsonConvert.SerializeObject(req), createRoom));

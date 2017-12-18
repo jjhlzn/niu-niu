@@ -100,7 +100,9 @@ public class WaitForNextRoundController : BaseStateController {
 		//make start game request
 		var request = new {
 			roomNo = gamePlayerController.game.roomNo,
-			userId = Player.Me.userId
+			userId = Player.Me.userId,
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
 		};
 
 		gameSocket.Emit (Messages.Ready, JsonConvert.SerializeObject(request));  

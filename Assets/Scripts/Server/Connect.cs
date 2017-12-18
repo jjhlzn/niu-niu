@@ -86,7 +86,9 @@ public class Connect : BaseMonoBehaviour {
 	void JoinRoom() {
 		var joinReq = new {
 			roomNo = roomNo,
-			userId = Player.Me.userId
+			userId = Player.Me.userId,
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
 		};
 
 		Debug.Log ("try to join room");

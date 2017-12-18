@@ -156,7 +156,9 @@ public class BetController : BaseStateController {
 		var req = new {
 			roomNo = gamePlayController.game.roomNo,
 			userId = Player.Me.userId,
-			bet = mybet
+			bet = mybet,
+			clientInfo = Utils.GetClientInfo(),
+			userInfo = Utils.GetUserInfo()
 		};
 
 		socket.Emit (Messages.Bet, JsonConvert.SerializeObject(req)); 
